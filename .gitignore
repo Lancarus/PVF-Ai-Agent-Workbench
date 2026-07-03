@@ -1,9 +1,14 @@
-.env
 # Local secrets and machine-specific profiles.
+.env
 .claude/settings.local.json
 config/providers.local.json
 config/workspace-profiles.local.json
 config/*.secret.json
+
+# Python local caches.
+__pycache__/
+*.pyc
+.venv/
 
 # Replaceable local runtime payloads.
 runtime/opencode/*
@@ -17,6 +22,7 @@ workspaces/apply-runs/
 workspaces/backend-contract-runs/
 workspaces/backend-fixture-runs/
 workspaces/first-run-reports/
+workspaces/generated
 workspaces/real-task-runs/
 workspaces/real-task-checks/
 workspaces/absorption-checklists/*
@@ -38,6 +44,7 @@ workspaces/release-runs/*
 !workspaces/release-runs/README.zh-CN.md
 workspaces/indexes/*
 !workspaces/indexes/README.zh-CN.md
+knowledge-pack/nut攻略/*
 
 # Heavy PVF/client artifacts must be mounted by profile, not committed into the workbench.
 *.pvf
@@ -45,7 +52,3 @@ workspaces/indexes/*
 *.npk
 *.img
 *.lst.bak
-
-# Python local caches.
-__pycache__/
-*.pyc
