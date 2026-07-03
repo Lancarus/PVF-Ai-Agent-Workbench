@@ -15,6 +15,7 @@
     "CHANGELOG.zh-CN.md",
     "workbench.bat",
     ".agents/skills/dnf-pvf-xpilot/",
+    ".agents/skills/pvf-post-deploy/",
     "commands/",
     "docs/",
     "release/",
