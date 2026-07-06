@@ -11,7 +11,7 @@
     "indexes/knowledge-index.json",
     "indexes/completed-mainlines-status.zh-CN.md"
   ],
-  "topicCount": 308,
+  "topicCount": 309,
   "topics": {
     "pvf-safety": {
       "status": "默认可用",
@@ -686,6 +686,18 @@
         "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md",
         "dictionaries/nut-runtime-api-boundary.zh-CN.md",
         "workflows/skill-derivative-and-cancel.zh-CN.md"
+      ]
+    },
+    "action-combat-cross-version-porting": {
+      "status": "默认可用",
+      "entries": [
+        "safety/README.zh-CN.md",
+        "task-cards/action-combat-cross-version-porting.zh-CN.md",
+        "workflows/action-combat-cross-version-porting.zh-CN.md",
+        "task-cards/pvf-registry-lst-topology-readonly-audit.zh-CN.md",
+        "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md",
+        "dictionaries/skill-learnability-command-cooldown-fields.zh-CN.md",
+        "dictionaries/nut-runtime-api-boundary-quick.zh-CN.md"
       ]
     },
     "nut-api": {

@@ -1,15 +1,11 @@
 {
   "schemaVersion": "1.0",
   "packageName": "PVF-Agent-Workbench",
-  "packageVersion": "1.0.0",
+  "packageVersion": "1.1.0",
   "purpose": "Clean workspace with a single root command entry for desktop Agents to inspect and safely modify PVF through controlled output workflows.",
-  "generatedAt": "2026-06-20",
+  "generatedAt": "2026-07-06",
   "includes": [
-    ".gitattributes",
     "AGENTS.md",
-    "LICENSE",
-    "LICENSE-KNOWLEDGE-CC0.md",
-    "README.md",
     "README.zh-CN.md",
     "VERSION",
     "CHANGELOG.zh-CN.md",
@@ -73,7 +69,7 @@
     "gate3": "workbench.bat release gate3"
   },
   "releaseValidation": {
-    "validatedAt": "2026-06-20",
+    "validatedAt": "2026-07-06",
     "gate1PackageManifest": true,
     "gate2StageCopyHashes": true,
     "gate3NoPvfColdStart": true,
