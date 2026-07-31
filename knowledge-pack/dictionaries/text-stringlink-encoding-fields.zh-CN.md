@@ -6,18 +6,18 @@
 
 ## 核心术语
 
-| 术语 | 静态含义 | 主目标观察 | 边界 |
+| 术语 | 静态含义 | 目标核验 | 边界 |
 | --- | --- | --- | --- |
-| StringLink 样 token | `<namespace::key\`文本\`>` 或相近形态 | 27719 个 | 只证明脚本文本中有链接样结构 |
-| namespace | StringLink 中 `::` 前的数字 | 观察到 `13`、`9`、`3`、`17`、`6` 等高频值 | 只能作为分布提示，不是全局 registry |
-| key / head | StringLink 中 `::` 后、反引号前的键 | 唯一 key 18904 个 | 不等同于物品 ID、怪物 ID 或任务 ID |
-| 内嵌文本 | StringLink 反引号中的可见文本 | 19405 个含 CJK/非 ASCII | 不证明 UI 一定显示该文本 |
-| 直接文本 | 普通反引号 token 中的文本样内容 | 大量存在 | 可能是说明、枚举、脚本条件、路径或逻辑字符串，需看父标签 |
-| 名称表 | `itemname.lst`、`monstername.lst` 等 | 字符串资源候选 | 不是文件路径 registry |
-| `.str` 文件 | 多目录本地化字符串资源候选 | 主目标有多类 `.kor.str`、`.jpn.str`、`.chn.str` | 不证明运行时加载顺序 |
-| `n_string.lst` | 字符串资源候选入口 | 主目标存在 | 不等同于所有文本来源 |
-| `stringtable.bin` | 二进制字符串表候选 | 主目标存在 | 当前未证明写入流程 |
-| replacement char | Unicode replacement character 字形 | 文件级命中 270 个 | 编码/反编译风险桶，不能静态硬修 |
+| StringLink 样 token | `<namespace::key\`文本\`>` 或相近形态 | 需在当前目标 PVF 中只读确认 | 只证明脚本文本中有链接样结构 |
+| namespace | StringLink 中 `::` 前的数字 | 需在当前目标 PVF 中只读确认 | 只能作为分布提示，不是全局 registry |
+| key / head | StringLink 中 `::` 后、反引号前的键 | 需在当前目标 PVF 中只读确认 | 不等同于物品 ID、怪物 ID 或任务 ID |
+| 内嵌文本 | StringLink 反引号中的可见文本 | 需在当前目标 PVF 中只读确认 | 不证明 UI 一定显示该文本 |
+| 直接文本 | 普通反引号 token 中的文本样内容 | 需在当前目标 PVF 中只读确认 | 可能是说明、枚举、脚本条件、路径或逻辑字符串，需看父标签 |
+| 名称表 | `itemname.lst`、`monstername.lst` 等 | 需在当前目标 PVF 中只读确认 | 不是文件路径 registry |
+| `.str` 文件 | 多目录本地化字符串资源候选 | 需在当前目标 PVF 中只读确认 | 不证明运行时加载顺序 |
+| `n_string.lst` | 字符串资源候选入口 | 需在当前目标 PVF 中只读确认 | 不等同于所有文本来源 |
+| `stringtable.bin` | 二进制字符串表候选 | 需在当前目标 PVF 中只读确认 | 当前未证明写入流程 |
+| replacement char | Unicode replacement character 字形 | 需在当前目标 PVF 中只读确认 | 编码/反编译风险桶，不能静态硬修 |
 
 ## 高频文本字段
 
@@ -65,7 +65,6 @@
 
 ## 已验证写入边界
 
-当前主目标样本已经证明：在含中文字符串的 stackable 文件中，只改数字字段时，使用 `pvfEncoding=Cn`、不做简繁转换、不自动转换 StringLink，可避免已知的客户端中文 UI 乱码问题。
 
 边界：
 

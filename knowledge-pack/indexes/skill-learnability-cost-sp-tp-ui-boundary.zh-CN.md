@@ -4,18 +4,17 @@
 
 用途：回答“学习等级、普通学习消耗、TP/EX 强化消耗、前置技能条件、装备技能等级加成和冷却效果分别从哪里查”。本文只覆盖静态只读边界，不证明 UI 最终扣点、服务端放行、PVP 修正、装备叠加、失败释放回滚或实际战斗效果。
 
-## 本桶主目标确认
 
-| 桶 | 主目标只读结果 | 当前结论 |
+| 桶 | 目标核验 | 当前结论 |
 | --- | --- | --- |
-| 普通 `.skl` 学习消耗 | `IceRoad.skl` 可见 `[purchase cost] 30`、`[required level] 25`、`[required level range] 2`、`[maximum level] 70`、growtype 上限和适配字段。 | 普通学习等级和购买消耗先回 `.skl` 查。 |
-| 自定义主动技能学习消耗 | `ReleaseBuffs.skl` 可见 `[purchase cost] 0`、`[required level] 1`、`[required level range] 3`、`[maximum level] 50`、growtype 上限和适配字段。 | 自定义技能同样不能只看技能树图标判断是否可学。 |
-| TP/EX 强化消耗 | `IceRoadEx.skl` 可见 `[special purchase cost] 2`、`[pre required skill] 7 10`、`[required level] 55`、`[required level range] 5`、`[maximum level] 10`。 | TP/EX 点数和前置技能条件在强化技能 `.skl` 中验证，不在 TP 树图标列表中验证。 |
-| 技能树字段缺失 | 主目标 21 个 `clientonly/skilltree/*_sp.co` / `*_tp.co` 中，限定搜索未命中 `[purchase cost]`、`[special purchase cost]`、`[required level]`、`[maximum level]`、`[skill class]`、`[pre required skill]`、`[required skill]`。 | 技能树文件承载显示、图标坐标和前置链线索，不承载学习费用或等级上限字段。 |
-| 技能树前置链 | 同一批技能树文件中 `[next skill]` 命中在多个 SP 文件中；代表样本有 `IceRoad(7) -> IceChakram(48)`。 | `[next skill]` 是技能树显示前置链线索，不等于 `.skl [pre required skill]`。 |
-| 装备技能等级加成 | `[skill levelup]` 全 PVF 命中 3884；样本为职业 token、技能 ID、等级变化量三列一组。 | 装备侧 `[skill levelup]` 是等级加成，不是技能学习消耗或最终技能等级。 |
-| 装备冷却效果 | 装备样本中可见条件块 `[cooltime]` 与 `[skill cooltime reset]`。 | 这是装备效果/触发层，不等于 `.skl [cool time]`，也不是学习点数来源。 |
-| 关键字段规模 | 全 PVF 搜索 `[special purchase cost]` 命中 554；`[pre required skill]` 命中 960。 | 两者是高频静态线索，但解释时仍要回到当前职业 registry 和具体 `.skl`。 |
+| 普通 `.skl` 学习消耗 | 需在当前目标 PVF 中只读确认 | 普通学习等级和购买消耗先回 `.skl` 查。 |
+| 自定义主动技能学习消耗 | 需在当前目标 PVF 中只读确认 | 自定义技能同样不能只看技能树图标判断是否可学。 |
+| TP/EX 强化消耗 | 需在当前目标 PVF 中只读确认 | TP/EX 点数和前置技能条件在强化技能 `.skl` 中验证，不在 TP 树图标列表中验证。 |
+| 技能树字段缺失 | 需在当前目标 PVF 中只读确认 | 技能树文件承载显示、图标坐标和前置链线索，不承载学习费用或等级上限字段。 |
+| 技能树前置链 | 需在当前目标 PVF 中只读确认 | `[next skill]` 是技能树显示前置链线索，不等于 `.skl [pre required skill]`。 |
+| 装备技能等级加成 | 需在当前目标 PVF 中只读确认 | 装备侧 `[skill levelup]` 是等级加成，不是技能学习消耗或最终技能等级。 |
+| 装备冷却效果 | 需在当前目标 PVF 中只读确认 | 这是装备效果/触发层，不等于 `.skl [cool time]`，也不是学习点数来源。 |
+| 关键字段规模 | 需在当前目标 PVF 中只读确认 | 两者是高频静态线索，但解释时仍要回到当前职业 registry 和具体 `.skl`。 |
 
 ## 字段分层
 
@@ -53,13 +52,6 @@
 | 装备加了多少技能等级 | 装备侧 `[skill levelup]` 三列组并按职业 registry 解析技能 ID。 | 穿戴后面板等级、技能树等级、卸装回退。 |
 | 装备改冷却或重置冷却 | 装备效果块、`[skill data up]`、`[cooltime]`、`[skill cooltime reset]` 分开查。 | 释放成功、失败释放、PVP、装备叠加后的实际冷却。 |
 
-## 辅助对照差异提示
-
-辅助对照只提示差异，不提升为主目标事实：
-
-- SP/TP 技能树目录为 25 个文件，比主目标多 AT priest 与 AT swordman 入口。
-- 辅助对照 25 个技能树文件中，同样未命中 `[purchase cost]`、`[special purchase cost]`、`[pre required skill]`。
-- 辅助对照全 PVF `[special purchase cost]` 命中 749，高于主目标的 554，提示技能规模和职业覆盖不同。
 
 ## 验收口径
 

@@ -2,17 +2,16 @@
 
 状态：默认可用
 
-用途：解释主目标 PVF 中角色、职业、growtype、技能树、职业限制相关字段的静态含义和风险边界。本文不证明实机转职、技能学习、装备穿戴、任务过滤、客户端 UI 或服务端放行。
 
 ## Registry 与入口
 
-| 字段或文件 | 主目标观察 | 只读结论 | 风险边界 |
+| 字段或文件 | 目标核验 | 只读结论 | 风险边界 |
 | --- | --- | --- | --- |
-| `character/character.lst` | 11 entries | 角色 ID 到 `.chr` 路径的主入口。 | 文件存在不等于客户端可创建或服务端放行。 |
-| `skill/skilllist.lst` | 11 entries | 职业 ID 到职业技能 `.lst` 的入口；顺序与 `character/character.lst` 一致。 | 只能说明本目标集的静态入口一致，不是跨 PVF 通用规则。 |
-| `skill/autoskill.lst` | 9 entries | AutoSkill 的职业入口，只覆盖 ID `0-8`。 | 不能用 `skill/skilllist.lst` 自动补出 9、10。 |
-| `clientonly/skilltree/*.co` | 21 files | SP/TP 技能树 UI/学习入口候选。 | 不证明 UI 正常、技能可学、SP/TP 扣点成功。 |
-| `etc/pvpskilltree/*.etc` | 9 files | PVP 技能树静态候选入口。 | 不证明 PVP 最终规则、平衡覆盖或实机生效。 |
+| `character/character.lst` | 需在当前目标 PVF 中只读确认 | 角色 ID 到 `.chr` 路径的主入口。 | 文件存在不等于客户端可创建或服务端放行。 |
+| `skill/skilllist.lst` | 需在当前目标 PVF 中只读确认 | 职业 ID 到职业技能 `.lst` 的入口；顺序与 `character/character.lst` 一致。 | 只能说明本目标集的静态入口一致，不是跨 PVF 通用规则。 |
+| `skill/autoskill.lst` | 需在当前目标 PVF 中只读确认 | AutoSkill 的职业入口，只覆盖 ID `0-8`。 | 不能用 `skill/skilllist.lst` 自动补出 9、10。 |
+| `clientonly/skilltree/*.co` | 需在当前目标 PVF 中只读确认 | SP/TP 技能树 UI/学习入口候选。 | 不证明 UI 正常、技能可学、SP/TP 扣点成功。 |
+| `etc/pvpskilltree/*.etc` | 需在当前目标 PVF 中只读确认 | PVP 技能树静态候选入口。 | 不证明 PVP 最终规则、平衡覆盖或实机生效。 |
 
 ## `.chr` 角色文件字段
 
@@ -44,7 +43,7 @@
 | `[skill info]` | `clientonly/skilltree/*.co` | 技能树中的一个技能节点。 | 节点存在不等于学习条件满足。 |
 | `[index]` | `clientonly/skilltree/*.co` | 技能 ID，需按当前职业 registry 解析。 | 不得当全局技能 ID。 |
 | `[next skill]` | `clientonly/skilltree/*.co` | 技能树节点前后关系候选。 | 不证明前置条件实机生效。 |
-| `[job index]` | `etc/pvpskilltree/*.etc` | PVP 表内职业数字入口。 | 需回到主目标角色/技能入口顺序解释。 |
+| `[job index]` | `etc/pvpskilltree/*.etc` | PVP 表内职业数字入口。 | 需在当前目标 PVF 中只读确认 |
 | `[grow type index]` | `etc/pvpskilltree/*.etc` | PVP 表内 growtype 数字入口。 | 只在该 PVP 表上下文内解释。 |
 | `[awakening type]` | `etc/pvpskilltree/*.etc` | PVP 表内觉醒阶段字段。 | 不证明 PVP 觉醒规则实际生效。 |
 | `[static basic skill]` | `etc/pvpskilltree/*.etc` | PVP 静态基础技能候选。 | 不证明角色实际获得或等级正确。 |
@@ -57,21 +56,20 @@
 | --- | --- | --- | --- |
 | `[usable job]` | `equipment/*.equ`、`stackable/*.stk` 等 | 职业 token 限制字段，可出现 `[all]` 或具体职业 token。 | 不证明装备可穿、物品可用、交易或服务端放行。 |
 | `[item growtype]` | 少量 `stackable/*.stk` | 道具效果中按 growtype 限定的候选字段。 | 不证明技能加成或道具效果实机生效。 |
-| `[SKILL_LEVEL]` | avatar / option 类字段中已有封存观察 | 技能等级加成字段，通常伴随 job token 与技能 ID。 | 必须按 job token 选 registry，不可裸 ID 解析。 |
+| `[SKILL_LEVEL]` | avatar / option 类字段中已有整理观察 | 技能等级加成字段，通常伴随 job token 与技能 ID。 | 必须按 job token 选 registry，不可裸 ID 解析。 |
 
 ## NUT / 运行时只读入口
 
-| 符号 | 主目标观察 | 只读结论 | 风险边界 |
+| 符号 | 目标核验 | 只读结论 | 风险边界 |
 | --- | --- | --- | --- |
-| `sq_getJob` | `sqr/` 下有命中 | 脚本文本存在读取角色职业的调用。 | 不证明调用路径实际执行。 |
-| `sq_getGrowType` | `sqr/` 下有命中 | 脚本文本存在读取 growtype 的调用。 | 不证明运行时值与 `.chr` 静态块一致。 |
-| `ENUM_CHARACTERJOB_*` | NUT 文本中可与 `sq_getJob` 同用 | 脚本层存在职业枚举常量引用。 | 常量数值和服务器规则不在本主线证明范围内。 |
-| `GROW_TYPE_*` | NUT 文本中可与 `sq_getGrowType` 同用 | 脚本层存在 growtype 常量引用。 | 不把常量名直接映射为所有 `.chr` growtype 名称。 |
+| `sq_getJob` | 需在当前目标 PVF 中只读确认 | 脚本文本存在读取角色职业的调用。 | 不证明调用路径实际执行。 |
+| `sq_getGrowType` | 需在当前目标 PVF 中只读确认 | 脚本文本存在读取 growtype 的调用。 | 不证明运行时值与 `.chr` 静态块一致。 |
+| `ENUM_CHARACTERJOB_*` | 需在当前目标 PVF 中只读确认 | 脚本层存在职业枚举常量引用。 | 常量数值和服务器规则不在本主题证明范围内。 |
+| `GROW_TYPE_*` | 需在当前目标 PVF 中只读确认 | 脚本层存在 growtype 常量引用。 | 不把常量名直接映射为所有 `.chr` growtype 名称。 |
 
 ## 解析规则
 
 - 角色 ID：先走 `character/character.lst`。
 - 职业技能 ID：先确定职业，再走对应 `skill/*Skill.lst`。
 - 技能树 `[index]`：先看同块 `[character job]`，再按职业 registry 解析。
-- PVP `[job index]`：先回到主目标角色/技能入口顺序，再解释同块 `[grow type index]`。
 - 装备/消耗品职业限制：只按 `[usable job]` token 记录静态限制，不推导实机结果。

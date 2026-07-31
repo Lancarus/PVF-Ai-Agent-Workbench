@@ -3,7 +3,7 @@
 const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
-const { McpStdioClient, parseMcpTextResult } = require("../lib/mcp-stdio-client");
+const { BackendStdioClient, parseBackendTextResult } = require("../lib/backend-stdio-client");
 const { resolveSourcePvf } = require("../lib/workspace-profiles");
 const indexStore = require("../lib/pvf-index-store");
 const { runtimePath } = require("../lib/runtime-state");
@@ -138,10 +138,10 @@ function writeJsonl(file, items) {
 async function callAndParse(client, name, toolArgs) {
   const result = await client.callTool(name, toolArgs);
   if (result && result.isError) {
-    const parsed = parseMcpTextResult(result);
+    const parsed = parseBackendTextResult(result);
     throw new Error(parsed.error || parsed.text || JSON.stringify(parsed));
   }
-  return parseMcpTextResult(result);
+  return parseBackendTextResult(result);
 }
 
 async function withOpenSession(config, client, resolved, action) {
@@ -415,7 +415,7 @@ async function buildIndex() {
   );
   ensureDir(outputDir);
 
-  const client = new McpStdioClient(upstreamLaunchOptions(config));
+  const client = new BackendStdioClient(upstreamLaunchOptions(config));
   try {
     const result = await withOpenSession(config, client, resolved, async (sessionId) => {
       const limit = numberOption("--limit", config.defaults.indexLimit || 1000000);

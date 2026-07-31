@@ -304,7 +304,6 @@
 
 含义：部分后期 PVF 样本存在状态抗性、Boss UI、特殊动作条件和表现类字段。
 
-注意：如果主目标 PVF 未出现，不要写成默认规则；任务明确命中时再回目标 PVF 专项核查。
 ## AI、召唤、出生与掉落主线
 
 - AI 结构与表达式：见 `dictionaries/monster-ai-fields.zh-CN.md`、`indexes/monster-ai-observed-tag-router.zh-CN.md`、`indexes/monster-ai-expression-router.zh-CN.md`。

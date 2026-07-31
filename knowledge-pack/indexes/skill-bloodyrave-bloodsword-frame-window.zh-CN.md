@@ -1,8 +1,7 @@
-# BloodyRave -> BloodSword 动作/帧窗口只读账本
+# BloodyRave -> BloodSword 动作/帧窗口只读索引
 
 状态：默认可用
 
-用途：记录当前主目标 PVF 中 `BloodyRave` 派生 `BloodSword` 的动作、帧、state/substate 只读闭合。本文只证明静态入口链和动作帧结构可读，不证明命中、伤害、手感、同步或 PVP 表现。
 
 ## 链路摘要
 
@@ -17,14 +16,13 @@ skill/swordmanskill.lst
 -> state 60 + substate [102]
 ```
 
-## 当前主目标已确认
 
 | 项 | 只读结论 | 边界 |
 | --- | --- | --- |
 | 源技能 | `skill/swordmanskill.lst` 中 `79 -> Swordman/BloodyRave.skl` | 只证明技能 ID 路由。 |
 | 目标技能 | `skill/swordmanskill.lst` 中 `103 -> Swordman/BloodSword.skl` | 只证明技能 ID 路由。 |
 | 入口脚本 | `sqr/character/swordman_load_state.nut` 推入 `passive_skill_swordman.nut` 和公共函数脚本 | 证明脚本链存在，不证明实机稳定性。 |
-| appendage 挂载 | `passive_skill_swordman.nut` 追加 `ap_qf_bloodyrave_bloodsword.nut` | 只说明当前主目标中有挂载逻辑。 |
+| appendage 挂载 | `passive_skill_swordman.nut` 追加 `ap_qf_bloodyrave_bloodsword.nut` | 需在当前目标 PVF 中只读确认 |
 | 触发条件 | appendage proc 判断 `obj.sq_GetState() == 43`，再取当前动画帧，`frame >= 4` 后尝试目标技能 | 这是 state + frame 级窗口，不是动作级窗口。 |
 | 目标 state | `sq_IntVectPush(102)` 后 `sq_AddSetStatePacket(60, STATE_PRIORITY_USER, true)` | `60/[102]` 只对本 BloodSword 链有当前目标证据。 |
 

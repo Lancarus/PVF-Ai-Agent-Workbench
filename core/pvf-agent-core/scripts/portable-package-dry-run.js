@@ -3,6 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 const {
+  auditReleaseTree,
   collectReleaseFiles,
   readJson,
   timestamp,
@@ -35,6 +36,12 @@ function main() {
 
   const collected = collectReleaseFiles(workbenchRoot, manifest);
   errors.push(...collected.errors);
+  if (collected.excludedCandidates.length > 0) {
+    errors.push(`Portable include roots contain ${collected.excludedCandidates.length} excluded file(s); clean the source tree before release.`);
+  }
+  const purity = auditReleaseTree(workbenchRoot, collected.includedFiles);
+  errors.push(...purity.errors);
+  warnings.push(...purity.warnings);
   const outRoot = path.resolve(option("--out", runtimePath(workbenchRoot, "release-runs", timestamp(), "gate1")));
   const reportPath = path.join(outRoot, "PORTABLE-PACKAGE-DRY-RUN-REPORT.json");
   const report = {
@@ -54,9 +61,11 @@ function main() {
       excludedCandidateCount: collected.excludedCandidates.length,
       errorCount: errors.length,
       warningCount: warnings.length,
+      purity: purity.summary,
     },
     includedFiles: collected.includedFiles,
     excludedCandidates: collected.excludedCandidates,
+    purity,
     errors,
     warnings,
   };

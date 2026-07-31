@@ -1,18 +1,15 @@
 # Client UI Layout / `.ui` / `.pos` / `.lay` 只读审计卡
 
-状态：已完成静态只读封存
+状态：需验证
 
-用途：回答“PVF 里 UI 布局、控件、窗口、坐标、`.pos`、`.lay` 能静态证明什么”。本文只记录主目标 PVF 的只读观察和辅助差异提示；不授权写 PVF，不证明客户端 UI 实机正常。
 
 ## 先读结论
 
-- 主目标 PVF 中 `.ui` 文件 301 个，均为脚本型 UI 描述文件；`.pos` 文件 0 个；`.lay` 文件 10 个，均位于 `equipment/character/`。
 - `.ui` 可静态证明控件类型、控件名/编号、坐标样数字、图片/动画/action 路径、父子关系、tab/radio 关系、grid/gauge/tree/tooltips 等描述存在。
 - `.lay` 可静态证明角色动作层模板和 motion 名称列表存在；其中 `%s/...ani` 是模板路径，不是可直接检查的具体资源路径。
 - `clientonly/skilltree/*_sp.co` / `*_tp.co` 的 `[icon pos]` 是技能树显示坐标线索；`[index]` 必须按对应职业技能 `.lst` 解析。
 - `.ui`、`.lay` 和技能树坐标不证明按钮可点、窗口可见、文本不溢出、拖拽/分页/领取成功、客户端资源完整或服务端放行。
 
-## 主目标样本
 
 | 样本 | 当前确认 | 边界 |
 | --- | --- | --- |
@@ -28,7 +25,6 @@
 
 ## 标签分布提示
 
-在主目标 `ui/` 范围内定向搜索：
 
 - `[window]`：119 个命中。
 - `[parent]`：50 个命中。
@@ -40,15 +36,11 @@
 
 `worldmap/ui/` 样本没有 `[window]`，主要是裸 `[ui controls]` 控件集合；普通 `ui/` 下可见独立窗口式 UI。
 
-## 辅助对照提示
 
 辅助 PVF 只作差异提示：
 
-- `.ui` 文件 346 个，多于主目标。
-- `.pos` 文件 7 个，集中在 `ui/japan/...`；主目标 `.pos` 为 0，不能把辅助 `.pos` 提升为主目标事实。
 - `.lay` 文件 12 个，多出 `equipment/character/atpriest.lay`、`equipment/character/atswordman.lay` 等。
 - 辅助 `ui/japan/avatarconvert/avatarconvert.pos` 的结构是 `[MAIN]`、`[TILETYPE]`、`[POS]`、`[UNITNUMBER]`、多段 `[UIDATA]` + `[INDEX]` + `[POS]`。
-- 辅助 `ui/amplify/amplifyselectwindow.ui` 与主目标结构相近，但文本写法可有差异；这只提示版本差异。
 
 ## 默认复核动作
 

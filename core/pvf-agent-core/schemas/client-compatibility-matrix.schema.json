@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.pvf-agent-workbench/schemas/client-compatibility-matrix.schema.json",
+  "type": "object",
+  "required": ["schemaVersion", "phase", "profile", "safety", "statusValues", "roleBoundaries", "snapshots", "matrix", "summary"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "phase": { "const": "client-pvf-compatibility-matrix" },
+    "safety": {
+      "type": "object",
+      "required": ["readOnly", "sourcePvfsModified", "clientWritten", "npkImgWritten", "outputExternalOnly"],
+      "properties": {
+        "readOnly": { "const": true },
+        "sourcePvfsModified": { "const": false },
+        "clientWritten": { "const": false },
+        "npkImgWritten": { "const": false },
+        "outputExternalOnly": { "const": true }
+      }
+    },
+    "statusValues": {
+      "type": "array",
+      "const": ["present", "missing", "divergent", "custom-only", "unknown"]
+    },
+    "snapshots": { "type": "array", "minItems": 3 },
+    "matrix": {
+      "type": "object",
+      "required": ["targetIds", "rowCount", "statusCounts", "rows"]
+    }
+  }
+}
+

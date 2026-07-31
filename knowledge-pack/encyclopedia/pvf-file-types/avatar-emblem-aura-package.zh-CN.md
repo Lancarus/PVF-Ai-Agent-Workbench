@@ -1,6 +1,6 @@
 # Avatar / Emblem / Aura / Package 文件类型
 
-状态：默认可用。
+状态：默认可用
 
 本页说明时装、徽章、光环、礼包相关文件类型和静态边界。
 
@@ -91,7 +91,6 @@ aura/aura.lst -> aura/**/*.ora
 
 注意：
 
-- 主目标该文件存在 10 个部位映射。
 - 其中 ring 段落使用 `[/socket]` 差异关闭，不要擅自改写为 `[/socket info]`。
 - 该文件不替代时装内 `[avatar type select]` 或徽章道具内 `[avatar emblem target type]`。
 

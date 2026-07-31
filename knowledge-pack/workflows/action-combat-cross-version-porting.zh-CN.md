@@ -44,7 +44,7 @@
 4. 读取该职业 `load_state`，确认 `passive_skill_<job>.nut` 和 appendage 脚本是否会被加载。
 5. 读取职业 passive 文件，确认 `ProcPassiveSkill_<job>` 或同等被动入口。
 6. 读取候选主动技能的 `.skl`、state/substate、NUT 入口和攻击判定链。
-7. 若需要控制怪物，先确认目标 PVF 中已有可用控制 API 或同职业样本；没有 TypeSquirrel 或目标脚本证据时不要发明函数名。
+7. 若需要控制怪物，先确认目标 PVF 中已有可用控制 API 或同职业样本；没有 内置 NUT API 事实目录 或目标脚本证据时不要发明函数名。
 
 ## 挂载形态
 
@@ -275,6 +275,10 @@ function isSuperArmorOnCastCastingWindow(obj)
 - 不屈读条样本：buff 期间读条减伤，非 buff 或非读条不减伤。
 
 如果目标版本没有合适 APC 或远程样本，可记录为未覆盖，不能写成已验证。
+
+## 运行证据复用边界
+
+任何行为结论只绑定记录中的 PVF SHA、职业、技能、客户端和前置条件。迁移到新目标时必须重新闭合 `基础精通`、职业 passive、appendage、技能窗口和 API 使用点；远程 / 脱手、APC、不屈读条、PVP、同步和客户端资源没有对应证据时保持未覆盖。
 
 ## 破招专题边界
 

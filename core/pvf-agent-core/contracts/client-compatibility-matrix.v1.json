@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "contractId": "pvf-client-compatibility-matrix-v1",
+  "roles": {
+    "low-noise-85-baseline": "Stable functional baseline; never evidence of byte-exact official provenance.",
+    "action-research-baseline": "SHA-bound research PVF; client resource temporal alignment is recorded separately.",
+    "content-compatibility-upper-bound": "Extra-content and pressure-test upper bound; custom-only content is not official authority."
+  },
+  "statusValues": ["present", "missing", "divergent", "custom-only", "unknown"],
+  "layers": ["PVF registry", "PVF raw file and script dependency", "ANI/IMG/NPK path", "client anchor and encoding/UI risk"],
+  "resourceScanning": {
+    "default": "metadata",
+    "scoped": "explicit container patterns and limits",
+    "complete": "explicitCompleteIndexScan=true only",
+    "incrementalCacheBinding": ["relative path", "bytes", "mtimeMs", "desired asset fingerprint"],
+    "interruptCheckpoint": true,
+    "fullClientContentHashDefault": false
+  },
+  "safety": {
+    "readOnly": true,
+    "sourcePvfOverwriteAllowed": false,
+    "clientWritesAllowed": false,
+    "npkImgWritesAllowed": false,
+    "outputExternalOnly": true,
+    "customOnlyMeansOfficial": false,
+    "matrixIsRuntimeProof": false
+  }
+}
+

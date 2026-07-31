@@ -2,14 +2,12 @@
 
 状态：默认可用
 
-用途：说明技能“能否学、在哪里显示、怎样输入、静态冷却和消耗从哪里来”的字段边界。本文不授权写 PVF；除当前主目标一个冷却样本外，字段仍不证明运行时最终效果。
 
 ## 总规则
 
 - 技能 ID 必须先确定父入口和职业 registry，再解析到 `.skl`；同一个数字可以在不同 registry 中指向不同技能。
 - `.skl` 的学习字段、技能树入口、角色默认技能、自动技能表、PVP 技能表、取消技能表分别是不同层，不要互相替代。
 - 能学会不等于能释放；能释放不等于命中、伤害、冷却 UI、服务端一致性或 PVP 规则成立。
-- 辅助对照 PVF 只能提示差异，不提升为主目标事实。
 
 ## Registry 与入口字段
 
@@ -35,7 +33,7 @@
 | `[skill class]` | 技能分类字段。 | 当前只作为静态分类线索，不直接等于技能树页签或可学状态。 |
 | `[maximum level]` | `.skl` 基础等级上限字段。 | 不等于角色实际可点到该等级；还受 growtype、树、PVP、服务端影响。 |
 | `[growtype maximum level]` | 按 growtype 列出的等级上限形状。 | 列数和 growtype 映射必须按当前职业上下文确认。 |
-| `[skill fitness growtype]` | 技能适配 growtype 列表。 | 适配不等于自动获得；仍需技能树、默认技能或运行授予入口。 |
+| `[skill fitness growtype]` | 技能适配 growtype 列表。 | 适配不等于自动获得；仍需技能树、默认技能或运行授予入口。只增加技能树显示节点不能作为 learnability 已扩大的证据。 |
 | `[feature skill index]` | 指向特性/扩展技能 ID 的静态字段。 | 必须回到同职业 registry 解析，不跨职业借 ID。 |
 
 ## 命令与可释放状态
@@ -45,20 +43,20 @@
 | `[command]` | 静态输入序列，常见方向键、技能键、BUFF 键等 token。 | 不证明键盘输入一定成功、快捷栏释放成功或取消窗口成立。 |
 | `[command key explain]` | UI 文本说明用的操作指令。 | 是说明文本，不能替代 `[command]` token。 |
 | `[executable states]` | `.skl` 中列出的可释放 state 线索。 | 不证明强制、柔化、派生或脚本最终放行；NUT 可继续收窄。 |
-| `[active seal enable]` | 主目标可见的主动封印/开关类静态字段。 | 具体 UI 和服务端行为未静态证明。 |
+| `[active seal enable]` | 需在当前目标 PVF 中只读确认 | 具体 UI 和服务端行为未静态证明。 |
 
 ## 冷却、消耗与施放时间
 
 | 字段 | 当前可用含义 | 边界 |
 | --- | --- | --- |
 | `[consume MP]` | `.skl` 静态 MP 消耗字段。 | 不证明最终扣蓝、失败释放回滚或装备修正后结果。 |
-| `[cool time]` | `.skl` 静态冷却字段。 | 当前主目标一个玩家技能样本已证明该字段可被实机采用并显著缩短冷却；不等同于装备 `[skill data up]` 的 `[cooltime]` 类型，也不外推到所有技能、PVP 或装备修正。 |
+| `[cool time]` | `.skl` 静态冷却字段。 | 需在当前目标 PVF 中只读确认 |
 | `[start cool time]` | `.skl` 中可见的起始冷却字段。 | 不能和 `[cool time]` 合并解释。 |
 | `[auto cooltime apply]` | 自动冷却应用线索。 | 当前只按静态标签保留，不证明引擎具体时机。 |
-| `[casting time]` | `.skl` 静态施放时间字段。 | 主目标未观察到 `[cast time]` 标签；运行读条和动作帧仍需实机。 |
+| `[casting time]` | `.skl` 静态施放时间字段。 | 需在当前目标 PVF 中只读确认 |
 | `[consume item]` | 技能消耗道具字段。 | 道具 ID 需按对应 item registry 解析，不靠数字猜。 |
 | `[durability decrease rate]` | 耐久消耗相关静态字段。 | 不证明最终耐久扣减表现。 |
-| `startSkillCoolTime` | 当前主目标与辅助对照均未命中该 NUT 调用。 | 旧 Runtime 账本中的 API 边界不能直接当成当前主目标事实。 |
+| `startSkillCoolTime` | 跨版本候选；需在当前目标 PVF 中复核 | 需在当前目标 PVF 中只读确认 |
 
 ## 技能树、默认技能和 PVP 入口
 

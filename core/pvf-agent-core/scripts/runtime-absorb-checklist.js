@@ -76,7 +76,7 @@ function checklistMarkdown(meta) {
 - [ ] 边界索引：更新相关 \`knowledge-pack/indexes/*boundary*.zh-CN.md\` 或专题索引。
 - [ ] 任务卡：如果会影响 Agent 默认操作，更新 \`knowledge-pack/task-cards/*\`。
 - [ ] workflow：如果会影响写入流程、验证流程或风险步骤，更新 \`knowledge-pack/workflows/*\`。
-- [ ] 完成状态：必要时更新 \`knowledge-pack/indexes/completed-mainlines-status.zh-CN.md\`。
+- [ ] 路由：必要时更新 \`knowledge-pack/indexes/knowledge-index.json\`。
 - [ ] 安全护栏：若发现新的污染、编码、覆盖或部署风险，更新 \`knowledge-pack/safety/README.zh-CN.md\`。
 
 ## 禁止写入 clean pack 的内容

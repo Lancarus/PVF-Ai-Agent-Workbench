@@ -1,6 +1,7 @@
 "use strict";
 
 const childProcess = require("child_process");
+const fs = require("fs");
 const path = require("path");
 
 const rawArgs = process.argv.slice(2);
@@ -9,10 +10,15 @@ const workbenchRoot = rootIndex >= 0 ? path.resolve(rawArgs[rootIndex + 1]) : pa
 const args = rawArgs.filter((item, index) => item !== "--root" && rawArgs[index - 1] !== "--root");
 const command = String(args[0] || "help").toLowerCase();
 const commandArgs = args.slice(1);
+const versionFile = path.join(workbenchRoot, "VERSION");
+const version = fs.existsSync(versionFile) ? fs.readFileSync(versionFile, "utf8").trim() : "unknown";
 
 const commands = {
   check: "core/pvf-agent-core/scripts/check-env.js",
   "knowledge-check": "core/pvf-agent-core/scripts/check-knowledge-pack.js",
+  "runtime-help": "core/pvf-agent-core/scripts/native-runtime-help.js",
+  "fallback-self-test": "core/pvf-agent-core/scripts/fallback-backend-self-test.js",
+  "fallback-diff": "core/pvf-agent-core/scripts/fallback-backend-differential.js",
   "real-task-check": "core/pvf-agent-core/scripts/check-real-task-runs.js",
   "fixture-check": "core/pvf-agent-core/scripts/check-backend-fixtures.js",
   profile: "core/pvf-agent-core/scripts/workbench-profile.js",
@@ -20,6 +26,13 @@ const commands = {
   "pvf-read": "core/pvf-agent-core/cli/pvf-readonly.js",
   "pvf-index": "core/pvf-agent-core/cli/pvf-index.js",
   "pvf-change": "core/pvf-agent-core/cli/pvf-change-set.js",
+  research: "core/pvf-agent-core/cli/research-intake.js",
+  "nut-api": "core/pvf-agent-core/cli/nut-api.js",
+  "tag-knowledge": "core/pvf-agent-core/cli/tag-knowledge.js",
+  "pvf-lineage": "core/pvf-agent-core/cli/pvf-lineage.js",
+  "dependency-plan": "core/pvf-agent-core/cli/dependency-planner.js",
+  "client-matrix": "core/pvf-agent-core/cli/client-compat-matrix.js",
+  "knowledge-query": "core/pvf-agent-core/cli/unified-knowledge-query.js",
   "backend-contract": "core/pvf-agent-core/cli/pvf-backend-contract.js",
   doctor: "core/pvf-agent-core/scripts/workbench-doctor.js",
   eval: "core/pvf-agent-core/scripts/agent-eval.js",
@@ -27,22 +40,33 @@ const commands = {
 };
 
 function help() {
-  return `PVF-Agent-Workbench 0.5 command entry
+  return `PVF-Agent-Workbench ${version} command entry
 
 Usage:
   workbench.bat <command> [arguments]
 
 Everyday:
+  version               Print the Workbench version
   check                 Validate the local Workbench environment
+  runtime-help          Show VC++ runtime recovery links (--open opens Microsoft instructions)
+  fallback-self-test    Verify the bundled JavaScript read-only fallback backend
+  fallback-diff         Compare native and fallback reads on external PVFs (maintenance)
   profile               Manage machine-local PVF paths
   pvf-read              Inspect PVF content through the read-only lane
   pvf-index             Build or query a local read-only index
   pvf-change            Validate, dry-run, or apply a controlled change set
+  research              Inventory external sources and manage the external claim store
+  nut-api               Query bundled NUT API facts or rebuild maintenance catalogs
+  tag-knowledge         Query bundled layered tag facts or rebuild maintenance catalogs
+  pvf-lineage           Build or query external SHA-bound PVF semantic lineage
+  dependency-plan       Preview clean-room cross-file dependencies (read-only)
+  client-matrix         Build or query a read-only client/PVF compatibility matrix
+  knowledge-query       Query bundled NUT/tag/bookmark facts and task artifacts through one contract
   skill                 Validate or install the Agent Skill adapter
   doctor                Run integrated Workbench checks
 
 Maintenance:
-  knowledge-check       Validate the clean knowledge pack
+  knowledge-check       Validate the clean knowledge pack (--rebuild-manifest refreshes integrity metadata)
   eval                  Run deterministic Agent evaluations
   absorb                Create a runtime absorption checklist
   backend-contract      Run the PVF backend contract
@@ -88,7 +112,9 @@ function runRelease(releaseArgs) {
 }
 
 try {
-  if (command === "help" || command === "--help" || command === "-h") {
+  if (command === "version" || command === "--version" || command === "-v") {
+    process.stdout.write(`${version}\n`);
+  } else if (command === "help" || command === "--help" || command === "-h") {
     process.stdout.write(help());
   } else if (command === "release") {
     process.exitCode = runRelease(commandArgs);

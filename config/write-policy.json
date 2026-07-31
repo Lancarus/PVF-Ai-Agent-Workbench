@@ -2,43 +2,52 @@
   "schemaVersion": "1.0",
   "phase": "phase-3-controlled-output-apply",
   "mode": "controlled-output-only",
-  "mcpWriteToolsEnabled": false,
+  "publicWriteToolsEnabled": false,
   "controlledApplyEnabled": true,
   "permissionModel": {
-    "readOnlyAdapter": "config/pvf-adapter.json is the Agent/MCP read lane and must not expose write tools.",
-    "controlledWriteRunner": "core/pvf-agent-core/cli/pvf-change-set.js is the only local write lane; it may call bridge write tools only inside apply, only with explicit output, backup, and readback.",
-    "agentMcpWriteToolsEnabled": false,
+    "readOnlyAdapter": "config/pvf-adapter.json launches only the Workbench-bundled read backend for ordinary inspection.",
+    "controlledWriteRunner": "core/pvf-agent-core/cli/pvf-change-set.js is the only local write lane; it may call bundled backend write operations only inside apply, only with explicit output, backup, and readback.",
+    "hostExposedWriteToolsEnabled": false,
     "sourceOverwriteAllowed": false,
     "clientWriteAllowed": false
   },
   "controlledWriteRunner": {
     "allowedBridgeTools": [
       "pvf_open",
+      "pvf_list_files",
       "pvf_read_file",
       "pvf_resolve_lst_id",
       "pvf_replace_text",
+      "pvf_write_file",
       "pvf_backup",
       "pvf_save",
       "pvf_close"
     ],
     "sourceOverwriteAllowed": false,
     "clientWriteAllowed": false,
-    "requiresDryRunFirst": true
+    "requiresDryRunFirst": true,
+    "requiresMatchingDryRunManifest": true,
+    "requiresExplicitAuthorizationCode": true
   },
   "allowedOperations": [
     "validate-change-set",
     "dry-run-replace-text",
-    "apply-replace-text-to-explicit-output"
+    "dry-run-write-new-file",
+    "apply-replace-text-to-explicit-output",
+    "apply-write-new-file-to-explicit-output"
   ],
   "forbiddenOperations": [
     "overwrite-source-pvf",
     "client-resource-write",
     "apply-without-backup",
     "apply-without-explicit-output",
-    "apply-without-readback"
+    "apply-without-readback",
+    "apply-without-matching-dry-run",
+    "apply-without-explicit-authorization-code"
   ],
   "requiredBeforeApply": [
     "explicit-user-authorization",
+    "matching-dry-run-manifest",
     "target-pvf-confirmed",
     "timestamped-backup",
     "explicit-output-path",

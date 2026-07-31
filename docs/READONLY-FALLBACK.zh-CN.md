@@ -1,0 +1,44 @@
+# PVF 只读备用后端
+
+Workbench 的普通后端选择顺序是：
+
+```text
+随包 native 可加载 -> 使用完整后端
+随包 native 加载失败 -> 自动使用纯 JavaScript 只读备用后端
+```
+
+备用后端不是外部插件，也不需要 npm、网络或额外安装。它随干净 Workbench 一起复制，用来保证新电脑暂时缺少 VC++ 运行库时仍能开展只读工作。
+
+## 可以做什么
+
+- 打开 PVF、读取文件树和元数据。
+- 列出、读取和搜索文件。
+- 解密并反编译常见脚本与 LST。
+- 保留或解析 StringLink，并按需读取 StringTable / StringView。
+- 读取 NUT 等纯文本文件。
+- 反编译支持范围内的二进制 ANI；无法识别时返回原始 base64，而不是猜测文本。
+- 支持 Workbench 的注册表解析、只读 planner、索引和 dry-run 路线。
+
+## 绝对不能做什么
+
+备用模式下，保存、写文件、替换文本、删除、重命名、导入和为写入任务创建备份都会抛出 `READ_ONLY_FALLBACK`。`workbench.bat pvf-change apply` 会在修改发生前停止，不会把备用解析结果交给 native 写回。
+
+这条限制是架构边界，不是等待用户确认后可以绕开的提示。需要输出 PVF 时，先安装兼容的 Microsoft Visual C++ v14 x64 runtime，再运行 `workbench.bat check`，直到状态显示 native 完整后端可用。
+
+## 已知限制
+
+- 不做简繁自动转换；返回目标编码下的原始显示文本。
+- 混合编码或来源不明的 NUT 注释可能与 native 呈现不同；可执行的 ASCII 结构仍需保持，乱码不能当成写入依据。
+- 全包正文搜索需要逐文件按需解密，在大型 PVF 上可能比 native 慢。
+- 二进制 ANI 只反编译已确认的结构；未知结构保留为二进制。
+- `listFiles` 在首次读取前根据扩展名推断脚本/ANI 类型，读取后才确认内容类型。
+- 搜索最多保留 5000 条结果并标记 `truncated`；结果数量从不构成写入授权。
+
+## 检查与维护
+
+```bat
+workbench.bat check
+workbench.bat fallback-self-test
+```
+
+维护人员可用 `PVF_WORKBENCH_BACKEND=typescript-readonly` 强制进入备用模式。`workbench.bat fallback-diff` 只用于对外部 PVF 做 native/fallback 回归比较，报告必须写在 Workbench 外。普通用户和 Agent 不应为了绕过 native 错误而强设 backend 模式。

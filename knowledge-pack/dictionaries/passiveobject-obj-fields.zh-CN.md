@@ -2,7 +2,6 @@
 
 状态：需验证
 
-本文只记录主目标 PVF 只读观察到的 passiveobject `.obj` 结构入口。字段出现不等于实机碰撞、移动、追踪、伤害、销毁、队伍关系或客户端表现已经验证。
 
 ## 文件边界
 
@@ -80,7 +79,7 @@
 | `[init rotation]` | 一个数值。 | 初始旋转语义需实机验证。 |
 | `[diff rotation]` | 一个数值。 | 旋转差值语义需实机验证。 |
 | `[homing time]` | 一个数值。 | 持续时间语义需实机验证。 |
-| `[straight homing]` | 空标签，位于 `[homing]` 块内。 | 主目标只观察到少量样本，需专项复核。 |
+| `[straight homing]` | 空标签，位于 `[homing]` 块内。 | 需在目标文件中复核父块与运行效果。 |
 
 ### `[homing follow]` 路由
 
@@ -96,9 +95,9 @@
 | `[int data] ... [/int data]` | 数值列表闭合块。 | 列含义需结合对象专题验证。 |
 | `[string data] ... [/string data]` | 字符串列表闭合块。 | 可能包含音效、资源或脚本名样字符串；不要猜运行含义。 |
 
-## 覆盖
+## 继续读取
 
-- 通用入口：见 `indexes/passiveobject-coverage-ledger.zh-CN.md`。
-- 生命周期与追踪：见 `indexes/passiveobject-lifecycle-homing-ledger.zh-CN.md`。
-- 样本链：见 `indexes/passiveobject-nonmonster-sample-chain.zh-CN.md`。
-- Monster 创建链历史路由：见 `indexes/monster-created-passiveobject-obj-observed-tag-router.zh-CN.md`。
+- 动作字段：`dictionaries/passiveobject-action-fields.zh-CN.md`。
+- AttackInfo：`dictionaries/attackinfo-atk-fields.zh-CN.md`。
+- Monster 创建链：`indexes/monster-created-passiveobject-obj-observed-tag-router.zh-CN.md`。
+- 完整闭环：`task-cards/passiveobject-nonmonster-readonly-audit.zh-CN.md`。

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.pvf-agent-workbench/schemas/nut-api-catalog.schema.json",
+  "title": "External NUT API declaration catalog",
+  "type": "object",
+  "required": ["schemaVersion", "phase", "generatedAt", "source", "parser", "summary", "declarationFiles", "declarations", "tutorials", "conflicts"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "phase": { "const": "external-nut-api-catalog" },
+    "source": { "type": "object", "required": ["sourceId", "root", "declaredRuntimeVersion", "licenseStatus", "distributionStatus"] },
+    "parser": {
+      "type": "object",
+      "required": ["id", "version", "sourceMethodsExecuted", "sourceContentCopiedToWorkbench"],
+      "properties": {
+        "sourceMethodsExecuted": { "const": false },
+        "sourceContentCopiedToWorkbench": { "const": false }
+      }
+    },
+    "summary": { "type": "object" },
+    "declarationFiles": { "type": "array" },
+    "declarations": { "type": "array", "items": { "type": "object", "required": ["kind", "name", "qualifiedName", "signature", "group", "source"] } },
+    "tutorials": { "type": "array" },
+    "conflicts": { "type": "array" }
+  }
+}

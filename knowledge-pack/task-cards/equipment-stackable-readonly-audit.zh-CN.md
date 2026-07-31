@@ -28,7 +28,6 @@
 13. 道具文件如有宝箱/选择器块，解析候选装备或道具 ID。
 14. 如果文件引用其他物品或材料，继续用对应 registry 解析。
 15. 如果涉及商店价格，回到 NPC 商店链路确认这个商品确实被目标商店售卖。
-16. 已有当前主目标局部样本：stackable 商店 `[price]` / `[need material]`、`[stack limit]`，equipment `[minimum level]` / `[usable job]`。这些样本只作为边界参考，不外推到所有物品类型。
 
 ## 验收
 
@@ -36,7 +35,6 @@
 - 已说明目标文件是 equipment 还是 stackable。
 - `[grade]`、`[rarity]`、`[weight]` 已记录，未凭空省略。
 - 材料 ID 没有从数字形状猜测。
-- `[minimum level]`、`[usable job]` 已有一个当前主目标装备限制样本；新装备或新职业仍需游戏内确认。
 - `[passive object]` 没有被当作可直接写装备效果的入口。
 - 宝箱/选择器里的候选 ID 已按 equipment 或 stackable registry 解析。
 - 如使用 planner，root 唯一、readErrorCount 为 0，且 unresolved / external IMG 风险已记录。

@@ -3,7 +3,7 @@
 const childProcess = require("child_process");
 const fs = require("fs");
 const path = require("path");
-const { McpStdioClient, parseMcpTextResult } = require("../lib/mcp-stdio-client");
+const { BackendStdioClient, parseBackendTextResult } = require("../lib/backend-stdio-client");
 const { resolveSourcePvf } = require("../lib/workspace-profiles");
 const {
   assertReadOnlyAdapter,
@@ -124,10 +124,10 @@ function resolveRunRoot(context = {}) {
 async function callAndParse(client, name, toolArgs) {
   const result = await client.callTool(name, toolArgs);
   if (result && result.isError) {
-    const parsed = parseMcpTextResult(result);
+    const parsed = parseBackendTextResult(result);
     throw new Error(parsed.error || parsed.text || JSON.stringify(parsed));
   }
-  return parseMcpTextResult(result);
+  return parseBackendTextResult(result);
 }
 
 async function recordTest(tests, id, fn) {
@@ -312,7 +312,7 @@ async function runCheck() {
     };
   });
 
-  client = new McpStdioClient(upstreamLaunchOptions(adapterConfig));
+  client = new BackendStdioClient(upstreamLaunchOptions(adapterConfig));
   try {
     await recordTest(tests, "upstream.required-tools-present", async () => {
       const listed = await client.listTools();
@@ -461,6 +461,37 @@ async function runCheck() {
         textLength: read.textContent.length,
         metadata: read.metadata,
       };
+    });
+
+    await recordTest(tests, "text.read-batch", async () => {
+      const read = await callAndParse(client, "pvf_read_files", {
+        sessionId: openedSessionId,
+        pvfPaths: [fixture.readPath, expectedPvfPath],
+        pvfEncoding: fixtureEncoding.read || adapterConfig.defaults.pvfReadEncoding,
+        decompileScript: true,
+        decompileBinaryAni: false,
+        useCompatibleDecompiler: true,
+        convertToSimplifiedChinese: true,
+        maxCharsPerFile: 30000,
+        maxTotalChars: 60000,
+      });
+      assertCondition(Number(read.requestedCount) === 2, "batch read did not preserve the requested path count.");
+      assertCondition(Number(read.readCount) === 2 && Number(read.errorCount) === 0, "batch read did not read both fixture paths cleanly.");
+      assertCondition((read.items || []).every((item) => typeof item.textContent === "string"), "batch read did not return text for every fixture path.");
+      return { requestedCount: read.requestedCount, readCount: read.readCount, errorCount: read.errorCount, returnedCharCount: read.returnedCharCount };
+    });
+
+    await recordTest(tests, "registry.resolve-path", async () => {
+      const resolved = await callAndParse(client, "pvf_resolve_path", {
+        sessionId: openedSessionId,
+        pvfPath: expectedPvfPath,
+        registryPaths: [fixture.registryPath],
+        pvfEncoding: fixtureEncoding.read || adapterConfig.defaults.pvfReadEncoding,
+        convertToSimplifiedChinese: true,
+      });
+      const match = (resolved.matches || []).find((item) => Number(item.entry?.id) === Number(fixture.registryId));
+      assertCondition(match, `${expectedPvfPath} did not resolve back to ${fixture.registryPath}:${fixture.registryId}.`);
+      return { pvfPath: expectedPvfPath, registryPath: match.registry.path, id: match.entry.id };
     });
 
     await recordTest(tests, "path.search-or-list-fallback", async () => {

@@ -1,6 +1,6 @@
 # Avatar / Emblem / Socket / Clone / Aura / Fashion Package Boundary
 
-状态：已完成静态只读封存。
+状态：需验证
 
 本索引用于路由时装、徽章、镶嵌、克隆、光环、礼包相关问题。它只覆盖 PVF 静态注册链、字段块和资源引用边界，不覆盖实机穿戴、开包、镶嵌、克隆、UI、客户端资源完整或服务端放行。
 
@@ -36,7 +36,6 @@ aura/aura.lst
     -> [file name] / .ani / .ptl
 ```
 
-## 主目标覆盖
 
 | 项目 | 数量 |
 | --- | ---: |
@@ -183,20 +182,16 @@ Aura registry：
 
 ## Clone 边界
 
-主目标 clone 关键词命中：
 
 | 层 | 数量 |
 | --- | ---: |
 | equipment | 298 |
 | stackable | 9 |
 
-clone 关键词只能作为定位线索。若要判断克隆时装是否可用，需要另做最小实机样本：克隆 UI、外观继承、消耗材料、客户端资源和服务端放行均不在静态封存范围内。
+clone 关键词只能作为定位线索。若要判断克隆时装是否可用，需要另做最小实机样本：克隆 UI、外观继承、消耗材料、客户端资源和服务端放行均不在静态静态范围内。
 
-## 辅助对照提示
 
-辅助对照只作为差异提示，不覆盖主目标。
-
-| 项目 | 辅助对照 |
+| 项目 | 跨版本候选；需在当前目标 PVF 中复核 |
 | --- | ---: |
 | PVF 总文件 | 1052773 |
 | avatar / aura 相关装备候选 | 72920 |
@@ -208,13 +203,8 @@ clone 关键词只能作为定位线索。若要判断克隆时装是否可用�
 | `[aura ability]` | 501 |
 | aura `.ora` 文件 | 12 |
 
-辅助对照提示可写为：
 
-- “辅助对照规模更大，提示 avatar / package 内容存在版本差异。”
-- “辅助对照出现更多 clone 与 socket 命中，但不能覆盖主目标。”
-- “辅助对照存在少量闭合差异，不能作为主目标修正依据。”
-
-## 与已封存主线的边界
+## 与现有主题的边界
 
 | 关联主线 | 只引用什么 | 不重开什么 |
 | --- | --- | --- |
@@ -222,18 +212,16 @@ clone 关键词只能作为定位线索。若要判断克隆时装是否可用�
 | Stackable Container / Package | 引用容器和礼包静态开包边界。 | 不重开礼盒概率、候选池和 UI 验证。 |
 | RandomOption / Mystic | 引用 hidden option / mystic 边界。 | 不重开随机属性池。 |
 | Skill Learnability | 引用 skill registry 路由。 | 不重开技能可学、SP/TP 或冷却主线。 |
-| Client Assets | 引用客户端资源完整性边界。 | 不在本主线证明 ImagePacks2/NPK/IMG 完整。 |
+| Client Assets | 引用客户端资源完整性边界。 | 不在本主题证明 ImagePacks2/NPK/IMG 完整。 |
 
 ## 结论模板
 
 可以使用：
 
 ```text
-主目标静态观察到该时装装备经 equipment registry 注册，文件内存在 avatar 类型和对应 socket / ability 块；该结论不证明实机可穿戴、UI 正常或客户端资源完整。
 ```
 
 风险写法：
 
 ```text
-主目标静态观察到该礼包 [package data] 内部分 ID 未能按 equipment / stackable registry 解析，应记录为静态发放链风险；是否影响实机开包需要运行测试。
 ```

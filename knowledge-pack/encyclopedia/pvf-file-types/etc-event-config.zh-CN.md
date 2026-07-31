@@ -6,7 +6,6 @@
 
 `etc/` 和 `event/` 是 PVF 中跨度很大的配置家族。它们可以承载全局参数、活动列表、活动本体、成长支援、签到、活动任务、公告弹窗、契约/黑钻、清算翻牌、PVP 表、随机属性支持表、教程引导、小游戏资源 registry 等。
 
-本页只说明主目标 PVF 中观察到的静态文件类型和边界。
 
 ## 常见文件类型
 
@@ -40,7 +39,7 @@
 - `etc/premiumlist_new.etc` 可见契约/黑钻/服务效果类标签，但不证明服务端状态或客户端显示。
 - `etc/growthpowerrewardbuff.etc` 可见成长支援奖励和经验表形态，但 item 数字仍需 registry 解析。
 - `etc/itemdropinfo_clearreward.etc` 与清算翻牌相关，但不证明概率、翻牌 UI 或发放。
-- `etc/randomoption/*`、`etc/pvpskilltree/*`、`etc/independentdrop/*` 已有其他主线封存，遇到这些内容应回对应主线复核。
+- `etc/randomoption/*`、`etc/pvpskilltree/*`、`etc/independentdrop/*` 已有其他主线整理，遇到这些内容应回对应主线复核。
 
 ## 写入边界
 

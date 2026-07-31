@@ -4,13 +4,13 @@
 
 把 Codex、Claude Code、OpenCode、Trae 等 AI 工具的工作区指向这个文件夹，它就能按这里的资料和规则帮你分析 PVF 怎么改、该看哪些文件、哪些地方容易出错。
 
-你可以一句话让 Ai Agent 修改任意内容；也可以只将其当做老师的角色，问询修改方法，然后利用 pvfUtility 之类的成熟修改工具自主修改
+你可以一句话让 AI Agent 修改任意内容；也可以只将其当做老师，询问修改方法后自行操作。
 
 ## 下载使用
 
 点 GitHub 页面右侧的 **Releases**，下载最新版的 **Source code (zip)**。
 
-解压后，用你的 AI Agent 工具打开 `PVF-Agent-Workbench` 文件夹，然后将这段话发给 AI：
+当前发行包面向 **64 位 Windows**。解压后，用你的 AI Agent 工具打开 `PVF-Agent-Workbench` 文件夹，先运行 `workbench.bat check`，再将这段话发给 AI：
 
 ```text
 请先只读 AGENTS.md、knowledge-pack/README.zh-CN.md、knowledge-pack/safety/README.zh-CN.md 和 knowledge-pack/indexes/knowledge-index.json。
@@ -25,12 +25,21 @@
 
 新手建议先让 AI 做只读分析，不要一上来就写 PVF。
 
+Node.js 已包含在下载包中，不需要 npm、外部 MCP、TypeSquirrel 或已下架的 VSCode 插件。工作台优先使用 native 后端；如果系统缺少兼容的 Microsoft Visual C++ v14 runtime，会自动降级到内置的纯 JavaScript 只读备用后端。此时仍可查询和读取 PVF，但所有写入都会被硬阻断。`workbench.bat check` 会说明当前状态并给出微软官方页面和 x64 下载链接；也可手动运行 `workbench.bat runtime-help --open`。
+
 ## 能帮你做什么
 
 - 查 PVF 字段、路径、ID 和注册表。
 - 判断一个修改大概要动哪些文件。
+- 用统一只读 dependency planner 预览副本、城镇、怪物、APC、ANI、装备、礼包、宝珠、任务和套装的跨文件依赖。
+- 用内置“副本与世界”标准化路线处理地图宽屏补全、worldmap 副本接口布局、深渊组可视化、难度表、地狱名单、城镇预览和 ANI，不需要携带原工具。
+- 用产品化能力总路由处理全包质检、双 PVF 语义对比与结果集、通用 LST 生命周期、独立掉落规范化、物品来源反查、技能树布局 / 合并，以及任务 / 礼盒 / 徽章 / 装备复制的原子预览。
+- 用 SHA 锁定的只读兼容矩阵比较低噪声功能基线、动作化研究基线和内容兼容上界，不写客户端资源。
+- 直接查询随包内置的 NUT API、PVF tag 注释和商城/爆率/registry 等任务书签，不需要另带知识目录。
+- 用统一只读查询按需访问任务明确提供的来源、claim、谱系、planner 和客户端矩阵，不把整库塞进上下文。
 - 提醒常见崩溃点和格式坑。
 - 让 AI 按“只读 -> dry-run -> 受控输出”的路线做事。
+- native 无法加载时自动保留只读工作能力；修复运行库以前不能生成输出 PVF。
 - 减少 AI 靠猜修改 PVF 的概率。
 
 ## 几条底线

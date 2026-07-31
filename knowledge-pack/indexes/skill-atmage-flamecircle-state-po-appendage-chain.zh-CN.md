@@ -2,13 +2,11 @@
 
 状态：默认可用
 
-用途：记录当前主目标中 `FlameCircle` 的 skill registry、state/substate、load_state、`24244` passiveobject、二进制写包/读包、旋转段 PO 命中、爆炸段角色自身攻击包、通用视觉 appendage 和 NUT API 边界。本文只覆盖这一个技能创建的 PO 窄链，不重开 PassiveObject / AttackInfo / Hitbox 广域主线。
 
 ## 一句话结论
 
 `FlameCircle` 是男法 `skill 11` 的主动技能，运行入口注册到 `STATE_FLAMECIRCLE = 30`。角色从 `CASTING(5)` 进入 `0 -> 1 -> 2` 三段流程：substate 0 在 frame `>= 2` 创建 `24244` 旋转火环 PO，PO 按接收包中的旋转次数、半径、速度和攻击倍率循环命中；当 PO 标记接近完成后，角色切到 substate 1，再切 substate 2 播 `FlameCircle3.ani`，用角色自身 `CUSTOM_ATTACK_INFO_FLAMECIRCLE` 做最后爆炸攻击，并临时挂 `ap_atmage_effect.nut` 做视觉效果。
 
-## 主目标只读闭合链
 
 | 层级 | 当前确认 | 边界 |
 | --- | --- | --- |
@@ -26,7 +24,7 @@
 | 运行字段 | 来源 | 当前用法 | 边界 |
 | --- | --- | --- | --- |
 | 旋转半径倍率 | static data index `0`，当前为 `100` | 角色写入 `spin_r = static0 / 100.0`；PO 用它缩放图片和攻击盒。 | 视觉半径和实机命中范围需测试。 |
-| 爆炸范围倍率 | static data index `1`，当前为 `100` | substate 2 用它缩放 `FlameCircle3.ani` 攻击盒；离开 state 时按倒数尝试恢复。 | TypeSquirrel 对全局 `sq_SetAttackBoundingBoxSizeRate` 有非 PO 警告；当前脚本实见不等于实机范围可靠。 |
+| 爆炸范围倍率 | static data index `1`，当前为 `100` | substate 2 用它缩放 `FlameCircle3.ani` 攻击盒；离开 state 时按倒数尝试恢复。 | 内置 NUT API 事实目录 对全局 `sq_SetAttackBoundingBoxSizeRate` 有非 PO 警告；当前脚本实见不等于实机范围可靠。 |
 | 旋转次数 | level data index `0` | 角色写入 PO，PO 用作循环计数上限。 | `FlameCircleEx.skl` 的 special level up 显示可增加次数，但静态只读不能证明最终合并规则。 |
 | 旋转速度倍率 | level data index `1` | 角色写入 PO，PO 用 `CNRDAnimation.setSpeedRate(speed)` 同步主动画和 draw-only 子视觉速度。 | 播放速度、命中节奏和同步需实机。 |
 | 旋转攻击倍率 | level data index `2` 经 `sq_GetBonusRateWithPassive` | 角色写入 PO；PO 设置当前 AttackInfo 百分比攻击力。 | 最终伤害、被动叠加和 PVP 修正不能静态证明。 |
@@ -39,7 +37,7 @@
 | --- | --- | --- |
 | 释放入口 | `checkExecutableSkill_FlameCircle` 成功使用 `SKILL_FLAMECIRCLE` 后压入 `SUB_STATE_FLAMECIRCLE_CASTING = 5`，发送 `STATE_FLAMECIRCLE` 且 `hasSubState=true`。 | 成功进入仍受技能条件和引擎判断影响。 |
 | 命令允许 | `checkCommandEnable_FlameCircle` 在普通攻击 state 内额外查 `sq_IsCommandEnable`，其他状态返回 true。 | 只说明命令层检查，不等于任何状态都能实际释放。 |
-| casting | 设置 `CUSTOM_ANI_FLAMECIRCLE_CASTING`，调用 `sq_SetStaticSpeedInfo(... speedRate, speedRate)`，并追加火元素链。 | 当前文件内原本计算 `speedRate` 的代码被注释；TypeSquirrel 当前上下文未解析到 `speedRate` 定义。这里只记录静态风险，不断定实机必坏。 |
+| casting | 设置 `CUSTOM_ANI_FLAMECIRCLE_CASTING`，调用 `sq_SetStaticSpeedInfo(... speedRate, speedRate)`，并追加火元素链。 | 当前文件内原本计算 `speedRate` 的代码被注释；内置 NUT API 事实目录 当前上下文未解析到 `speedRate` 定义。这里只记录静态风险，不断定实机必坏。 |
 | substate 0 | 设置 `CUSTOM_ANI_FLAMECIRCLE1`。`onProc` 在 frame `>= 2` 且本机控制时写包并创建 `24244`。 | frame 触发是轮询当前帧，不是 keyframe flag；实际时序需实机。 |
 | 等待 PO 完成 | substate 0 frame `>= 3` 后读取 `obj.sq_GetPassiveObject(24244)`；若 PO 不存在，或 PO 的 `sq_var[3] == 1`，角色发送 substate 1。 | `sq_GetPassiveObject` 返回受创建、销毁和同步影响；当前脚本有空对象分支。 |
 | substate 1 | 设置 `CUSTOM_ANI_FLAMECIRCLE2`；动画结束后发送 substate 2。 | 动作衔接和可取消窗口需实机。 |
@@ -59,7 +57,7 @@
 
 边界：
 
-- TypeSquirrel 可查到 `sq_BinaryStartWrite`、`sq_BinaryWriteWord`、`sq_BinaryWriteFloat`、`sq_BinaryWriteDword`；读取端 `receiveData.readWord/readFloat/readDword` 当前未查到独立内置定义，只按目标脚本实见记录。
+- 内置 NUT API 事实目录 可查到 `sq_BinaryStartWrite`、`sq_BinaryWriteWord`、`sq_BinaryWriteFloat`、`sq_BinaryWriteDword`；读取端 `receiveData.readWord/readFloat/readDword` 当前未查到独立内置定义，只按目标脚本实见记录。
 - 写包顺序必须和 PO 读取顺序一致；宽度不能凭字段名猜。
 
 ## `24244` PO 流程
@@ -94,7 +92,7 @@
 | `IRDCharacter.setSkillSubState(substate)` / `getSkillSubState()` | FlameCircle 用成员方法记录和读取 `5/0/1/2` 等子状态。 | 子状态数字只对本技能链闭合，不能跨技能硬套。 |
 | `sq_BinaryStartWrite()` / `sq_BinaryWriteWord/Float/Dword(...)` | FlameCircle 创建 PO 前写入 word/float/float/dword 四项数据。 | 读取端顺序必须闭合；`receiveData.read*` 当前只按目标脚本实见记录。 |
 | `CNRDAnimation.setImageRate(width, height)` / `setSpeedRate(rate)` | PO 按接收包缩放图片和调动画速度。 | 视觉尺度、播放速度和实际命中节奏需实机。 |
-| `sq_SetAttackBoundingBoxSizeRate(currentAni, xRate, yRate, zRate)` | PO 缩放旋转段攻击盒；角色 substate 2 也用它缩放爆炸动画攻击盒。 | TypeSquirrel 对非 PO 使用有警告；当前脚本实见不等于实机范围可靠。 |
+| `sq_SetAttackBoundingBoxSizeRate(currentAni, xRate, yRate, zRate)` | PO 缩放旋转段攻击盒；角色 substate 2 也用它缩放爆炸动画攻击盒。 | 内置 NUT API 事实目录 对非 PO 使用有警告；当前脚本实见不等于实机范围可靠。 |
 | `sq_CreateAnimation(...)` / `sq_CreatePooledObject(...)` / `sq_AddObject(...)` | PO 创建并挂接 `04_bspin_dodge.ani` 作为 draw-only 子视觉。 | draw-only 不等于攻击来源；显示、层级和残留需资源链或实机。 |
 | `CNRDPassiveObject.getTopCharacter()` | PO 在 `procAppend` 找创建它的角色；角色不在或不处于 FlameCircle 时自毁。 | 父角色失效、中断和同步状态需实机。 |
 | `IRDCollisionObject.resetHitObjectList()` | PO 每次旋转计数推进后重置命中列表，用于多段命中。 | 重复命中、目标过滤、PVP 和同步不能静态证明。 |

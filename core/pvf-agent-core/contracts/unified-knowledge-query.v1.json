@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "1.0",
+  "contractId": "pvf-unified-workbench-query-v1",
+  "kinds": ["source", "claims", "nut", "tag", "bookmark", "lineage", "planner", "client"],
+  "envelope": ["kind", "artifact path and SHA256", "query", "summary", "results", "boundaries", "delegated metadata"],
+  "boundaries": {
+    "readOnly": true,
+    "generatedArtifactIsFinalEvidence": false,
+    "targetPvfReadbackRequiredForPvfConclusion": true,
+    "zeroMatchesProveAbsence": false,
+    "directWriteAllowed": false,
+    "clientWriteAllowed": false,
+    "requiredPvfWriteLane": "workbench.bat pvf-change",
+    "outputArtifactsAndMachinePathsExternalOnly": true
+  },
+  "routing": {
+    "source": "external source manifest",
+    "claims": "external claim store",
+    "nut": "bundled compact NUT API and constant facts by default; maintenance override optional",
+    "tag": "bundled compact community, official-original, and tool-extension facts by default; maintenance override optional",
+    "bookmark": "bundled PVF task-navigation candidate paths",
+    "lineage": "external full-PVF-SHA semantic lineage",
+    "planner": "external dependency plan or batch report",
+    "client": "external client/PVF compatibility matrix"
+  }
+}

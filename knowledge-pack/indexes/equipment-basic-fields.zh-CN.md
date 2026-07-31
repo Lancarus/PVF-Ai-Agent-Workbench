@@ -6,7 +6,6 @@
 
 ## 总规则
 
-- 本索引字段默认状态均为 `需验证`，除 NPC 商店兑换链路中的 `[need material]`，以及当前主目标已实机采样的装备 `[minimum level]` / `[usable job]` 穿戴限制边界。
 - 文本字段只证明 PVF 内存在说明文字，不证明真实运行效果。
 - 数值字段可出现在根级，也可出现在 `[set ability]`、`[piece set ability]` 等能力块中；同名字段必须按所在块解释。
 - 资源路径只证明 PVF 有引用，不证明客户端 `ImagePacks2` / NPK 资源完整。
@@ -30,8 +29,8 @@
 | `[grade]` | 单数值 | 装备掉落等级或成长上下文等级；不等同于穿戴等级。 |
 | `[rarity]` | 单数值 | 稀有度候选；颜色和最终名称需目标客户端确认。 |
 | `[attach type]` | 单个反引号 token | 交易、绑定或附着类型；目标值见 bracket token 索引。 |
-| `[minimum level]` | 单数值 | 装备穿戴最低等级；当前主目标样本已证明会阻止低等级角色穿戴，但不外推到所有装备或满足等级后的正向穿戴。 |
-| `[usable job]` | 闭合 token 列表 | 可用职业或公共范围；当前主目标样本已证明会阻止非目标职业穿戴。必须读取 `[/usable job]`，职业 token 见 bracket token 索引。 |
+| `[minimum level]` | 单数值 | 需在当前目标 PVF 中只读确认 |
+| `[usable job]` | 闭合 token 列表 | 需在当前目标 PVF 中只读确认 |
 | `[need material]` | ID 与数量组合 | NPC 商店兑换链路中可默认作为入口；材料 ID 仍需走对应 registry。 |
 | `[medal]` | 单数值 | NPC 商店装备兑换链路的奖章或货币需求线索。 |
 | `[cash]` | 单数值 | 点券或 cash 价格线索；最终购买行为受服务端和商店链路影响。 |

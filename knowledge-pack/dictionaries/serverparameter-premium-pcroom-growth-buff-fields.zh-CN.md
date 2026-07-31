@@ -2,19 +2,18 @@
 
 状态：默认可用
 
-本文记录主目标 PVF 只读观察后可作为 Workbench 默认知识的服务参数、契约/黑钻、PC 房、成长支援字段边界。本文不授权写 PVF。
 
 ## 文件族
 
-| 文件族 | 主目标观察 | 口径 |
+| 文件族 | 目标核验 | 口径 |
 | --- | --- | --- |
-| `etc/serverparameter.etc` | 1 个文件，含大量全局参数块。 | 高风险全局配置，只能说明静态参数存在。 |
-| `etc/premiumlist.etc` / `etc/premiumlist_new.etc` | 旧/新两份 premium 列表均存在。 | 契约、黑钻、特权、疲劳、经验和掉率线索；不证明账号状态。 |
-| `etc/premiumserviceeffect.etc` | `[premium service]` 多条服务效果条目。 | 图片索引和附加装备线索；不证明 UI 或效果套用。 |
-| `etc/pcroom*.vm` | `pcroom.vm`、`pcroom3.vm`、`pcroom4.vm` 均存在。 | 贩卖机样配置，需按 `[material]`、`[output]` 解析候选物品。 |
-| `etc/worlddroppcroom*.etc` | `worlddroppcroom.etc`、`worlddroppcroom2.etc`、`worlddropwarareapcroom.etc` 均存在。 | PC 房/黑钻世界掉落相邻表，不等于翻牌本体。 |
-| `etc/growthpowerrewardbuff.etc` | 块存在但当前主目标观察为空。 | 只能说有成长支援骨架。 |
-| `etc/growthpowernpcdialog.etc` | `[Dialog]` 块存在但当前主目标观察为空。 | 不证明 NPC 交互或对话触发。 |
+| `etc/serverparameter.etc` | 需在当前目标 PVF 中只读确认 | 高风险全局配置，只能说明静态参数存在。 |
+| `etc/premiumlist.etc` / `etc/premiumlist_new.etc` | 需在当前目标 PVF 中只读确认 | 契约、黑钻、特权、疲劳、经验和掉率线索；不证明账号状态。 |
+| `etc/premiumserviceeffect.etc` | 需在当前目标 PVF 中只读确认 | 图片索引和附加装备线索；不证明 UI 或效果套用。 |
+| `etc/pcroom*.vm` | 需在当前目标 PVF 中只读确认 | 贩卖机样配置，需按 `[material]`、`[output]` 解析候选物品。 |
+| `etc/worlddroppcroom*.etc` | 需在当前目标 PVF 中只读确认 | PC 房/黑钻世界掉落相邻表，不等于翻牌本体。 |
+| `etc/growthpowerrewardbuff.etc` | 需在当前目标 PVF 中只读确认 | 只能说有成长支援骨架。 |
+| `etc/growthpowernpcdialog.etc` | 需在当前目标 PVF 中只读确认 | 不证明 NPC 交互或对话触发。 |
 
 ## `etc/serverparameter.etc`
 
@@ -62,7 +61,7 @@
 | `[fatigue]` | 疲劳值或疲劳相关服务字段。 | 不证明疲劳上限或恢复实际生效。 |
 | `[exp]` / `[bonus exp]` | 经验加成线索。 | 不证明经验倍率实机采用。 |
 | `[quest item drop rate]` | 任务道具掉率加成线索。 | 不证明掉落。 |
-| `[independent drop rate]` | 独立掉落倍率线索，主目标观察到多值表形态。 | 不证明独立掉落实机概率。 |
+| `[independent drop rate]` | 需在当前目标 PVF 中只读确认 | 不证明独立掉落实机概率。 |
 | `[coin]` / `[gold bonus]` | 币或金币加成线索。 | 不证明货币发放或扣费。 |
 | `[inventory limit]` | 背包/负重扩展线索。 | 不证明 UI 或服务端放行。 |
 | `[unlimit fatigue]` | 疲劳无限/限制解除线索。 | 不证明账号状态或疲劳系统生效。 |
@@ -76,7 +75,7 @@
 | --- | --- | --- |
 | `[premium service]` | premium service 父块。 | 不证明服务激活。 |
 | `[main premium image index]` / `[additional premium image index]` | 图片索引或显示索引线索。 | 不证明 UI 图标显示正常。 |
-| `[add equipment list]` | 附加装备候选列表，主目标样本可解析到 `equipment/equipment.lst`。 | 不证明装备效果已套用。 |
+| `[add equipment list]` | 需在当前目标 PVF 中只读确认 | 不证明装备效果已套用。 |
 | `[add selectAble equipment list]` | 可选附加装备候选列表，观察为索引与 equipment ID 成对形态。 | 不证明选择 UI 或效果生效。 |
 
 ## PC 房与成长支援
@@ -87,27 +86,26 @@
 | `[material]` | 贩卖机材料候选。 | 数字需解析，不证明扣除。 |
 | `[output]` | 贩卖机输出池，观察为物品、权重/概率、数量、标志位循环形态。 | 不证明抽取或发放。 |
 | `[world drop]` | `worlddroppcroom*.etc` 世界掉落列表，观察为等级段与候选物品组合。 | 不证明 PC 房/黑钻状态或世界掉落实机采用。 |
-| `[breakaway section]` | 成长支援等级段/分段块。 | 主目标为空块，不证明等级判断。 |
-| `[exp reward]` | 成长支援经验奖励块。 | 主目标为空块，不证明经验发放。 |
-| `[package reward]` | 成长支援礼包奖励块。 | 主目标为空块，不证明礼包发放；辅助非空仅作提示。 |
-| `[Dialog]` | 成长支援 NPC 对话块。 | 主目标为空块，不证明 NPC 交互。 |
+| `[breakaway section]` | 成长支援等级段/分段块。 | 需在当前目标 PVF 中只读确认 |
+| `[exp reward]` | 成长支援经验奖励块。 | 需在当前目标 PVF 中只读确认 |
+| `[package reward]` | 成长支援礼包奖励块。 | 需在当前目标 PVF 中只读确认 |
+| `[Dialog]` | 成长支援 NPC 对话块。 | 需在当前目标 PVF 中只读确认 |
 
 ## ID 解析样本
 
-| 数字 | 父上下文 | 主目标解析 |
+| 数字 | 父上下文 | 目标核验 |
 | --- | --- | --- |
-| `7455` | `worlddroppcroom.etc [world drop]` 候选物品 | 解析到 `stackable/stackable.lst` 的黑钻贩卖机代币交换券。 |
-| `7463` | `pcroom.vm [output]` 候选物品 | 解析到 `stackable/stackable.lst` 的卡妮娜的手工面包。 |
-| `3017951` | `premiumlist_new.etc` 黑钻契约条目 `[item]` | 解析到 `stackable/stackable.lst` 的黑钻会员，类型为 `[contract]`。 |
-| `2660543` | `premiumlist_new.etc` 晶体契约条目 `[item]` | 解析到 `stackable/stackable.lst` 的契约类道具。 |
-| `9944451` | `premiumserviceeffect.etc [add equipment list]` | 解析到 `equipment/equipment.lst` 的黑钻契约附加效果。 |
-| `2312900` | `premiumserviceeffect.etc [add equipment list]` | 解析到 `equipment/equipment.lst` 的成长的合约。 |
-| `100300084` | `premiumserviceeffect.etc [add selectAble equipment list]` | 解析到 `equipment/equipment.lst` 的晶体契约效果装备。 |
-| `31013` | `serverparameter.etc [premium card drop]` 样本数字 | 可跨 equipment、map、passiveobject 多 registry 命中；不能脱离父块直接断言物品类型。 |
+| `7455` | `worlddroppcroom.etc [world drop]` 候选物品 | 需在当前目标 PVF 中只读确认 |
+| `7463` | `pcroom.vm [output]` 候选物品 | 需在当前目标 PVF 中只读确认 |
+| `3017951` | `premiumlist_new.etc` 黑钻契约条目 `[item]` | 需在当前目标 PVF 中只读确认 |
+| `2660543` | `premiumlist_new.etc` 晶体契约条目 `[item]` | 需在当前目标 PVF 中只读确认 |
+| `9944451` | `premiumserviceeffect.etc [add equipment list]` | 需在当前目标 PVF 中只读确认 |
+| `2312900` | `premiumserviceeffect.etc [add equipment list]` | 需在当前目标 PVF 中只读确认 |
+| `100300084` | `premiumserviceeffect.etc [add selectAble equipment list]` | 需在当前目标 PVF 中只读确认 |
+| `31013` | `serverparameter.etc [premium card drop]` 样本数字 | 需在当前目标 PVF 中只读确认 |
 
 ## 通用规则
 
 - 同名标签跨文件不自动同义，必须看父文件和父块。
 - 低位数字、高位数字都不能靠外形判断 registry。
 - 静态字段只证明配置存在，不证明服务端采用、账号状态、UI、扣费、发放、概率或资源完整。
-- 辅助对照只提示同类配置可能更完整，不替代主目标事实。

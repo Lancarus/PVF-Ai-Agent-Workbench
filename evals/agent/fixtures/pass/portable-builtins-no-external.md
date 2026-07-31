@@ -1,0 +1,1 @@
+普通任务不需要额外知识目录。干净 Workbench 已自带 NUT API、PVF tag 和任务书签紧凑事实，并由 `workbench.bat` 优先启动随包 native backend；native 加载失败时自动进入随包 JavaScript 只读备用模式。新电脑只需复制干净工作台，再提供本次目标 `Script.pvf`、修改诉求、输出授权和实机条件即可；备用模式可读但不能备份、apply 或保存 PVF。

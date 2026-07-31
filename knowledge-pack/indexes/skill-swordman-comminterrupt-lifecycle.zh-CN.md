@@ -1,8 +1,7 @@
-# Swordman comminterrupt / skill 254 生命周期只读账本
+# Swordman comminterrupt / skill 254 生命周期只读索引
 
 状态：默认可用
 
-用途：记录当前主目标中鬼剑士 `skill 254 / swordman_comminterrupt` 的注册、技能文件、被动入口、appendage 挂接、proc 运行边界和 API 语义。本文只证明静态入口链和脚本参数可读，不证明游戏内一定已学习、一定挂接、一定成功柔化或稳定同步。
 
 ## 链路摘要
 
@@ -18,7 +17,6 @@ skill/swordmanskill.lst
 -> swordman_comminterrupt(appendage)
 ```
 
-## 当前主目标已确认
 
 | 项 | 只读结论 | 边界 |
 | --- | --- | --- |
@@ -55,7 +53,7 @@ skill/swordmanskill.lst
 | 翻转条件 | `if(obj.sq_IsEnterSkill(76) != -1)` 时在 0/1 间翻转 `STATE_FFRENZY` | proc 频率、按键保持、重进图、死亡、换图等场景下是否稳定，静态只读不能证明。 |
 | Frenzy 后可柔化目标 | `STATE_FFRENZY` 为真时，启用并尝试 `79 -> state 43/[0]`、`103 -> state 60/[102]`、`81 -> state 45/[0,1]` | 只证明当前脚本参数；成功触发仍受输入、冷却、当前状态和技能条件影响。 |
 
-## TypeSquirrel 已核 API
+## 内置 NUT API 事实目录 已核 API
 
 | API | 最低可用含义 | 本链边界 |
 | --- | --- | --- |
@@ -74,10 +72,10 @@ skill/swordmanskill.lst
 
 | 需求 | 判断 |
 | --- | --- |
-| 判断当前主目标是否已有 254 被动文件 | 可以：registry 和 `.skl` 均已闭合。 |
-| 判断当前主目标是否已有 254 appendage 文件 | 可以：`ap_swordman_comminterrupt.nut` 存在且被 passive 入口引用。 |
+| 需在当前目标 PVF 中只读确认 | 可以：registry 和 `.skl` 均已闭合。 |
+| 需在当前目标 PVF 中只读确认 | 可以：`ap_swordman_comminterrupt.nut` 存在且被 passive 入口引用。 |
 | 判断角色是否默认学会 254 | 不能：当前 `.chr` 默认技能表不证明它已学。 |
-| 判断 OutRageBreak 普攻强制是否已安装 | 不能：254 账本只证明 comminterrupt 链，不证明普通攻击专项入口。 |
+| 判断 OutRageBreak 普攻强制是否已安装 | 不能：254 索引只证明 comminterrupt 链，不证明普通攻击专项入口。 |
 | 判断 Frenzy 状态变量是否可靠 | 不能：`STATE_FFRENZY` 是脚本变量，必须运行测试。 |
 | 复用到其他职业 | 不能直接复用：各职业有各自 comminterrupt `.skl` 和 appendage，必须按各自 skill registry、load_state 和脚本重核。 |
 

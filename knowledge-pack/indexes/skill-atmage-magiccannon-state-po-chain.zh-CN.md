@@ -2,13 +2,11 @@
 
 状态：默认可用
 
-用途：记录当前主目标中 `MagicCannon` 的 skill registry、state/substate、角色 keyframe、24227 passiveobject、元素攻击包和 NUT API 边界。本文只覆盖这一个技能创建的 PO 窄链，不重开 PassiveObject / AttackInfo / Hitbox 广域主线。
 
 ## 一句话结论
 
 `MagicCannon` 是男法 `skill 18` 的主动技能，运行入口注册到 `STATE_MAGIC_CANNON = 37`；地面释放直接进入 `LAND` 子状态，空中释放先进入 `CHARGE` 再按方向键选择水平、垂直或斜向发射。角色 keyframe 通过二进制 word 包创建 `24227`，PO 再按发射位置和元素类型切换动画、攻击信息、元素爆炸或暗属性自身攻击链。
 
-## 主目标只读闭合链
 
 | 层级 | 当前确认 | 边界 |
 | --- | --- | --- |

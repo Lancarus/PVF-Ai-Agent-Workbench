@@ -2,7 +2,7 @@
 
 本策略定义纯净知识包的迁移边界：只把已经沉淀成结论、词典或流程的内容放进 PVF-Agent-Workbench。
 
-`DNFPVFwork` 是研究室和证据库。PVF-Agent-Workbench 是执行台。执行台不携带来源材料。
+研究资料与 PVF-Agent-Workbench 执行台分离；干净执行台不携带来源材料。
 
 ## 可以进入知识包
 

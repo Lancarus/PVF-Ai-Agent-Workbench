@@ -8,10 +8,9 @@
   ],
   "defaultReadOrder": [
     "safety/README.zh-CN.md",
-    "indexes/knowledge-index.json",
-    "indexes/completed-mainlines-status.zh-CN.md"
+    "indexes/knowledge-index.json"
   ],
-  "topicCount": 309,
+  "topicCount": 289,
   "topics": {
     "pvf-safety": {
       "status": "默认可用",
@@ -24,8 +23,7 @@
       "entries": [
         "task-cards/runtime-pass-absorption-checklist.zh-CN.md",
         "workflows/runtime-validation-absorption.zh-CN.md",
-        "safety/README.zh-CN.md",
-        "indexes/completed-mainlines-status.zh-CN.md"
+        "safety/README.zh-CN.md"
       ]
     },
     "completed-mainlines": {
@@ -40,7 +38,6 @@
         "task-cards/attackinfo-payload-damage-element-activestatus-readonly-audit.zh-CN.md",
         "dictionaries/attackinfo-payload-damage-element-activestatus-fields.zh-CN.md",
         "indexes/attackinfo-payload-damage-element-activestatus-boundary.zh-CN.md",
-        "indexes/completed-mainlines-status.zh-CN.md",
         "task-cards/pvf-registry-lst-topology-readonly-audit.zh-CN.md",
         "dictionaries/pvf-registry-lst-topology-fields.zh-CN.md",
         "indexes/pvf-registry-lst-topology-orphan-boundary.zh-CN.md",
@@ -49,8 +46,6 @@
         "dictionaries/text-stringlink-encoding-fields.zh-CN.md",
         "indexes/text-stringlink-encoding-localization-boundary.zh-CN.md",
         "encyclopedia/pvf-file-types/text-stringlink-localization.zh-CN.md",
-        "indexes/registry-text-source-position-reinforcement.zh-CN.md",
-        "indexes/npc-shop-source-position-reinforcement.zh-CN.md",
         "task-cards/equipment-stackable-readonly-audit.zh-CN.md",
         "dictionaries/equipment-fields.zh-CN.md",
         "task-cards/monster-mob-readonly-audit.zh-CN.md",
@@ -59,48 +54,34 @@
         "dictionaries/monster-ai-action-attack-cross-layer-fields.zh-CN.md",
         "indexes/monster-ai-action-attack-cross-layer-boundary.zh-CN.md",
         "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-completion-audit.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-static-acceptance-report.zh-CN.md",
-        "indexes/skill-state-nut-runtime-high-coverage-matrix.zh-CN.md",
         "indexes/skill-state-nut-runtime-api-group-boundary.zh-CN.md",
-        "indexes/skill-learnability-source-position-reinforcement.zh-CN.md",
         "indexes/quest-drop-reward-ticket-boundary.zh-CN.md",
-        "indexes/quest-drop-reward-source-position-reinforcement.zh-CN.md",
         "task-cards/quest-drop-reward-ticket-readonly-audit.zh-CN.md",
         "dictionaries/quest-drop-reward-ticket-fields.zh-CN.md",
         "workflows/quest-drop-reward-ticket-edit.zh-CN.md",
-        "indexes/quest-mainline-coverage-audit.zh-CN.md",
         "dictionaries/quest-type-condition-fields.zh-CN.md",
-        "indexes/quest-type-condition-int-data-matrix.zh-CN.md",
         "indexes/quest-chain-requirement-boundary.zh-CN.md",
         "task-cards/pvp-mission-readonly-audit.zh-CN.md",
         "dictionaries/pvp-mission-fields.zh-CN.md",
         "indexes/pvp-mission-msn-boundary.zh-CN.md",
-        "indexes/pvp-mission-source-position-reinforcement.zh-CN.md",
         "indexes/randomoption-mystic-equipment-boundary.zh-CN.md",
-        "indexes/randomoption-mystic-source-position-reinforcement.zh-CN.md",
         "task-cards/randomoption-mystic-readonly-audit.zh-CN.md",
         "dictionaries/randomoption-mystic-fields.zh-CN.md",
         "indexes/stackable-container-package-boundary.zh-CN.md",
-        "indexes/stackable-container-package-source-position-reinforcement.zh-CN.md",
         "task-cards/stackable-container-package-readonly-audit.zh-CN.md",
         "dictionaries/stackable-container-package-fields.zh-CN.md",
         "indexes/creature-pet-boundary.zh-CN.md",
-        "indexes/creature-pet-source-position-reinforcement.zh-CN.md",
         "task-cards/creature-pet-readonly-audit.zh-CN.md",
         "dictionaries/creature-pet-fields.zh-CN.md",
         "task-cards/dungeon-map-spawn-entry-clear-resource-readonly-audit.zh-CN.md",
         "dictionaries/dungeon-map-spawn-entry-clear-resource-fields.zh-CN.md",
         "indexes/dungeon-map-spawn-entry-clear-resource-boundary.zh-CN.md",
-        "indexes/dungeon-map-source-position-reinforcement.zh-CN.md",
         "task-cards/client-assets-imagepacks-ui-readonly-audit.zh-CN.md",
         "dictionaries/client-assets-imagepacks-ui-fields.zh-CN.md",
         "indexes/client-assets-imagepacks-ui-boundary.zh-CN.md",
-        "indexes/client-assets-source-position-reinforcement.zh-CN.md",
         "task-cards/audio-soundpacks-music-readonly-audit.zh-CN.md",
         "dictionaries/audio-soundpacks-music-fields.zh-CN.md",
         "indexes/audio-soundpacks-music-boundary.zh-CN.md",
-        "indexes/audio-soundpacks-source-position-reinforcement.zh-CN.md",
         "encyclopedia/pvf-file-types/audio-soundpacks-music.zh-CN.md",
         "task-cards/avatar-emblem-socket-clone-aura-fashion-package-readonly-audit.zh-CN.md",
         "dictionaries/avatar-emblem-socket-clone-aura-fashion-package-fields.zh-CN.md",
@@ -146,8 +127,7 @@
         "task-cards/pvf-registry-lst-topology-readonly-audit.zh-CN.md",
         "dictionaries/pvf-registry-lst-topology-fields.zh-CN.md",
         "indexes/pvf-registry-lst-topology-orphan-boundary.zh-CN.md",
-        "encyclopedia/pvf-file-types/lst-registry-topology.zh-CN.md",
-        "indexes/registry-text-source-position-reinforcement.zh-CN.md"
+        "encyclopedia/pvf-file-types/lst-registry-topology.zh-CN.md"
       ]
     },
     "lst-registry": {
@@ -198,35 +178,7 @@
         "task-cards/text-stringlink-encoding-readonly-audit.zh-CN.md",
         "dictionaries/text-stringlink-encoding-fields.zh-CN.md",
         "indexes/text-stringlink-encoding-localization-boundary.zh-CN.md",
-        "encyclopedia/pvf-file-types/text-stringlink-localization.zh-CN.md",
-        "indexes/registry-text-source-position-reinforcement.zh-CN.md"
-      ]
-    },
-    "registry-text-source-position-reinforcement": {
-      "status": "默认可用",
-      "entries": [
-        "safety/README.zh-CN.md",
-        "indexes/pvf-registry-lst-topology-orphan-boundary.zh-CN.md",
-        "indexes/text-stringlink-encoding-localization-boundary.zh-CN.md",
-        "indexes/registry-text-source-position-reinforcement.zh-CN.md"
-      ]
-    },
-    "lst-source-position": {
-      "status": "默认可用",
-      "entries": [
-        "safety/README.zh-CN.md",
-        "dictionaries/pvf-registry-lst-topology-fields.zh-CN.md",
-        "indexes/pvf-registry-lst-topology-orphan-boundary.zh-CN.md",
-        "indexes/registry-text-source-position-reinforcement.zh-CN.md"
-      ]
-    },
-    "text-source-position": {
-      "status": "默认可用",
-      "entries": [
-        "safety/README.zh-CN.md",
-        "dictionaries/text-stringlink-encoding-fields.zh-CN.md",
-        "indexes/text-stringlink-encoding-localization-boundary.zh-CN.md",
-        "indexes/registry-text-source-position-reinforcement.zh-CN.md"
+        "encyclopedia/pvf-file-types/text-stringlink-localization.zh-CN.md"
       ]
     },
     "stringlink": {
@@ -275,7 +227,6 @@
         "dictionaries/pvf-tags.zh-CN.md",
         "dictionaries/npc-shop-fields.zh-CN.md",
         "indexes/npc-shop-itemshop-exchange-price-boundary.zh-CN.md",
-        "indexes/npc-shop-source-position-reinforcement.zh-CN.md",
         "task-cards/npc-shop-readonly-audit.zh-CN.md",
         "workflows/npc-shop-edit.zh-CN.md"
       ]
@@ -285,7 +236,6 @@
       "entries": [
         "dictionaries/npc-shop-fields.zh-CN.md",
         "indexes/npc-shop-itemshop-exchange-price-boundary.zh-CN.md",
-        "indexes/npc-shop-source-position-reinforcement.zh-CN.md",
         "encyclopedia/pvf-file-types/equipment-stackable.zh-CN.md",
         "task-cards/npc-shop-readonly-audit.zh-CN.md"
       ]
@@ -295,29 +245,8 @@
       "entries": [
         "safety/README.zh-CN.md",
         "indexes/npc-shop-itemshop-exchange-price-boundary.zh-CN.md",
-        "indexes/npc-shop-source-position-reinforcement.zh-CN.md",
         "task-cards/npc-shop-controlled-change.zh-CN.md",
         "workflows/npc-shop-edit.zh-CN.md"
-      ]
-    },
-    "npc-shop-source-position": {
-      "status": "默认可用",
-      "entries": [
-        "safety/README.zh-CN.md",
-        "encyclopedia/pvf-file-types/itemshop-shp.zh-CN.md",
-        "dictionaries/npc-shop-fields.zh-CN.md",
-        "indexes/npc-shop-itemshop-exchange-price-boundary.zh-CN.md",
-        "indexes/npc-shop-source-position-reinforcement.zh-CN.md"
-      ]
-    },
-    "itemshop-source-position": {
-      "status": "默认可用",
-      "entries": [
-        "safety/README.zh-CN.md",
-        "encyclopedia/pvf-file-types/itemshop-shp.zh-CN.md",
-        "dictionaries/npc-shop-fields.zh-CN.md",
-        "indexes/npc-shop-itemshop-exchange-price-boundary.zh-CN.md",
-        "indexes/npc-shop-source-position-reinforcement.zh-CN.md"
       ]
     },
     "shop-material-clues": {
@@ -326,14 +255,12 @@
         "safety/README.zh-CN.md",
         "dictionaries/npc-shop-fields.zh-CN.md",
         "indexes/npc-shop-itemshop-exchange-price-boundary.zh-CN.md",
-        "indexes/npc-shop-source-position-reinforcement.zh-CN.md",
         "encyclopedia/pvf-file-types/equipment-stackable.zh-CN.md"
       ]
     },
     "equipment-stackable": {
       "status": "默认可用",
       "entries": [
-        "indexes/completed-mainlines-status.zh-CN.md",
         "encyclopedia/pvf-file-types/equipment-stackable.zh-CN.md",
         "dictionaries/pvf-tags.zh-CN.md",
         "dictionaries/equipment-fields.zh-CN.md",
@@ -569,80 +496,10 @@
         "indexes/skill-learnability-tree-command-cooldown-boundary.zh-CN.md",
         "indexes/skill-tree-default-pvp-entry-boundary.zh-CN.md",
         "indexes/skill-learnability-cost-sp-tp-ui-boundary.zh-CN.md",
-        "indexes/skill-learnability-tree-command-cooldown-completion-audit.zh-CN.md",
-        "indexes/skill-learnability-source-position-reinforcement.zh-CN.md",
         "indexes/skill-levelup.zh-CN.md",
         "indexes/skill-data-up-types.zh-CN.md",
         "task-cards/skill-learnability-tree-command-cooldown-readonly-audit.zh-CN.md",
         "dictionaries/nut-runtime-api-boundary.zh-CN.md"
-      ]
-    },
-    "skill-learnability-source-position": {
-      "status": "默认可用",
-      "entries": [
-        "safety/README.zh-CN.md",
-        "encyclopedia/pvf-file-types/skill-skl.zh-CN.md",
-        "indexes/skill-registry-routing.zh-CN.md",
-        "dictionaries/skill-learnability-command-cooldown-fields.zh-CN.md",
-        "indexes/skill-learnability-tree-command-cooldown-boundary.zh-CN.md",
-        "indexes/skill-tree-default-pvp-entry-boundary.zh-CN.md",
-        "indexes/skill-learnability-cost-sp-tp-ui-boundary.zh-CN.md",
-        "indexes/skill-learnability-source-position-reinforcement.zh-CN.md"
-      ]
-    },
-    "skilltree-source-position": {
-      "status": "默认可用",
-      "entries": [
-        "safety/README.zh-CN.md",
-        "indexes/skill-registry-routing.zh-CN.md",
-        "dictionaries/skill-learnability-command-cooldown-fields.zh-CN.md",
-        "indexes/skill-learnability-tree-command-cooldown-boundary.zh-CN.md",
-        "indexes/skill-tree-default-pvp-entry-boundary.zh-CN.md",
-        "indexes/skill-learnability-source-position-reinforcement.zh-CN.md"
-      ]
-    },
-    "skill-command-source-position": {
-      "status": "默认可用",
-      "entries": [
-        "safety/README.zh-CN.md",
-        "encyclopedia/pvf-file-types/skill-skl.zh-CN.md",
-        "dictionaries/skill-learnability-command-cooldown-fields.zh-CN.md",
-        "indexes/skill-learnability-tree-command-cooldown-boundary.zh-CN.md",
-        "indexes/skill-learnability-source-position-reinforcement.zh-CN.md"
-      ]
-    },
-    "skill-cooldown-source-position": {
-      "status": "默认可用",
-      "entries": [
-        "safety/README.zh-CN.md",
-        "encyclopedia/pvf-file-types/skill-skl.zh-CN.md",
-        "dictionaries/skill-learnability-command-cooldown-fields.zh-CN.md",
-        "indexes/skill-learnability-tree-command-cooldown-boundary.zh-CN.md",
-        "indexes/skill-learnability-cost-sp-tp-ui-boundary.zh-CN.md",
-        "indexes/skill-learnability-source-position-reinforcement.zh-CN.md"
-      ]
-    },
-    "skill-sp-tp-source-position": {
-      "status": "默认可用",
-      "entries": [
-        "safety/README.zh-CN.md",
-        "encyclopedia/pvf-file-types/skill-skl.zh-CN.md",
-        "indexes/skill-registry-routing.zh-CN.md",
-        "dictionaries/skill-learnability-command-cooldown-fields.zh-CN.md",
-        "indexes/skill-tree-default-pvp-entry-boundary.zh-CN.md",
-        "indexes/skill-learnability-cost-sp-tp-ui-boundary.zh-CN.md",
-        "indexes/skill-learnability-source-position-reinforcement.zh-CN.md"
-      ]
-    },
-    "pvp-skilltree-source-position": {
-      "status": "默认可用",
-      "entries": [
-        "safety/README.zh-CN.md",
-        "indexes/skill-registry-routing.zh-CN.md",
-        "dictionaries/skill-learnability-command-cooldown-fields.zh-CN.md",
-        "indexes/skill-learnability-tree-command-cooldown-boundary.zh-CN.md",
-        "indexes/skill-tree-default-pvp-entry-boundary.zh-CN.md",
-        "indexes/skill-learnability-source-position-reinforcement.zh-CN.md"
       ]
     },
     "skill-runtime": {
@@ -650,16 +507,7 @@
       "entries": [
         "encyclopedia/pvf-file-types/skill-skl.zh-CN.md",
         "encyclopedia/pvf-file-types/nut-api-runtime.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
-        "indexes/skill-load-state-entry-coverage.zh-CN.md",
-        "indexes/skill-state-nut-runtime-high-coverage-matrix.zh-CN.md",
         "indexes/skill-state-nut-runtime-api-group-boundary.zh-CN.md",
-        "indexes/skill-avenger-cnapi-spincutter-representative-chain.zh-CN.md",
-        "indexes/skill-avenger-cnapi-powerofdarkness-representative-chain.zh-CN.md",
-        "indexes/skill-creatormage-hybrid-mousecontrol-representative-chain.zh-CN.md",
-        "indexes/skill-common-burster-public-loop-state-representative-chain.zh-CN.md",
-        "indexes/skill-gunner-passive-comminterrupt-script-only-representative-chain.zh-CN.md",
-        "indexes/skill-priest-releasebuffs-light-state-representative-chain.zh-CN.md",
         "indexes/skill-atmage-windstrike-native-chain.zh-CN.md",
         "indexes/skill-atmage-crystalattack-native-chain.zh-CN.md",
         "indexes/skill-atmage-darkchange-state-blind-attackinfo-chain.zh-CN.md",
@@ -706,14 +554,6 @@
         "encyclopedia/pvf-file-types/nut-api-runtime.zh-CN.md",
         "dictionaries/nut-runtime-api-boundary.zh-CN.md",
         "indexes/skill-state-nut-runtime-api-group-boundary.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
-        "indexes/skill-state-nut-runtime-high-coverage-matrix.zh-CN.md",
-        "indexes/skill-avenger-cnapi-spincutter-representative-chain.zh-CN.md",
-        "indexes/skill-avenger-cnapi-powerofdarkness-representative-chain.zh-CN.md",
-        "indexes/skill-creatormage-hybrid-mousecontrol-representative-chain.zh-CN.md",
-        "indexes/skill-common-burster-public-loop-state-representative-chain.zh-CN.md",
-        "indexes/skill-gunner-passive-comminterrupt-script-only-representative-chain.zh-CN.md",
-        "indexes/skill-priest-releasebuffs-light-state-representative-chain.zh-CN.md",
         "indexes/skill-atmage-windstrike-native-chain.zh-CN.md",
         "indexes/skill-atmage-crystalattack-native-chain.zh-CN.md",
         "indexes/skill-atmage-darkchange-state-blind-attackinfo-chain.zh-CN.md",
@@ -733,7 +573,6 @@
         "indexes/skill-atmage-frozenland-state-po-appendage-chain.zh-CN.md",
         "indexes/skill-atmage-holonglight-state-po-skillload-buff-chain.zh-CN.md",
         "indexes/skill-atmage-pieceofice-state-core-shard-po-chain.zh-CN.md",
-        "indexes/skill-load-state-entry-coverage.zh-CN.md",
         "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
       ]
     },
@@ -744,16 +583,7 @@
         "encyclopedia/pvf-file-types/skill-skl.zh-CN.md",
         "encyclopedia/pvf-file-types/nut-api-runtime.zh-CN.md",
         "indexes/skill-registry-routing.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
-        "indexes/skill-load-state-entry-coverage.zh-CN.md",
-        "indexes/skill-state-nut-runtime-high-coverage-matrix.zh-CN.md",
         "indexes/skill-state-nut-runtime-api-group-boundary.zh-CN.md",
-        "indexes/skill-avenger-cnapi-spincutter-representative-chain.zh-CN.md",
-        "indexes/skill-avenger-cnapi-powerofdarkness-representative-chain.zh-CN.md",
-        "indexes/skill-creatormage-hybrid-mousecontrol-representative-chain.zh-CN.md",
-        "indexes/skill-common-burster-public-loop-state-representative-chain.zh-CN.md",
-        "indexes/skill-gunner-passive-comminterrupt-script-only-representative-chain.zh-CN.md",
-        "indexes/skill-priest-releasebuffs-light-state-representative-chain.zh-CN.md",
         "indexes/skill-atmage-windstrike-native-chain.zh-CN.md",
         "indexes/skill-atmage-crystalattack-native-chain.zh-CN.md",
         "indexes/skill-atmage-darkchange-state-blind-attackinfo-chain.zh-CN.md",
@@ -782,104 +612,11 @@
         "workflows/skill-derivative-and-cancel.zh-CN.md"
       ]
     },
-    "skill-state-nut-high-coverage": {
-      "status": "默认可用",
-      "entries": [
-        "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-high-coverage-matrix.zh-CN.md",
-        "indexes/skill-load-state-entry-coverage.zh-CN.md",
-        "indexes/skill-avenger-cnapi-spincutter-representative-chain.zh-CN.md",
-        "indexes/skill-avenger-cnapi-powerofdarkness-representative-chain.zh-CN.md",
-        "indexes/skill-creatormage-hybrid-mousecontrol-representative-chain.zh-CN.md",
-        "indexes/skill-common-burster-public-loop-state-representative-chain.zh-CN.md",
-        "indexes/skill-gunner-passive-comminterrupt-script-only-representative-chain.zh-CN.md",
-        "indexes/skill-priest-releasebuffs-light-state-representative-chain.zh-CN.md",
-        "indexes/skill-state-nut-runtime-api-group-boundary.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
-        "dictionaries/nut-runtime-api-boundary.zh-CN.md",
-        "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
-      ]
-    },
     "skill-state-nut-runtime-api-group-boundary": {
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-high-coverage-matrix.zh-CN.md",
         "indexes/skill-state-nut-runtime-api-group-boundary.zh-CN.md",
-        "dictionaries/nut-runtime-api-boundary.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
-        "indexes/skill-load-state-entry-coverage.zh-CN.md",
-        "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
-      ]
-    },
-    "skill-avenger-cnapi-spincutter-representative-chain": {
-      "status": "默认可用",
-      "entries": [
-        "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-high-coverage-matrix.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
-        "indexes/skill-load-state-entry-coverage.zh-CN.md",
-        "indexes/skill-avenger-cnapi-spincutter-representative-chain.zh-CN.md",
-        "dictionaries/nut-runtime-api-boundary.zh-CN.md",
-        "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
-      ]
-    },
-    "skill-avenger-cnapi-powerofdarkness-representative-chain": {
-      "status": "默认可用",
-      "entries": [
-        "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-high-coverage-matrix.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
-        "indexes/skill-load-state-entry-coverage.zh-CN.md",
-        "indexes/skill-avenger-cnapi-powerofdarkness-representative-chain.zh-CN.md",
-        "dictionaries/nut-runtime-api-boundary.zh-CN.md",
-        "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
-      ]
-    },
-    "skill-creatormage-hybrid-mousecontrol-representative-chain": {
-      "status": "默认可用",
-      "entries": [
-        "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-high-coverage-matrix.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
-        "indexes/skill-load-state-entry-coverage.zh-CN.md",
-        "indexes/skill-creatormage-hybrid-mousecontrol-representative-chain.zh-CN.md",
-        "dictionaries/nut-runtime-api-boundary.zh-CN.md",
-        "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
-      ]
-    },
-    "skill-common-burster-public-loop-state-representative-chain": {
-      "status": "默认可用",
-      "entries": [
-        "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-high-coverage-matrix.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
-        "indexes/skill-load-state-entry-coverage.zh-CN.md",
-        "indexes/skill-common-burster-public-loop-state-representative-chain.zh-CN.md",
-        "dictionaries/nut-runtime-api-boundary.zh-CN.md",
-        "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
-      ]
-    },
-    "skill-gunner-passive-comminterrupt-script-only-representative-chain": {
-      "status": "默认可用",
-      "entries": [
-        "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-high-coverage-matrix.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
-        "indexes/skill-load-state-entry-coverage.zh-CN.md",
-        "indexes/skill-gunner-passive-comminterrupt-script-only-representative-chain.zh-CN.md",
-        "dictionaries/nut-runtime-api-boundary.zh-CN.md",
-        "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
-      ]
-    },
-    "skill-priest-releasebuffs-light-state-representative-chain": {
-      "status": "默认可用",
-      "entries": [
-        "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-high-coverage-matrix.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
-        "indexes/skill-load-state-entry-coverage.zh-CN.md",
-        "indexes/skill-priest-releasebuffs-light-state-representative-chain.zh-CN.md",
         "dictionaries/nut-runtime-api-boundary.zh-CN.md",
         "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
       ]
@@ -888,7 +625,6 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
         "indexes/skill-atmage-windstrike-native-chain.zh-CN.md",
         "dictionaries/nut-runtime-api-boundary.zh-CN.md",
         "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
@@ -898,7 +634,6 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
         "indexes/skill-atmage-crystalattack-native-chain.zh-CN.md",
         "dictionaries/nut-runtime-api-boundary.zh-CN.md",
         "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
@@ -908,8 +643,6 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
-        "indexes/skill-load-state-entry-coverage.zh-CN.md",
         "indexes/skill-atmage-darkchange-state-blind-attackinfo-chain.zh-CN.md",
         "dictionaries/nut-runtime-api-boundary.zh-CN.md",
         "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
@@ -919,7 +652,6 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
         "indexes/skill-atmage-watercannon-native-chain.zh-CN.md",
         "dictionaries/nut-runtime-api-boundary.zh-CN.md",
         "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
@@ -929,7 +661,6 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
         "indexes/skill-atmage-elementalchange-throw-appendage-chain.zh-CN.md",
         "dictionaries/nut-runtime-api-boundary.zh-CN.md",
         "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
@@ -939,7 +670,6 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
         "indexes/skill-atmage-magicshield-buff-appendage-chain.zh-CN.md",
         "dictionaries/nut-runtime-api-boundary.zh-CN.md",
         "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
@@ -949,8 +679,6 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
-        "indexes/skill-load-state-entry-coverage.zh-CN.md",
         "indexes/skill-atmage-manaburst-throw-buff-chain.zh-CN.md",
         "dictionaries/nut-runtime-api-boundary.zh-CN.md",
         "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
@@ -960,8 +688,6 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
-        "indexes/skill-load-state-entry-coverage.zh-CN.md",
         "indexes/skill-atmage-teleport-movement-state-chain.zh-CN.md",
         "dictionaries/nut-runtime-api-boundary.zh-CN.md",
         "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
@@ -971,8 +697,6 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
-        "indexes/skill-load-state-entry-coverage.zh-CN.md",
         "indexes/skill-atmage-magiccannon-state-po-chain.zh-CN.md",
         "dictionaries/nut-runtime-api-boundary.zh-CN.md",
         "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
@@ -982,8 +706,6 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
-        "indexes/skill-load-state-entry-coverage.zh-CN.md",
         "indexes/skill-atmage-chainlightning-state-po-chain.zh-CN.md",
         "dictionaries/nut-runtime-api-boundary.zh-CN.md",
         "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
@@ -993,8 +715,6 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
-        "indexes/skill-load-state-entry-coverage.zh-CN.md",
         "indexes/skill-atmage-lightningwall-state-po-appendage-chain.zh-CN.md",
         "dictionaries/nut-runtime-api-boundary.zh-CN.md",
         "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
@@ -1004,8 +724,6 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
-        "indexes/skill-load-state-entry-coverage.zh-CN.md",
         "indexes/skill-atmage-fireroad-state-po-chain.zh-CN.md",
         "dictionaries/nut-runtime-api-boundary.zh-CN.md",
         "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
@@ -1015,8 +733,6 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
-        "indexes/skill-load-state-entry-coverage.zh-CN.md",
         "indexes/skill-atmage-iceroad-state-appendage-disabled-po-boundary.zh-CN.md",
         "dictionaries/nut-runtime-api-boundary.zh-CN.md",
         "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
@@ -1026,8 +742,6 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
-        "indexes/skill-load-state-entry-coverage.zh-CN.md",
         "indexes/skill-atmage-icesword-state-attackinfo-ex-rewind-chain.zh-CN.md",
         "dictionaries/nut-runtime-api-boundary.zh-CN.md",
         "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
@@ -1037,8 +751,6 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
-        "indexes/skill-load-state-entry-coverage.zh-CN.md",
         "indexes/skill-atmage-flamecircle-state-po-appendage-chain.zh-CN.md",
         "dictionaries/nut-runtime-api-boundary.zh-CN.md",
         "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
@@ -1048,8 +760,6 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
-        "indexes/skill-load-state-entry-coverage.zh-CN.md",
         "indexes/skill-atmage-bluedragonwill-state-target-po-chain.zh-CN.md",
         "dictionaries/nut-runtime-api-boundary.zh-CN.md",
         "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
@@ -1059,8 +769,6 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
-        "indexes/skill-load-state-entry-coverage.zh-CN.md",
         "indexes/skill-atmage-frozenland-state-po-appendage-chain.zh-CN.md",
         "dictionaries/nut-runtime-api-boundary.zh-CN.md",
         "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
@@ -1070,8 +778,6 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
-        "indexes/skill-load-state-entry-coverage.zh-CN.md",
         "indexes/skill-atmage-holonglight-state-po-skillload-buff-chain.zh-CN.md",
         "dictionaries/nut-runtime-api-boundary.zh-CN.md",
         "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
@@ -1081,8 +787,6 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
-        "indexes/skill-load-state-entry-coverage.zh-CN.md",
         "indexes/skill-atmage-pieceofice-state-core-shard-po-chain.zh-CN.md",
         "dictionaries/nut-runtime-api-boundary.zh-CN.md",
         "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
@@ -1092,18 +796,7 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
         "indexes/skill-bloodyrave-bloodsword-frame-window.zh-CN.md",
-        "dictionaries/nut-runtime-api-boundary.zh-CN.md",
-        "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
-      ]
-    },
-    "skill-load-state-entry-coverage": {
-      "status": "默认可用",
-      "entries": [
-        "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
-        "indexes/skill-load-state-entry-coverage.zh-CN.md",
         "dictionaries/nut-runtime-api-boundary.zh-CN.md",
         "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
       ]
@@ -1112,7 +805,6 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
         "indexes/skill-outragebreak-state45-substate-boundary.zh-CN.md",
         "dictionaries/nut-runtime-api-boundary.zh-CN.md",
         "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
@@ -1122,7 +814,6 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
         "indexes/skill-swordman-comminterrupt-lifecycle.zh-CN.md",
         "indexes/skill-swordman-comminterrupt-reachability.zh-CN.md",
         "indexes/skill-outragebreak-state45-substate-boundary.zh-CN.md",
@@ -1134,24 +825,10 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/skill-state-nut-runtime-boundary-audit.zh-CN.md",
         "indexes/skill-swordman-comminterrupt-lifecycle.zh-CN.md",
         "indexes/skill-swordman-comminterrupt-reachability.zh-CN.md",
         "dictionaries/nut-runtime-api-boundary.zh-CN.md",
         "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
-      ]
-    },
-    "passiveobject-ledger-governance": {
-      "status": "默认可用",
-      "entries": [
-        "indexes/completed-mainlines-status.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-static-acceptance-report.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-completion-audit.zh-CN.md",
-        "indexes/passiveobject-ledger-governance.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-acceptance-checklist.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-acceptance-review-ledger.zh-CN.md",
-        "task-cards/passiveobject-nonmonster-readonly-audit.zh-CN.md"
       ]
     },
     "passiveobject-attackinfo-hitbox-compact-router": {
@@ -1160,65 +837,10 @@
         "task-cards/attackinfo-payload-damage-element-activestatus-readonly-audit.zh-CN.md",
         "dictionaries/attackinfo-payload-damage-element-activestatus-fields.zh-CN.md",
         "indexes/attackinfo-payload-damage-element-activestatus-boundary.zh-CN.md",
-        "indexes/completed-mainlines-status.zh-CN.md",
         "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-completion-audit.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-static-acceptance-report.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-acceptance-checklist.zh-CN.md",
         "dictionaries/attackinfo-atk-fields.zh-CN.md",
         "dictionaries/passiveobject-obj-fields.zh-CN.md",
         "dictionaries/passiveobject-action-fields.zh-CN.md",
-        "task-cards/passiveobject-nonmonster-readonly-audit.zh-CN.md"
-      ]
-    },
-    "passiveobject-attackinfo-hitbox-acceptance": {
-      "status": "默认可用",
-      "entries": [
-        "indexes/completed-mainlines-status.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-static-acceptance-report.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-completion-audit.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-acceptance-checklist.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-acceptance-review-ledger.zh-CN.md",
-        "indexes/passiveobject-ledger-governance.zh-CN.md",
-        "task-cards/passiveobject-nonmonster-readonly-audit.zh-CN.md"
-      ]
-    },
-    "passiveobject-attackinfo-hitbox-static-acceptance-report": {
-      "status": "默认可用",
-      "entries": [
-        "indexes/completed-mainlines-status.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-static-acceptance-report.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-completion-audit.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-acceptance-checklist.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-acceptance-review-ledger.zh-CN.md",
-        "indexes/passiveobject-ledger-governance.zh-CN.md",
-        "task-cards/passiveobject-nonmonster-readonly-audit.zh-CN.md"
-      ]
-    },
-    "passiveobject-attackinfo-hitbox-completion-audit": {
-      "status": "默认可用",
-      "entries": [
-        "indexes/completed-mainlines-status.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-completion-audit.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-static-acceptance-report.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-acceptance-checklist.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-acceptance-review-ledger.zh-CN.md",
-        "task-cards/passiveobject-nonmonster-readonly-audit.zh-CN.md"
-      ]
-    },
-    "passiveobject-attackinfo-hitbox-acceptance-review": {
-      "status": "默认可用",
-      "entries": [
-        "indexes/completed-mainlines-status.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-static-acceptance-report.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-completion-audit.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-acceptance-review-ledger.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-acceptance-checklist.zh-CN.md",
-        "indexes/passiveobject-ledger-governance.zh-CN.md",
         "task-cards/passiveobject-nonmonster-readonly-audit.zh-CN.md"
       ]
     },
@@ -1228,14 +850,8 @@
         "task-cards/attackinfo-payload-damage-element-activestatus-readonly-audit.zh-CN.md",
         "dictionaries/attackinfo-payload-damage-element-activestatus-fields.zh-CN.md",
         "indexes/attackinfo-payload-damage-element-activestatus-boundary.zh-CN.md",
-        "indexes/completed-mainlines-status.zh-CN.md",
         "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md",
         "encyclopedia/pvf-file-types/passiveobject-attackinfo-hitbox.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-static-acceptance-report.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-completion-audit.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-acceptance-checklist.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-acceptance-review-ledger.zh-CN.md",
-        "indexes/passiveobject-ledger-governance.zh-CN.md",
         "dictionaries/attackinfo-atk-fields.zh-CN.md",
         "indexes/attackinfo-atk-observed-tag-router.zh-CN.md",
         "indexes/attackinfo-atk-backtick-token-router.zh-CN.md",
@@ -1252,11 +868,6 @@
         "indexes/attackinfo-payload-damage-element-activestatus-boundary.zh-CN.md",
         "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md",
         "encyclopedia/pvf-file-types/passiveobject-attackinfo-hitbox.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-static-acceptance-report.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-completion-audit.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-acceptance-checklist.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-acceptance-review-ledger.zh-CN.md",
-        "indexes/passiveobject-ledger-governance.zh-CN.md",
         "dictionaries/attackinfo-atk-fields.zh-CN.md",
         "indexes/attackinfo-atk-observed-tag-router.zh-CN.md",
         "indexes/attackinfo-atk-backtick-token-router.zh-CN.md",
@@ -1280,7 +891,6 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/completed-mainlines-status.zh-CN.md",
         "task-cards/monster-ai-action-attack-cross-layer-readonly-audit.zh-CN.md",
         "dictionaries/monster-ai-action-attack-cross-layer-fields.zh-CN.md",
         "indexes/monster-ai-action-attack-cross-layer-boundary.zh-CN.md",
@@ -1296,7 +906,6 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/completed-mainlines-status.zh-CN.md",
         "task-cards/monster-ai-action-attack-cross-layer-readonly-audit.zh-CN.md",
         "dictionaries/monster-ai-action-attack-cross-layer-fields.zh-CN.md",
         "indexes/monster-ai-action-attack-cross-layer-boundary.zh-CN.md",
@@ -1324,7 +933,6 @@
     "monster": {
       "status": "需验证",
       "entries": [
-        "indexes/completed-mainlines-status.zh-CN.md",
         "task-cards/monster-ai-action-attack-cross-layer-readonly-audit.zh-CN.md",
         "dictionaries/monster-ai-action-attack-cross-layer-fields.zh-CN.md",
         "indexes/monster-ai-action-attack-cross-layer-boundary.zh-CN.md",
@@ -1359,7 +967,6 @@
     "monster-fields": {
       "status": "需验证",
       "entries": [
-        "indexes/completed-mainlines-status.zh-CN.md",
         "dictionaries/monster-fields.zh-CN.md",
         "indexes/monster-field-router-basic.zh-CN.md",
         "indexes/monster-observed-tag-router.zh-CN.md",
@@ -1376,7 +983,6 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/completed-mainlines-status.zh-CN.md",
         "task-cards/monster-ai-action-attack-cross-layer-readonly-audit.zh-CN.md",
         "dictionaries/monster-ai-action-attack-cross-layer-fields.zh-CN.md",
         "indexes/monster-ai-action-attack-cross-layer-boundary.zh-CN.md",
@@ -1413,7 +1019,6 @@
         "task-cards/dungeon-map-spawn-entry-clear-resource-readonly-audit.zh-CN.md",
         "dictionaries/dungeon-map-spawn-entry-clear-resource-fields.zh-CN.md",
         "indexes/dungeon-map-spawn-entry-clear-resource-boundary.zh-CN.md",
-        "indexes/dungeon-map-source-position-reinforcement.zh-CN.md",
         "indexes/monster-entry-link-router.zh-CN.md"
       ]
     },
@@ -1425,10 +1030,8 @@
         "task-cards/dungeon-map-spawn-entry-clear-resource-readonly-audit.zh-CN.md",
         "dictionaries/dungeon-map-spawn-entry-clear-resource-fields.zh-CN.md",
         "indexes/dungeon-map-spawn-entry-clear-resource-boundary.zh-CN.md",
-        "indexes/dungeon-map-source-position-reinforcement.zh-CN.md",
         "indexes/monster-entry-link-router.zh-CN.md",
         "indexes/quest-drop-reward-ticket-boundary.zh-CN.md",
-        "indexes/quest-drop-reward-source-position-reinforcement.zh-CN.md",
         "dictionaries/quest-drop-reward-ticket-fields.zh-CN.md"
       ]
     },
@@ -1439,8 +1042,7 @@
         "encyclopedia/pvf-file-types/dungeon-map-worldmap.zh-CN.md",
         "task-cards/dungeon-map-spawn-entry-clear-resource-readonly-audit.zh-CN.md",
         "dictionaries/dungeon-map-spawn-entry-clear-resource-fields.zh-CN.md",
-        "indexes/dungeon-map-spawn-entry-clear-resource-boundary.zh-CN.md",
-        "indexes/dungeon-map-source-position-reinforcement.zh-CN.md"
+        "indexes/dungeon-map-spawn-entry-clear-resource-boundary.zh-CN.md"
       ]
     },
     "dungeon-clear-reward": {
@@ -1448,10 +1050,8 @@
       "entries": [
         "safety/README.zh-CN.md",
         "indexes/dungeon-map-spawn-entry-clear-resource-boundary.zh-CN.md",
-        "indexes/dungeon-map-source-position-reinforcement.zh-CN.md",
         "dictionaries/dungeon-map-spawn-entry-clear-resource-fields.zh-CN.md",
         "indexes/quest-drop-reward-ticket-boundary.zh-CN.md",
-        "indexes/quest-drop-reward-source-position-reinforcement.zh-CN.md",
         "dictionaries/quest-drop-reward-ticket-fields.zh-CN.md",
         "task-cards/clear-reward-card-flip-independent-drop-probability-readonly-audit.zh-CN.md",
         "dictionaries/clear-reward-card-flip-independent-drop-probability-fields.zh-CN.md",
@@ -1474,7 +1074,6 @@
         "task-cards/client-assets-imagepacks-ui-readonly-audit.zh-CN.md",
         "dictionaries/client-assets-imagepacks-ui-fields.zh-CN.md",
         "indexes/client-assets-imagepacks-ui-boundary.zh-CN.md",
-        "indexes/client-assets-source-position-reinforcement.zh-CN.md",
         "encyclopedia/pvf-file-types/assets-imagepacks-ui.zh-CN.md"
       ]
     },
@@ -1485,7 +1084,6 @@
         "task-cards/client-assets-imagepacks-ui-readonly-audit.zh-CN.md",
         "dictionaries/client-assets-imagepacks-ui-fields.zh-CN.md",
         "indexes/client-assets-imagepacks-ui-boundary.zh-CN.md",
-        "indexes/client-assets-source-position-reinforcement.zh-CN.md",
         "encyclopedia/pvf-file-types/assets-imagepacks-ui.zh-CN.md"
       ]
     },
@@ -1496,7 +1094,6 @@
         "task-cards/client-assets-imagepacks-ui-readonly-audit.zh-CN.md",
         "dictionaries/client-assets-imagepacks-ui-fields.zh-CN.md",
         "indexes/client-assets-imagepacks-ui-boundary.zh-CN.md",
-        "indexes/client-assets-source-position-reinforcement.zh-CN.md",
         "encyclopedia/pvf-file-types/assets-imagepacks-ui.zh-CN.md"
       ]
     },
@@ -1507,14 +1104,12 @@
         "task-cards/client-assets-imagepacks-ui-readonly-audit.zh-CN.md",
         "dictionaries/client-assets-imagepacks-ui-fields.zh-CN.md",
         "indexes/client-assets-imagepacks-ui-boundary.zh-CN.md",
-        "indexes/client-assets-source-position-reinforcement.zh-CN.md",
         "encyclopedia/pvf-file-types/assets-imagepacks-ui.zh-CN.md"
       ]
     },
     "equipment-basic-fields": {
       "status": "需验证",
       "entries": [
-        "indexes/completed-mainlines-status.zh-CN.md",
         "indexes/equipment-basic-fields.zh-CN.md",
         "dictionaries/equipment-fields.zh-CN.md",
         "indexes/pvf-tag-router-equipment-basic-rules.zh-CN.md",
@@ -1628,11 +1223,6 @@
         "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md",
         "encyclopedia/pvf-file-types/monster-mob.zh-CN.md",
         "encyclopedia/pvf-file-types/passiveobject-attackinfo-hitbox.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-static-acceptance-report.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-completion-audit.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-acceptance-checklist.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-acceptance-review-ledger.zh-CN.md",
-        "indexes/passiveobject-ledger-governance.zh-CN.md",
         "dictionaries/passiveobject-action-fields.zh-CN.md",
         "dictionaries/passiveobject-obj-fields.zh-CN.md",
         "dictionaries/attackinfo-atk-fields.zh-CN.md",
@@ -1701,44 +1291,8 @@
     "passiveobject-nonmonster": {
       "status": "需验证",
       "entries": [
-        "indexes/completed-mainlines-status.zh-CN.md",
         "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md",
         "encyclopedia/pvf-file-types/passiveobject-attackinfo-hitbox.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-static-acceptance-report.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-completion-audit.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-acceptance-checklist.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-acceptance-review-ledger.zh-CN.md",
-        "indexes/passiveobject-ledger-governance.zh-CN.md",
-        "indexes/passiveobject-nonmonster-sample-chain.zh-CN.md",
-        "dictionaries/passiveobject-obj-fields.zh-CN.md",
-        "dictionaries/passiveobject-action-fields.zh-CN.md",
-        "dictionaries/attackinfo-atk-fields.zh-CN.md",
-        "task-cards/passiveobject-nonmonster-readonly-audit.zh-CN.md"
-      ]
-    },
-    "passiveobject-coverage-ledger": {
-      "status": "需验证",
-      "entries": [
-        "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-static-acceptance-report.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-completion-audit.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-acceptance-checklist.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-acceptance-review-ledger.zh-CN.md",
-        "indexes/passiveobject-ledger-governance.zh-CN.md",
-        "indexes/passiveobject-coverage-ledger.zh-CN.md",
-        "indexes/attackinfo-status-pvp-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-block-inventory.zh-CN.md",
-        "indexes/attackinfo-pvp-chain-pilot-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-gunner-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-fighter-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-mage-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-priest-swordman-thief-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-common-equipment-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-zrr-skill-chain-ledger.zh-CN.md",
-        "indexes/passiveobject-lifecycle-homing-ledger.zh-CN.md",
-        "indexes/passiveobject-hitbox-ani-sample-ledger.zh-CN.md",
-        "indexes/passiveobject-create-recursion-ledger.zh-CN.md",
-        "indexes/passiveobject-nonmonster-sample-chain.zh-CN.md",
         "dictionaries/passiveobject-obj-fields.zh-CN.md",
         "dictionaries/passiveobject-action-fields.zh-CN.md",
         "dictionaries/attackinfo-atk-fields.zh-CN.md",
@@ -1749,16 +1303,6 @@
       "status": "需验证",
       "entries": [
         "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-static-acceptance-report.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-completion-audit.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-acceptance-checklist.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-acceptance-review-ledger.zh-CN.md",
-        "indexes/passiveobject-ledger-governance.zh-CN.md",
-        "indexes/passiveobject-hitbox-ani-sample-ledger.zh-CN.md",
-        "indexes/passiveobject-create-recursion-ledger.zh-CN.md",
-        "indexes/passiveobject-coverage-ledger.zh-CN.md",
-        "indexes/passiveobject-lifecycle-homing-ledger.zh-CN.md",
-        "indexes/passiveobject-nonmonster-sample-chain.zh-CN.md",
         "dictionaries/passiveobject-action-fields.zh-CN.md",
         "dictionaries/passiveobject-obj-fields.zh-CN.md",
         "dictionaries/attackinfo-atk-fields.zh-CN.md",
@@ -1769,17 +1313,8 @@
       "status": "需验证",
       "entries": [
         "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-static-acceptance-report.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-completion-audit.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-acceptance-checklist.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-acceptance-review-ledger.zh-CN.md",
-        "indexes/passiveobject-ledger-governance.zh-CN.md",
-        "indexes/passiveobject-create-recursion-ledger.zh-CN.md",
-        "indexes/passiveobject-coverage-ledger.zh-CN.md",
-        "indexes/passiveobject-lifecycle-homing-ledger.zh-CN.md",
         "dictionaries/passiveobject-action-fields.zh-CN.md",
         "dictionaries/passiveobject-obj-fields.zh-CN.md",
-        "indexes/passiveobject-hitbox-ani-sample-ledger.zh-CN.md",
         "task-cards/passiveobject-nonmonster-readonly-audit.zh-CN.md"
       ]
     },
@@ -1787,15 +1322,7 @@
       "status": "需验证",
       "entries": [
         "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-static-acceptance-report.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-completion-audit.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-acceptance-checklist.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-acceptance-review-ledger.zh-CN.md",
-        "indexes/passiveobject-ledger-governance.zh-CN.md",
-        "indexes/passiveobject-lifecycle-homing-ledger.zh-CN.md",
-        "indexes/passiveobject-coverage-ledger.zh-CN.md",
         "dictionaries/passiveobject-obj-fields.zh-CN.md",
-        "indexes/passiveobject-create-recursion-ledger.zh-CN.md",
         "task-cards/passiveobject-nonmonster-readonly-audit.zh-CN.md"
       ]
     },
@@ -1806,57 +1333,8 @@
         "dictionaries/attackinfo-payload-damage-element-activestatus-fields.zh-CN.md",
         "indexes/attackinfo-payload-damage-element-activestatus-boundary.zh-CN.md",
         "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md",
-        "indexes/attackinfo-status-pvp-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-block-inventory.zh-CN.md",
-        "indexes/attackinfo-pvp-chain-pilot-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-gunner-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-fighter-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-mage-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-priest-swordman-thief-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-common-equipment-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-zrr-skill-chain-ledger.zh-CN.md",
         "dictionaries/attackinfo-atk-fields.zh-CN.md",
-        "indexes/passiveobject-coverage-ledger.zh-CN.md",
         "encyclopedia/pvf-file-types/passiveobject-attackinfo-hitbox.zh-CN.md",
-        "task-cards/passiveobject-nonmonster-readonly-audit.zh-CN.md"
-      ]
-    },
-    "attackinfo-pvp-block-inventory": {
-      "status": "需验证",
-      "entries": [
-        "task-cards/attackinfo-payload-damage-element-activestatus-readonly-audit.zh-CN.md",
-        "dictionaries/attackinfo-payload-damage-element-activestatus-fields.zh-CN.md",
-        "indexes/attackinfo-payload-damage-element-activestatus-boundary.zh-CN.md",
-        "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md",
-        "indexes/attackinfo-pvp-block-inventory.zh-CN.md",
-        "indexes/attackinfo-pvp-chain-pilot-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-gunner-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-fighter-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-mage-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-priest-swordman-thief-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-common-equipment-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-zrr-skill-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-status-pvp-ledger.zh-CN.md",
-        "dictionaries/attackinfo-atk-fields.zh-CN.md",
-        "indexes/passiveobject-coverage-ledger.zh-CN.md",
-        "task-cards/passiveobject-nonmonster-readonly-audit.zh-CN.md"
-      ]
-    },
-    "attackinfo-pvp-chain-pilot": {
-      "status": "需验证",
-      "entries": [
-        "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md",
-        "indexes/attackinfo-pvp-chain-pilot-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-gunner-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-fighter-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-mage-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-priest-swordman-thief-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-common-equipment-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-zrr-skill-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-block-inventory.zh-CN.md",
-        "indexes/attackinfo-status-pvp-ledger.zh-CN.md",
-        "dictionaries/attackinfo-atk-fields.zh-CN.md",
-        "indexes/passiveobject-coverage-ledger.zh-CN.md",
         "task-cards/passiveobject-nonmonster-readonly-audit.zh-CN.md"
       ]
     },
@@ -1864,17 +1342,7 @@
       "status": "需验证",
       "entries": [
         "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md",
-        "indexes/attackinfo-pvp-gunner-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-fighter-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-mage-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-priest-swordman-thief-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-common-equipment-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-zrr-skill-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-chain-pilot-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-block-inventory.zh-CN.md",
-        "indexes/attackinfo-status-pvp-ledger.zh-CN.md",
         "dictionaries/attackinfo-atk-fields.zh-CN.md",
-        "indexes/passiveobject-coverage-ledger.zh-CN.md",
         "task-cards/passiveobject-nonmonster-readonly-audit.zh-CN.md"
       ]
     },
@@ -1882,16 +1350,7 @@
       "status": "需验证",
       "entries": [
         "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md",
-        "indexes/attackinfo-pvp-fighter-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-mage-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-priest-swordman-thief-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-common-equipment-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-zrr-skill-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-chain-pilot-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-block-inventory.zh-CN.md",
-        "indexes/attackinfo-status-pvp-ledger.zh-CN.md",
         "dictionaries/attackinfo-atk-fields.zh-CN.md",
-        "indexes/passiveobject-coverage-ledger.zh-CN.md",
         "task-cards/passiveobject-nonmonster-readonly-audit.zh-CN.md"
       ]
     },
@@ -1899,15 +1358,7 @@
       "status": "需验证",
       "entries": [
         "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md",
-        "indexes/attackinfo-pvp-mage-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-priest-swordman-thief-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-common-equipment-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-zrr-skill-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-chain-pilot-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-block-inventory.zh-CN.md",
-        "indexes/attackinfo-status-pvp-ledger.zh-CN.md",
         "dictionaries/attackinfo-atk-fields.zh-CN.md",
-        "indexes/passiveobject-coverage-ledger.zh-CN.md",
         "task-cards/passiveobject-nonmonster-readonly-audit.zh-CN.md"
       ]
     },
@@ -1915,14 +1366,7 @@
       "status": "需验证",
       "entries": [
         "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md",
-        "indexes/attackinfo-pvp-priest-swordman-thief-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-common-equipment-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-zrr-skill-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-chain-pilot-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-block-inventory.zh-CN.md",
-        "indexes/attackinfo-status-pvp-ledger.zh-CN.md",
         "dictionaries/attackinfo-atk-fields.zh-CN.md",
-        "indexes/passiveobject-coverage-ledger.zh-CN.md",
         "task-cards/passiveobject-nonmonster-readonly-audit.zh-CN.md"
       ]
     },
@@ -1930,13 +1374,7 @@
       "status": "需验证",
       "entries": [
         "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md",
-        "indexes/attackinfo-pvp-common-equipment-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-zrr-skill-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-chain-pilot-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-block-inventory.zh-CN.md",
-        "indexes/attackinfo-status-pvp-ledger.zh-CN.md",
         "dictionaries/attackinfo-atk-fields.zh-CN.md",
-        "indexes/passiveobject-coverage-ledger.zh-CN.md",
         "task-cards/passiveobject-nonmonster-readonly-audit.zh-CN.md"
       ]
     },
@@ -1944,12 +1382,7 @@
       "status": "需验证",
       "entries": [
         "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md",
-        "indexes/attackinfo-pvp-zrr-skill-chain-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-chain-pilot-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-block-inventory.zh-CN.md",
-        "indexes/attackinfo-status-pvp-ledger.zh-CN.md",
         "dictionaries/attackinfo-atk-fields.zh-CN.md",
-        "indexes/passiveobject-coverage-ledger.zh-CN.md",
         "task-cards/passiveobject-nonmonster-readonly-audit.zh-CN.md"
       ]
     },
@@ -1957,13 +1390,10 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/quest-mainline-coverage-audit.zh-CN.md",
         "dictionaries/quest-type-condition-fields.zh-CN.md",
-        "indexes/quest-type-condition-int-data-matrix.zh-CN.md",
         "indexes/quest-chain-requirement-boundary.zh-CN.md",
         "dictionaries/quest-drop-reward-ticket-fields.zh-CN.md",
         "indexes/quest-drop-reward-ticket-boundary.zh-CN.md",
-        "indexes/quest-drop-reward-source-position-reinforcement.zh-CN.md",
         "task-cards/quest-drop-reward-ticket-readonly-audit.zh-CN.md",
         "workflows/quest-drop-reward-ticket-edit.zh-CN.md",
         "encyclopedia/pvf-file-types/equipment-stackable.zh-CN.md",
@@ -1978,7 +1408,6 @@
       "entries": [
         "dictionaries/quest-drop-reward-ticket-fields.zh-CN.md",
         "indexes/quest-drop-reward-ticket-boundary.zh-CN.md",
-        "indexes/quest-drop-reward-source-position-reinforcement.zh-CN.md",
         "task-cards/quest-drop-reward-ticket-readonly-audit.zh-CN.md",
         "encyclopedia/pvf-file-types/equipment-stackable.zh-CN.md"
       ]
@@ -1988,12 +1417,10 @@
       "entries": [
         "dictionaries/quest-drop-reward-ticket-fields.zh-CN.md",
         "indexes/quest-drop-reward-ticket-boundary.zh-CN.md",
-        "indexes/quest-drop-reward-source-position-reinforcement.zh-CN.md",
         "task-cards/quest-drop-reward-ticket-readonly-audit.zh-CN.md",
         "dictionaries/monster-fields.zh-CN.md",
         "dictionaries/stackable-fields.zh-CN.md",
         "dictionaries/quest-type-condition-fields.zh-CN.md",
-        "indexes/quest-type-condition-int-data-matrix.zh-CN.md",
         "indexes/quest-chain-requirement-boundary.zh-CN.md"
       ]
     },
@@ -2002,10 +1429,8 @@
       "entries": [
         "dictionaries/quest-drop-reward-ticket-fields.zh-CN.md",
         "indexes/quest-drop-reward-ticket-boundary.zh-CN.md",
-        "indexes/quest-drop-reward-source-position-reinforcement.zh-CN.md",
         "task-cards/quest-drop-reward-ticket-readonly-audit.zh-CN.md",
         "encyclopedia/pvf-file-types/dungeon-map-worldmap.zh-CN.md",
-        "indexes/dungeon-map-source-position-reinforcement.zh-CN.md",
         "dictionaries/stackable-fields.zh-CN.md"
       ]
     },
@@ -2014,7 +1439,6 @@
       "entries": [
         "dictionaries/quest-drop-reward-ticket-fields.zh-CN.md",
         "indexes/quest-drop-reward-ticket-boundary.zh-CN.md",
-        "indexes/quest-drop-reward-source-position-reinforcement.zh-CN.md",
         "task-cards/quest-drop-reward-ticket-readonly-audit.zh-CN.md",
         "encyclopedia/pvf-file-types/equipment-stackable.zh-CN.md",
         "task-cards/clear-reward-card-flip-independent-drop-probability-readonly-audit.zh-CN.md",
@@ -2027,24 +1451,8 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/quest-mainline-coverage-audit.zh-CN.md",
         "dictionaries/quest-type-condition-fields.zh-CN.md",
-        "indexes/quest-type-condition-int-data-matrix.zh-CN.md",
-        "indexes/quest-chain-requirement-boundary.zh-CN.md",
-        "indexes/quest-drop-reward-source-position-reinforcement.zh-CN.md"
-      ]
-    },
-    "quest-mainline-coverage-audit": {
-      "status": "默认可用",
-      "entries": [
-        "safety/README.zh-CN.md",
-        "indexes/quest-mainline-coverage-audit.zh-CN.md",
-        "indexes/quest-type-condition-int-data-matrix.zh-CN.md",
-        "indexes/quest-chain-requirement-boundary.zh-CN.md",
-        "dictionaries/quest-type-condition-fields.zh-CN.md",
-        "indexes/quest-drop-reward-ticket-boundary.zh-CN.md",
-        "indexes/quest-drop-reward-source-position-reinforcement.zh-CN.md",
-        "dictionaries/quest-drop-reward-ticket-fields.zh-CN.md"
+        "indexes/quest-chain-requirement-boundary.zh-CN.md"
       ]
     },
     "quest-type-condition-fields": {
@@ -2052,9 +1460,7 @@
       "entries": [
         "safety/README.zh-CN.md",
         "dictionaries/quest-type-condition-fields.zh-CN.md",
-        "indexes/quest-type-condition-int-data-matrix.zh-CN.md",
-        "indexes/quest-chain-requirement-boundary.zh-CN.md",
-        "indexes/quest-drop-reward-source-position-reinforcement.zh-CN.md"
+        "indexes/quest-chain-requirement-boundary.zh-CN.md"
       ]
     },
     "quest-chain-requirement": {
@@ -2062,28 +1468,22 @@
       "entries": [
         "safety/README.zh-CN.md",
         "indexes/quest-chain-requirement-boundary.zh-CN.md",
-        "dictionaries/quest-type-condition-fields.zh-CN.md",
-        "indexes/quest-type-condition-int-data-matrix.zh-CN.md",
-        "indexes/quest-drop-reward-source-position-reinforcement.zh-CN.md"
+        "dictionaries/quest-type-condition-fields.zh-CN.md"
       ]
     },
     "quest-condition-under-clear": {
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/quest-type-condition-int-data-matrix.zh-CN.md",
         "dictionaries/quest-type-condition-fields.zh-CN.md",
-        "indexes/quest-chain-requirement-boundary.zh-CN.md",
-        "indexes/quest-drop-reward-source-position-reinforcement.zh-CN.md"
+        "indexes/quest-chain-requirement-boundary.zh-CN.md"
       ]
     },
     "quest-unregistered-qst-risk": {
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/quest-chain-requirement-boundary.zh-CN.md",
-        "indexes/quest-mainline-coverage-audit.zh-CN.md",
-        "indexes/quest-drop-reward-source-position-reinforcement.zh-CN.md"
+        "indexes/quest-chain-requirement-boundary.zh-CN.md"
       ]
     },
     "pvp-mission": {
@@ -2092,8 +1492,7 @@
         "safety/README.zh-CN.md",
         "task-cards/pvp-mission-readonly-audit.zh-CN.md",
         "dictionaries/pvp-mission-fields.zh-CN.md",
-        "indexes/pvp-mission-msn-boundary.zh-CN.md",
-        "indexes/pvp-mission-source-position-reinforcement.zh-CN.md"
+        "indexes/pvp-mission-msn-boundary.zh-CN.md"
       ]
     },
     "pvp-mission-msn": {
@@ -2102,8 +1501,7 @@
         "safety/README.zh-CN.md",
         "indexes/pvp-mission-msn-boundary.zh-CN.md",
         "dictionaries/pvp-mission-fields.zh-CN.md",
-        "task-cards/pvp-mission-readonly-audit.zh-CN.md",
-        "indexes/pvp-mission-source-position-reinforcement.zh-CN.md"
+        "task-cards/pvp-mission-readonly-audit.zh-CN.md"
       ]
     },
     "pvp-mission-condition": {
@@ -2111,8 +1509,7 @@
       "entries": [
         "dictionaries/pvp-mission-fields.zh-CN.md",
         "indexes/pvp-mission-msn-boundary.zh-CN.md",
-        "task-cards/pvp-mission-readonly-audit.zh-CN.md",
-        "indexes/pvp-mission-source-position-reinforcement.zh-CN.md"
+        "task-cards/pvp-mission-readonly-audit.zh-CN.md"
       ]
     },
     "pvp-mission-reward": {
@@ -2121,8 +1518,7 @@
         "dictionaries/pvp-mission-fields.zh-CN.md",
         "indexes/pvp-mission-msn-boundary.zh-CN.md",
         "encyclopedia/pvf-file-types/equipment-stackable.zh-CN.md",
-        "task-cards/pvp-mission-readonly-audit.zh-CN.md",
-        "indexes/pvp-mission-source-position-reinforcement.zh-CN.md"
+        "task-cards/pvp-mission-readonly-audit.zh-CN.md"
       ]
     },
     "pvp-mission-unregistered-risk": {
@@ -2130,50 +1526,29 @@
       "entries": [
         "indexes/pvp-mission-msn-boundary.zh-CN.md",
         "dictionaries/pvp-mission-fields.zh-CN.md",
-        "task-cards/pvp-mission-readonly-audit.zh-CN.md",
-        "indexes/pvp-mission-source-position-reinforcement.zh-CN.md"
+        "task-cards/pvp-mission-readonly-audit.zh-CN.md"
       ]
     },
     "pvp-mission-vs-quest": {
       "status": "默认可用",
       "entries": [
         "indexes/pvp-mission-msn-boundary.zh-CN.md",
-        "indexes/pvp-mission-source-position-reinforcement.zh-CN.md",
         "indexes/quest-chain-requirement-boundary.zh-CN.md",
-        "indexes/quest-mainline-coverage-audit.zh-CN.md",
         "dictionaries/quest-type-condition-fields.zh-CN.md"
-      ]
-    },
-    "pvp-mission-source-position": {
-      "status": "榛樿鍙敤",
-      "entries": [
-        "safety/README.zh-CN.md",
-        "task-cards/pvp-mission-readonly-audit.zh-CN.md",
-        "dictionaries/pvp-mission-fields.zh-CN.md",
-        "indexes/pvp-mission-msn-boundary.zh-CN.md",
-        "indexes/pvp-mission-source-position-reinforcement.zh-CN.md",
-        "indexes/client-assets-imagepacks-ui-boundary.zh-CN.md",
-        "indexes/dungeon-map-spawn-entry-clear-resource-boundary.zh-CN.md",
-        "indexes/audio-soundpacks-music-boundary.zh-CN.md"
       ]
     },
     "pvp-client-resource": {
       "status": "榛樿鍙敤",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/pvp-mission-source-position-reinforcement.zh-CN.md",
-        "indexes/client-assets-imagepacks-ui-boundary.zh-CN.md",
-        "indexes/client-assets-source-position-reinforcement.zh-CN.md",
-        "indexes/audio-soundpacks-source-position-reinforcement.zh-CN.md"
+        "indexes/client-assets-imagepacks-ui-boundary.zh-CN.md"
       ]
     },
     "pvp-map-start-area": {
       "status": "榛樿鍙敤",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/pvp-mission-source-position-reinforcement.zh-CN.md",
-        "indexes/dungeon-map-spawn-entry-clear-resource-boundary.zh-CN.md",
-        "indexes/dungeon-map-source-position-reinforcement.zh-CN.md"
+        "indexes/dungeon-map-spawn-entry-clear-resource-boundary.zh-CN.md"
       ]
     },
     "randomoption": {
@@ -2183,7 +1558,6 @@
         "task-cards/randomoption-mystic-readonly-audit.zh-CN.md",
         "dictionaries/randomoption-mystic-fields.zh-CN.md",
         "indexes/randomoption-mystic-equipment-boundary.zh-CN.md",
-        "indexes/randomoption-mystic-source-position-reinforcement.zh-CN.md",
         "indexes/equipment-rule-fields.zh-CN.md"
       ]
     },
@@ -2194,7 +1568,6 @@
         "task-cards/randomoption-mystic-readonly-audit.zh-CN.md",
         "dictionaries/randomoption-mystic-fields.zh-CN.md",
         "indexes/randomoption-mystic-equipment-boundary.zh-CN.md",
-        "indexes/randomoption-mystic-source-position-reinforcement.zh-CN.md",
         "indexes/equipment-rule-fields.zh-CN.md"
       ]
     },
@@ -2205,7 +1578,6 @@
         "task-cards/randomoption-mystic-readonly-audit.zh-CN.md",
         "dictionaries/randomoption-mystic-fields.zh-CN.md",
         "indexes/randomoption-mystic-equipment-boundary.zh-CN.md",
-        "indexes/randomoption-mystic-source-position-reinforcement.zh-CN.md",
         "indexes/equipment-rule-fields.zh-CN.md"
       ]
     },
@@ -2216,7 +1588,6 @@
         "task-cards/randomoption-mystic-readonly-audit.zh-CN.md",
         "dictionaries/randomoption-mystic-fields.zh-CN.md",
         "indexes/randomoption-mystic-equipment-boundary.zh-CN.md",
-        "indexes/randomoption-mystic-source-position-reinforcement.zh-CN.md",
         "indexes/equipment-rule-fields.zh-CN.md"
       ]
     },
@@ -2227,7 +1598,6 @@
         "task-cards/randomoption-mystic-readonly-audit.zh-CN.md",
         "dictionaries/randomoption-mystic-fields.zh-CN.md",
         "indexes/randomoption-mystic-equipment-boundary.zh-CN.md",
-        "indexes/randomoption-mystic-source-position-reinforcement.zh-CN.md",
         "indexes/equipment-rule-fields.zh-CN.md"
       ]
     },
@@ -2238,7 +1608,6 @@
         "task-cards/randomoption-mystic-readonly-audit.zh-CN.md",
         "dictionaries/randomoption-mystic-fields.zh-CN.md",
         "indexes/randomoption-mystic-equipment-boundary.zh-CN.md",
-        "indexes/randomoption-mystic-source-position-reinforcement.zh-CN.md",
         "indexes/equipment-rule-fields.zh-CN.md"
       ]
     },
@@ -2249,7 +1618,6 @@
         "task-cards/randomoption-mystic-readonly-audit.zh-CN.md",
         "dictionaries/randomoption-mystic-fields.zh-CN.md",
         "indexes/randomoption-mystic-equipment-boundary.zh-CN.md",
-        "indexes/randomoption-mystic-source-position-reinforcement.zh-CN.md",
         "indexes/equipment-rule-fields.zh-CN.md"
       ]
     },
@@ -2260,7 +1628,6 @@
         "task-cards/randomoption-mystic-readonly-audit.zh-CN.md",
         "dictionaries/randomoption-mystic-fields.zh-CN.md",
         "indexes/randomoption-mystic-equipment-boundary.zh-CN.md",
-        "indexes/randomoption-mystic-source-position-reinforcement.zh-CN.md",
         "indexes/equipment-rule-fields.zh-CN.md"
       ]
     },
@@ -2271,7 +1638,6 @@
         "task-cards/randomoption-mystic-readonly-audit.zh-CN.md",
         "dictionaries/randomoption-mystic-fields.zh-CN.md",
         "indexes/randomoption-mystic-equipment-boundary.zh-CN.md",
-        "indexes/randomoption-mystic-source-position-reinforcement.zh-CN.md",
         "indexes/equipment-rule-fields.zh-CN.md"
       ]
     },
@@ -2282,7 +1648,6 @@
         "task-cards/stackable-container-package-readonly-audit.zh-CN.md",
         "dictionaries/stackable-container-package-fields.zh-CN.md",
         "indexes/stackable-container-package-boundary.zh-CN.md",
-        "indexes/stackable-container-package-source-position-reinforcement.zh-CN.md",
         "dictionaries/stackable-fields.zh-CN.md",
         "task-cards/stackable-package-orb-card-extraction-preview.zh-CN.md",
         "workflows/stackable-package-orb-card-extraction-planner.zh-CN.md",
@@ -2299,7 +1664,6 @@
         "task-cards/stackable-container-package-readonly-audit.zh-CN.md",
         "dictionaries/stackable-container-package-fields.zh-CN.md",
         "indexes/stackable-container-package-boundary.zh-CN.md",
-        "indexes/stackable-container-package-source-position-reinforcement.zh-CN.md",
         "dictionaries/stackable-fields.zh-CN.md"
       ]
     },
@@ -2310,7 +1674,6 @@
         "task-cards/stackable-container-package-readonly-audit.zh-CN.md",
         "dictionaries/stackable-container-package-fields.zh-CN.md",
         "indexes/stackable-container-package-boundary.zh-CN.md",
-        "indexes/stackable-container-package-source-position-reinforcement.zh-CN.md",
         "dictionaries/stackable-fields.zh-CN.md"
       ]
     },
@@ -2321,7 +1684,6 @@
         "task-cards/stackable-container-package-readonly-audit.zh-CN.md",
         "dictionaries/stackable-container-package-fields.zh-CN.md",
         "indexes/stackable-container-package-boundary.zh-CN.md",
-        "indexes/stackable-container-package-source-position-reinforcement.zh-CN.md",
         "dictionaries/stackable-fields.zh-CN.md"
       ]
     },
@@ -2332,7 +1694,6 @@
         "task-cards/stackable-container-package-readonly-audit.zh-CN.md",
         "dictionaries/stackable-container-package-fields.zh-CN.md",
         "indexes/stackable-container-package-boundary.zh-CN.md",
-        "indexes/stackable-container-package-source-position-reinforcement.zh-CN.md",
         "dictionaries/stackable-fields.zh-CN.md"
       ]
     },
@@ -2343,7 +1704,6 @@
         "task-cards/stackable-container-package-readonly-audit.zh-CN.md",
         "dictionaries/stackable-container-package-fields.zh-CN.md",
         "indexes/stackable-container-package-boundary.zh-CN.md",
-        "indexes/stackable-container-package-source-position-reinforcement.zh-CN.md",
         "dictionaries/stackable-fields.zh-CN.md"
       ]
     },
@@ -2354,7 +1714,6 @@
         "task-cards/stackable-container-package-readonly-audit.zh-CN.md",
         "dictionaries/stackable-container-package-fields.zh-CN.md",
         "indexes/stackable-container-package-boundary.zh-CN.md",
-        "indexes/stackable-container-package-source-position-reinforcement.zh-CN.md",
         "dictionaries/stackable-fields.zh-CN.md"
       ]
     },
@@ -2365,7 +1724,6 @@
         "task-cards/stackable-container-package-readonly-audit.zh-CN.md",
         "dictionaries/stackable-container-package-fields.zh-CN.md",
         "indexes/stackable-container-package-boundary.zh-CN.md",
-        "indexes/stackable-container-package-source-position-reinforcement.zh-CN.md",
         "dictionaries/stackable-fields.zh-CN.md"
       ]
     },
@@ -2376,7 +1734,6 @@
         "task-cards/stackable-container-package-readonly-audit.zh-CN.md",
         "dictionaries/stackable-container-package-fields.zh-CN.md",
         "indexes/stackable-container-package-boundary.zh-CN.md",
-        "indexes/stackable-container-package-source-position-reinforcement.zh-CN.md",
         "dictionaries/stackable-fields.zh-CN.md"
       ]
     },
@@ -2387,7 +1744,6 @@
         "task-cards/stackable-container-package-readonly-audit.zh-CN.md",
         "dictionaries/stackable-container-package-fields.zh-CN.md",
         "indexes/stackable-container-package-boundary.zh-CN.md",
-        "indexes/stackable-container-package-source-position-reinforcement.zh-CN.md",
         "dictionaries/stackable-fields.zh-CN.md"
       ]
     },
@@ -2398,7 +1754,6 @@
         "task-cards/creature-pet-readonly-audit.zh-CN.md",
         "dictionaries/creature-pet-fields.zh-CN.md",
         "indexes/creature-pet-boundary.zh-CN.md",
-        "indexes/creature-pet-source-position-reinforcement.zh-CN.md",
         "indexes/stackable-container-package-boundary.zh-CN.md"
       ]
     },
@@ -2409,7 +1764,6 @@
         "task-cards/creature-pet-readonly-audit.zh-CN.md",
         "dictionaries/creature-pet-fields.zh-CN.md",
         "indexes/creature-pet-boundary.zh-CN.md",
-        "indexes/creature-pet-source-position-reinforcement.zh-CN.md",
         "indexes/stackable-container-package-boundary.zh-CN.md"
       ]
     },
@@ -2420,7 +1774,6 @@
         "task-cards/creature-pet-readonly-audit.zh-CN.md",
         "dictionaries/creature-pet-fields.zh-CN.md",
         "indexes/creature-pet-boundary.zh-CN.md",
-        "indexes/creature-pet-source-position-reinforcement.zh-CN.md",
         "indexes/stackable-container-package-boundary.zh-CN.md"
       ]
     },
@@ -2431,7 +1784,6 @@
         "task-cards/creature-pet-readonly-audit.zh-CN.md",
         "dictionaries/creature-pet-fields.zh-CN.md",
         "indexes/creature-pet-boundary.zh-CN.md",
-        "indexes/creature-pet-source-position-reinforcement.zh-CN.md",
         "indexes/stackable-container-package-boundary.zh-CN.md"
       ]
     },
@@ -2442,7 +1794,6 @@
         "task-cards/creature-pet-readonly-audit.zh-CN.md",
         "dictionaries/creature-pet-fields.zh-CN.md",
         "indexes/creature-pet-boundary.zh-CN.md",
-        "indexes/creature-pet-source-position-reinforcement.zh-CN.md",
         "indexes/stackable-container-package-boundary.zh-CN.md"
       ]
     },
@@ -2453,7 +1804,6 @@
         "task-cards/creature-pet-readonly-audit.zh-CN.md",
         "dictionaries/creature-pet-fields.zh-CN.md",
         "indexes/creature-pet-boundary.zh-CN.md",
-        "indexes/creature-pet-source-position-reinforcement.zh-CN.md",
         "indexes/stackable-container-package-boundary.zh-CN.md"
       ]
     },
@@ -2464,7 +1814,6 @@
         "task-cards/creature-pet-readonly-audit.zh-CN.md",
         "dictionaries/creature-pet-fields.zh-CN.md",
         "indexes/creature-pet-boundary.zh-CN.md",
-        "indexes/creature-pet-source-position-reinforcement.zh-CN.md",
         "indexes/stackable-container-package-boundary.zh-CN.md"
       ]
     },
@@ -2475,7 +1824,6 @@
         "task-cards/creature-pet-readonly-audit.zh-CN.md",
         "dictionaries/creature-pet-fields.zh-CN.md",
         "indexes/creature-pet-boundary.zh-CN.md",
-        "indexes/creature-pet-source-position-reinforcement.zh-CN.md",
         "indexes/stackable-container-package-boundary.zh-CN.md"
       ]
     },
@@ -2486,7 +1834,6 @@
         "task-cards/creature-pet-readonly-audit.zh-CN.md",
         "dictionaries/creature-pet-fields.zh-CN.md",
         "indexes/creature-pet-boundary.zh-CN.md",
-        "indexes/creature-pet-source-position-reinforcement.zh-CN.md",
         "indexes/stackable-container-package-boundary.zh-CN.md"
       ]
     },
@@ -2497,7 +1844,6 @@
         "task-cards/creature-pet-readonly-audit.zh-CN.md",
         "dictionaries/creature-pet-fields.zh-CN.md",
         "indexes/creature-pet-boundary.zh-CN.md",
-        "indexes/creature-pet-source-position-reinforcement.zh-CN.md",
         "indexes/stackable-container-package-boundary.zh-CN.md"
       ]
     },
@@ -2508,8 +1854,6 @@
         "task-cards/stackable-container-package-readonly-audit.zh-CN.md",
         "dictionaries/stackable-container-package-fields.zh-CN.md",
         "indexes/stackable-container-package-boundary.zh-CN.md",
-        "indexes/stackable-container-package-source-position-reinforcement.zh-CN.md",
-        "indexes/creature-pet-source-position-reinforcement.zh-CN.md",
         "dictionaries/stackable-fields.zh-CN.md"
       ]
     },
@@ -2520,7 +1864,6 @@
         "task-cards/audio-soundpacks-music-readonly-audit.zh-CN.md",
         "dictionaries/audio-soundpacks-music-fields.zh-CN.md",
         "indexes/audio-soundpacks-music-boundary.zh-CN.md",
-        "indexes/audio-soundpacks-source-position-reinforcement.zh-CN.md",
         "encyclopedia/pvf-file-types/audio-soundpacks-music.zh-CN.md"
       ]
     },
@@ -2531,7 +1874,6 @@
         "task-cards/audio-soundpacks-music-readonly-audit.zh-CN.md",
         "dictionaries/audio-soundpacks-music-fields.zh-CN.md",
         "indexes/audio-soundpacks-music-boundary.zh-CN.md",
-        "indexes/audio-soundpacks-source-position-reinforcement.zh-CN.md",
         "encyclopedia/pvf-file-types/audio-soundpacks-music.zh-CN.md",
         "indexes/client-assets-imagepacks-ui-boundary.zh-CN.md"
       ]
@@ -2541,10 +1883,8 @@
       "entries": [
         "safety/README.zh-CN.md",
         "indexes/audio-soundpacks-music-boundary.zh-CN.md",
-        "indexes/audio-soundpacks-source-position-reinforcement.zh-CN.md",
         "dictionaries/audio-soundpacks-music-fields.zh-CN.md",
-        "indexes/dungeon-map-spawn-entry-clear-resource-boundary.zh-CN.md",
-        "indexes/dungeon-map-source-position-reinforcement.zh-CN.md"
+        "indexes/dungeon-map-spawn-entry-clear-resource-boundary.zh-CN.md"
       ]
     },
     "avatar-emblem-socket-clone-aura-fashion-package": {
@@ -2885,7 +2225,6 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/completed-mainlines-status.zh-CN.md",
         "task-cards/content-lifecycle-dungeon-full-lifecycle-readonly-audit.zh-CN.md",
         "dictionaries/content-lifecycle-dungeon-full-lifecycle-fields.zh-CN.md",
         "indexes/content-lifecycle-dungeon-full-lifecycle-boundary.zh-CN.md",
@@ -3035,13 +2374,10 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/completed-mainlines-status.zh-CN.md",
         "task-cards/attackinfo-payload-damage-element-activestatus-readonly-audit.zh-CN.md",
         "dictionaries/attackinfo-payload-damage-element-activestatus-fields.zh-CN.md",
         "indexes/attackinfo-payload-damage-element-activestatus-boundary.zh-CN.md",
         "dictionaries/attackinfo-atk-fields.zh-CN.md",
-        "indexes/attackinfo-status-pvp-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-block-inventory.zh-CN.md",
         "indexes/attackinfo-atk-observed-tag-router.zh-CN.md",
         "indexes/attackinfo-atk-backtick-token-router.zh-CN.md",
         "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md"
@@ -3051,13 +2387,10 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/completed-mainlines-status.zh-CN.md",
         "task-cards/attackinfo-payload-damage-element-activestatus-readonly-audit.zh-CN.md",
         "dictionaries/attackinfo-payload-damage-element-activestatus-fields.zh-CN.md",
         "indexes/attackinfo-payload-damage-element-activestatus-boundary.zh-CN.md",
         "dictionaries/attackinfo-atk-fields.zh-CN.md",
-        "indexes/attackinfo-status-pvp-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-block-inventory.zh-CN.md",
         "indexes/attackinfo-atk-observed-tag-router.zh-CN.md",
         "indexes/attackinfo-atk-backtick-token-router.zh-CN.md",
         "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md"
@@ -3067,13 +2400,10 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/completed-mainlines-status.zh-CN.md",
         "task-cards/attackinfo-payload-damage-element-activestatus-readonly-audit.zh-CN.md",
         "dictionaries/attackinfo-payload-damage-element-activestatus-fields.zh-CN.md",
         "indexes/attackinfo-payload-damage-element-activestatus-boundary.zh-CN.md",
         "dictionaries/attackinfo-atk-fields.zh-CN.md",
-        "indexes/attackinfo-status-pvp-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-block-inventory.zh-CN.md",
         "indexes/attackinfo-atk-observed-tag-router.zh-CN.md",
         "indexes/attackinfo-atk-backtick-token-router.zh-CN.md",
         "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md"
@@ -3083,13 +2413,10 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/completed-mainlines-status.zh-CN.md",
         "task-cards/attackinfo-payload-damage-element-activestatus-readonly-audit.zh-CN.md",
         "dictionaries/attackinfo-payload-damage-element-activestatus-fields.zh-CN.md",
         "indexes/attackinfo-payload-damage-element-activestatus-boundary.zh-CN.md",
         "dictionaries/attackinfo-atk-fields.zh-CN.md",
-        "indexes/attackinfo-status-pvp-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-block-inventory.zh-CN.md",
         "indexes/attackinfo-atk-observed-tag-router.zh-CN.md",
         "indexes/attackinfo-atk-backtick-token-router.zh-CN.md",
         "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md"
@@ -3099,13 +2426,10 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/completed-mainlines-status.zh-CN.md",
         "task-cards/attackinfo-payload-damage-element-activestatus-readonly-audit.zh-CN.md",
         "dictionaries/attackinfo-payload-damage-element-activestatus-fields.zh-CN.md",
         "indexes/attackinfo-payload-damage-element-activestatus-boundary.zh-CN.md",
         "dictionaries/attackinfo-atk-fields.zh-CN.md",
-        "indexes/attackinfo-status-pvp-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-block-inventory.zh-CN.md",
         "indexes/attackinfo-atk-observed-tag-router.zh-CN.md",
         "indexes/attackinfo-atk-backtick-token-router.zh-CN.md",
         "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md"
@@ -3115,13 +2439,10 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/completed-mainlines-status.zh-CN.md",
         "task-cards/attackinfo-payload-damage-element-activestatus-readonly-audit.zh-CN.md",
         "dictionaries/attackinfo-payload-damage-element-activestatus-fields.zh-CN.md",
         "indexes/attackinfo-payload-damage-element-activestatus-boundary.zh-CN.md",
         "dictionaries/attackinfo-atk-fields.zh-CN.md",
-        "indexes/attackinfo-status-pvp-ledger.zh-CN.md",
-        "indexes/attackinfo-pvp-block-inventory.zh-CN.md",
         "indexes/attackinfo-atk-observed-tag-router.zh-CN.md",
         "indexes/attackinfo-atk-backtick-token-router.zh-CN.md",
         "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md"
@@ -3140,14 +2461,12 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/completed-mainlines-status.zh-CN.md",
         "task-cards/actionobject-mapobject-breakable-spc-readonly-audit.zh-CN.md",
         "dictionaries/actionobject-mapobject-breakable-spc-fields.zh-CN.md",
         "indexes/actionobject-mapobject-breakable-spc-boundary.zh-CN.md",
         "dictionaries/passiveobject-obj-fields.zh-CN.md",
         "dictionaries/passiveobject-action-fields.zh-CN.md",
         "dictionaries/attackinfo-atk-fields.zh-CN.md",
-        "indexes/passiveobject-nonmonster-sample-chain.zh-CN.md",
         "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md"
       ]
     },
@@ -3155,14 +2474,12 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/completed-mainlines-status.zh-CN.md",
         "task-cards/actionobject-mapobject-breakable-spc-readonly-audit.zh-CN.md",
         "dictionaries/actionobject-mapobject-breakable-spc-fields.zh-CN.md",
         "indexes/actionobject-mapobject-breakable-spc-boundary.zh-CN.md",
         "dictionaries/passiveobject-obj-fields.zh-CN.md",
         "dictionaries/passiveobject-action-fields.zh-CN.md",
         "dictionaries/attackinfo-atk-fields.zh-CN.md",
-        "indexes/passiveobject-nonmonster-sample-chain.zh-CN.md",
         "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md"
       ]
     },
@@ -3170,14 +2487,12 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/completed-mainlines-status.zh-CN.md",
         "task-cards/actionobject-mapobject-breakable-spc-readonly-audit.zh-CN.md",
         "dictionaries/actionobject-mapobject-breakable-spc-fields.zh-CN.md",
         "indexes/actionobject-mapobject-breakable-spc-boundary.zh-CN.md",
         "dictionaries/passiveobject-obj-fields.zh-CN.md",
         "dictionaries/passiveobject-action-fields.zh-CN.md",
         "dictionaries/attackinfo-atk-fields.zh-CN.md",
-        "indexes/passiveobject-nonmonster-sample-chain.zh-CN.md",
         "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md"
       ]
     },
@@ -3185,14 +2500,12 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/completed-mainlines-status.zh-CN.md",
         "task-cards/actionobject-mapobject-breakable-spc-readonly-audit.zh-CN.md",
         "dictionaries/actionobject-mapobject-breakable-spc-fields.zh-CN.md",
         "indexes/actionobject-mapobject-breakable-spc-boundary.zh-CN.md",
         "dictionaries/passiveobject-obj-fields.zh-CN.md",
         "dictionaries/passiveobject-action-fields.zh-CN.md",
         "dictionaries/attackinfo-atk-fields.zh-CN.md",
-        "indexes/passiveobject-nonmonster-sample-chain.zh-CN.md",
         "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md"
       ]
     },
@@ -3200,14 +2513,12 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "indexes/completed-mainlines-status.zh-CN.md",
         "task-cards/actionobject-mapobject-breakable-spc-readonly-audit.zh-CN.md",
         "dictionaries/actionobject-mapobject-breakable-spc-fields.zh-CN.md",
         "indexes/actionobject-mapobject-breakable-spc-boundary.zh-CN.md",
         "dictionaries/passiveobject-obj-fields.zh-CN.md",
         "dictionaries/passiveobject-action-fields.zh-CN.md",
         "dictionaries/attackinfo-atk-fields.zh-CN.md",
-        "indexes/passiveobject-nonmonster-sample-chain.zh-CN.md",
         "indexes/passiveobject-attackinfo-hitbox-compact-router.zh-CN.md"
       ]
     },

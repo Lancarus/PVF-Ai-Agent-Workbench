@@ -41,7 +41,6 @@
 - 不要把裸数字当全局 ID。
 - 不要把 `region/region.lst` 条目数当 region ID 最大值。
 - 不要把 `worldmap/worldmap.lst` 条目数当 worldmap ID 或 dungeon ID 最大值。
-- 不要用辅助对照 PVF 的新增 town ID 补主目标缺号。
 - 不要把未注册 `.rgn/.twn/.wdm` 文件写成可用入口。
 - 不要把 `.ui` 文件存在写成客户端 UI 正常。
 

@@ -43,7 +43,6 @@
 - 不要把 `[mail title]`、`[mail content]` 写成客户端文本正常显示。
 - 不要把 `postal`、`inven`、`equip` 写成实际投递位置成功。
 - 不要把同一个裸数字跨文件、跨 registry 直接复用。
-- 不要用辅助对照更大的 registry 或更多活动文件补主目标事实。
 
 ## 必须验证的地方
 

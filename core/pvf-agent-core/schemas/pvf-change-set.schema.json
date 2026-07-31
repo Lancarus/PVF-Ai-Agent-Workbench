@@ -61,7 +61,14 @@
       "type": "array",
       "minItems": 1,
       "items": {
-        "$ref": "#/$defs/change"
+        "oneOf": [
+          {
+            "$ref": "#/$defs/replaceTextChange"
+          },
+          {
+            "$ref": "#/$defs/writeFileChange"
+          }
+        ]
       }
     },
     "safety": {
@@ -90,7 +97,7 @@
     }
   },
   "$defs": {
-    "change": {
+    "replaceTextChange": {
       "type": "object",
       "required": [
         "id",
@@ -122,6 +129,86 @@
         "replaceAll": {
           "type": "boolean",
           "default": false
+        },
+        "pvfEncoding": {
+          "enum": [
+            "Tw",
+            "Cn",
+            "Kr",
+            "Jp",
+            "Utf8",
+            "Unicode"
+          ]
+        },
+        "rationale": {
+          "type": "string"
+        },
+        "requiredResolvedIds": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "lstPath",
+              "id",
+              "expectedPvfPath"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "lstPath": {
+                "type": "string"
+              },
+              "id": {
+                "type": "integer"
+              },
+              "expectedPvfPath": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "writeFileChange": {
+      "type": "object",
+      "required": [
+        "id",
+        "type",
+        "pvfPath",
+        "sourceFile",
+        "sourceSha256",
+        "expectAbsent"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9._-]+$"
+        },
+        "type": {
+          "const": "write-file"
+        },
+        "pvfPath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceFile": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceSha256": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{64}$"
+        },
+        "expectAbsent": {
+          "const": true
+        },
+        "compileScript": {
+          "type": "boolean",
+          "default": true
+        },
+        "compileBinaryAni": {
+          "type": "boolean",
+          "default": true
         },
         "pvfEncoding": {
           "enum": [

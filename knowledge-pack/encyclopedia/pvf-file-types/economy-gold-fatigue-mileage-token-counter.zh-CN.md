@@ -6,7 +6,7 @@
 
 ## 是什么
 
-本主线不是单一经济系统，而是一组跨 `etc/`、`event/`、`stackable/`、`itemshop/`、`equipment/` 和文本表的静态入口：
+本主题不是单一经济系统，而是一组跨 `etc/`、`event/`、`stackable/`、`itemshop/`、`equipment/` 和文本表的静态入口：
 
 - `etc/goldlimitbylevel.etc`：等级到金币上限的静态表。
 - `etc/mileageshop.etc`：独立里程商店表，含 coin、item、premium、creature 等候选块。
@@ -48,7 +48,6 @@
 - 不要把 `token`、`point`、`coin`、`fatigue`、`count`、`reset` 字段写成账号状态或数据库计数成功。
 - 不要把 `[db table]` 写成数据库表真实存在。
 - 不要把 `[condition]` 的裸数字硬命名为通用列义。
-- 不要把高等级金币上限、限制物品行数或活动奖励从辅助对照复制到主目标。
 
 ## 必须验证的地方
 

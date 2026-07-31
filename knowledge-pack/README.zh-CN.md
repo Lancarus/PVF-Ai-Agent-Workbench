@@ -1,8 +1,8 @@
 # knowledge-pack
 
-这里是 PVF-Agent-Workbench 的纯净知识包。它只放 Agent 执行任务需要的结论、词典、流程和安全规则。
+这里是 PVF-Agent-Workbench 的纯净知识包。它只放 Agent 执行任务需要的结论、词典、流程、安全规则，以及已经去除来源路径和正文的紧凑事实目录。
 
-它不是 `DNFPVFwork` 的备份，也不是来源资料库。来源、实验报告、旧路径、社区教程、源码参考、候选报告和争议追查材料不进入纯净工作台；需要验收或追查时回到原研究工作区处理。
+它不是原始资料的备份。来源正文、实验报告、旧路径、社区教程、源码参考、候选报告和争议追查材料不进入纯净工作台。普通任务不应寻找或要求额外资料目录。
 
 ## 默认入口
 
@@ -12,14 +12,16 @@ Agent 应先读：
 2. `indexes/knowledge-index.json`
 3. 路由命中的 `encyclopedia/`、`dictionaries/`、`workflows/` 或 `task-cards/` 文件
 
-`indexes/knowledge-index.json` 是轻量根路由。找不到旧 topic 时，再按需打开 `indexes/knowledge-topic-routes.full.json`；不要默认读取完整 topic 路由或深账本。
+`indexes/knowledge-index.json` 是轻量根路由。找不到旧 topic 时，再按需打开 `indexes/knowledge-topic-routes.full.json`；不要默认读取完整 topic 路由或深索引。
 
 如果某个主题没有命中路由，先做只读定位，不要回退到来源资料或旧报告。
+
+涉及全包质检、双 PVF 语义对比、结果集、LST 登记、独立掉落整理、物品来源、技能树布局或原子内容生成时，先读 `indexes/pvf-productized-capability-router.zh-CN.md`。它把完整产品能力分为现有覆盖、新增高价值路线、只读审计边界和工作台外四类；普通任务仍不需要原 GUI 或额外资料目录。
 
 ## 子目录
 
 - `safety/`：只放硬边界。默认只读、不覆盖源 PVF、写出必须备份和读回。
-- `indexes/`：只放路由 JSON 和少量入口说明，不放证据链。
+- `indexes/`：放路由、结构化参数事实和内置 NUT/tag/任务书签紧凑目录；不放来源正文或证据链。
 - `encyclopedia/`：纯百科，说明某类 PVF 文件或系统是什么。
 - `dictionaries/`：纯词典，说明标签、字段、词条、常见值是什么意思。
 - `workflows/`：纯流程，说明某类任务怎么做。
@@ -33,7 +35,7 @@ Agent 应先读：
 - `需验证`：只能当任务线索；必须查目标 PVF、客户端或实机后才能下结论。
 - `禁用`：已知容易错、过时、误导，不能照做。
 
-不要在正文里写来源报告、旧实验路径或证据链。结论是否可靠由维护者在研究工作区完成验收后再迁入。
+不要在正文里写来源报告、旧实验路径或证据链。结论必须在进入正文前完成验收；普通任务只使用迁入后的结论，并继续核验目标 PVF。
 
 ## 禁止进入
 

@@ -2,7 +2,6 @@
 
 状态：默认可用
 
-本文只记录主目标 PVF 只读观察后可作为 Workbench 默认知识的字段边界。资料库线索用于定向查找，不能绕过主目标观察。
 
 ## Registry
 
@@ -40,7 +39,7 @@
 | `[dungeon what must be cleared]` | 城镇或区域相关的前置清理/开放条件线索。 | 静态存在不证明服务端放行。 |
 | `[only server parsing dungeon what must be cleared]` | 服务端解析倾向的前置清理条件线索。 | 不能用只读 PVF 证明服务端实际执行结果。 |
 | `[limit level]` | 城镇或入口层级的等级限制线索。 | 静态等级不证明实机允许进入。 |
-| `[area]` | 城镇区域块。主目标样本中第一项是 area 编号，第二项是 `map/` 下直接地图路径。 | 不要把第二项当裸 map ID；仍需确认目标地图文件存在。 |
+| `[area]` | 需在当前目标 PVF 中只读确认 | 不要把第二项当裸 map ID；仍需确认目标地图文件存在。 |
 | `` `[normal]` `` | 普通区域类型。 | 不证明区域可走、NPC 可交互。 |
 | `` `[gate]` `` | 城镇间普通 gate 类型，后续常见为坐标/跳转参数。 | 不证明实机传送成功。 |
 | `` `[dungeon gate]` `` | 副本入口类型，后续数字按 `worldmap/worldmap.lst` 解析。 | 只证明入口到 worldmap 的静态引用。 |
@@ -76,12 +75,10 @@
 | 标签或结构 | 观察到的作用 | 风险 |
 | --- | --- | --- |
 | `background image` / image controls | worldmap UI 背景资源。 | 不证明客户端资源存在或绘制正常。 |
-| `balloon` controls | dungeon 按钮或气泡控件；主目标样本中末尾数字可对应 dungeon ID。 | 必须结合 `.wdm [dungeon]` 和 `dungeon/dungeon.lst`，不能单看控件数字。 |
+| `balloon` controls | 需在当前目标 PVF 中只读确认 | 必须结合 `.wdm [dungeon]` 和 `dungeon/dungeon.lst`，不能单看控件数字。 |
 | `switchbox` 等控件 | UI 状态/条件/显示控制线索。 | 不强行解释所有列，不证明 UI 逻辑正常。 |
 
 ## 关键边界
 
 - `7` 在不同 registry 中可以分别是 town、worldmap、dungeon 等不同对象。
-- registry `entryCount` 不是合法 ID 上限；worldmap `100`、dungeon `11000` 这类高 ID 在主目标样本中可合法解析。
 - 未注册文件存在不等于可用；注册文件存在也不等于实机加载成功。
-- 辅助对照只提示形态扩展，不覆盖主目标结论。

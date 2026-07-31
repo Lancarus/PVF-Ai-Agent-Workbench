@@ -2,50 +2,9 @@
 
 const fs = require("fs");
 const path = require("path");
+const { loadPvfBackend } = require("./native-backend");
 
-function findBundledNativeBackend() {
-  if (process.env.PVF_XPILOT_NATIVE) {
-    return process.env.PVF_XPILOT_NATIVE;
-  }
-  const localCandidates = [
-    path.join(__dirname, "native", "pvf_rust_core.node"),
-    path.join(__dirname, "pvf_rust_core.node"),
-  ];
-  for (const candidate of localCandidates) {
-    if (fs.existsSync(candidate)) {
-      return candidate;
-    }
-  }
-  const homes = [process.env.USERPROFILE, process.env.HOME].filter(Boolean);
-  const extensionRoots = [];
-  for (const home of homes) {
-    extensionRoots.push(path.join(home, ".vscode", "extensions"));
-    extensionRoots.push(path.join(home, ".vscode-insiders", "extensions"));
-  }
-  const candidates = [];
-  for (const root of extensionRoots) {
-    if (!fs.existsSync(root)) {
-      continue;
-    }
-    for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
-      if (!entry.isDirectory() || !/^dof\.pvf-x-pilot-/i.test(entry.name)) {
-        continue;
-      }
-      const nativePath = path.join(root, entry.name, "dist", "native", "pvf_rust_core.node");
-      if (fs.existsSync(nativePath)) {
-        candidates.push(nativePath);
-      }
-    }
-  }
-  candidates.sort((a, b) => fs.statSync(b).mtimeMs - fs.statSync(a).mtimeMs);
-  if (!candidates.length) {
-    throw new Error("PVF X-Pilot native backend was not found. Set PVF_XPILOT_NATIVE to pvf_rust_core.node.");
-  }
-  return candidates[0];
-}
-
-const nativePath = findBundledNativeBackend();
-const native = require(nativePath);
+const native = loadPvfBackend().api;
 
 const ROOTS = [
   "aicharacter",

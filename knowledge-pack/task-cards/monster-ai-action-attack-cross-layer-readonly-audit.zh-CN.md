@@ -2,7 +2,7 @@
 
 状态：默认可用
 
-用途：当问题涉及怪物行为、怪物攻击、怪物技能、召唤对象、帧级攻击盒、出生或掉落时，本入口把既有 Monster、AI、Action、AttackInfo、PassiveObject 和 Hitbox 账本串成一条只读核查路线。它不重开 Monster 静态覆盖主线，也不证明实机行为。
+用途：当问题涉及怪物行为、怪物攻击、怪物技能、召唤对象、帧级攻击盒、出生或掉落时，本入口把既有 Monster、AI、Action、AttackInfo、PassiveObject 和 Hitbox 索引串成一条只读核查路线。它不重开 Monster 静态覆盖主线，也不证明实机行为。
 
 ## 先读
 
@@ -25,8 +25,7 @@
 6. `.mob [attack info]`、`.obj [attack info]` 或 `.act` 内攻击信息继续闭合到 `.atk`；`.atk` 只记录攻击 payload，不替代 hitbox。
 7. `.act [BASE ANI]`、`[SUB ANI]` 和 `.obj` 直连动画继续闭合到 `.ani`；二进制 ANI 要反编译后才能记录 `[ATTACK BOX]`、`[DAMAGE BOX]`。
 8. 遇到 `[CREATE PASSIVEOBJECT]`、`[CREATE PASSIVEOBJECT CIRCLE]` 或对象创建候选，逐个解析静态数字 ID，并继续读 `.obj/.act/.atk/.ani` 到链路收敛。
-9. 遇到 map/dungeon 出生、`.mob` 掉落或全局掉落字段，转到对应已封存边界复核，不在本卡内扩展概率或清算结论。
-10. 辅助对照 PVF 只能记录 registry 总量、行号、字段值或文本形态差异；不得覆盖主目标事实。
+9. 遇到 map/dungeon 出生、`.mob` 掉落或全局掉落字段，转到对应已整理边界复核，不在本卡内扩展概率或清算结论。
 11. 不写 PVF，不改客户端，不声明 AI 正常、召唤成功、命中正确、伤害正确、掉率一致、UI 正常、音画资源完整或服务端放行。
 
 ## 验收
@@ -37,7 +36,6 @@
 - 空槽、缺失引用、registry 未命中和反编译失败分别记录，没有互相替代。
 - `.atk` payload 与 `.ani` 帧级 hitbox 没有互相替代。
 - 创建 passiveobject 的下游链路已解析到 `.obj`，并按需要继续到 action、attackinfo 和 animation。
-- 辅助对照只写差异提示，不提升为主目标结论。
 - 全程只读，没有生成输出 PVF，没有修改客户端。
 
 ## 运行风险

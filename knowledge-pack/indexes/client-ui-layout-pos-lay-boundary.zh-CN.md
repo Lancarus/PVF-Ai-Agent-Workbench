@@ -1,23 +1,22 @@
 # Client UI Layout / `.ui` / `.pos` / `.lay` 静态边界索引
 
-状态：已完成静态只读封存
+状态：需验证
 
 用途：作为 UI 布局语义的短入口。需要判断 UI 字段、坐标、控件、`.pos` 或 `.lay` 时，先读本文。
 
 ## 覆盖结论
 
-| 主题 | 主目标结论 | 边界 |
+| 主题 | 目标核验 | 边界 |
 | --- | --- | --- |
-| `.ui` 文件族 | 主目标 301 个；脚本型 UI 描述。 | 不证明客户端资源完整、窗口显示、按钮可点或事件生效。 |
-| `.pos` 文件族 | 主目标 0 个。 | 不能把辅助对照 `.pos` 写成主目标事实。 |
-| `.lay` 文件族 | 主目标 10 个，均在 `equipment/character/`。 | `%s` 模板不是具体 ANI 路径；不证明动作播放或层级显示正常。 |
-| worldmap UI | `.wdm [ui path]` 指向 `worldmap/ui/*.ui`；`.ui` 中有 image、balloon、switchbox、common action。 | dungeon 数字按 `dungeon/dungeon.lst`；按钮可点、入场、资源完整需实机/客户端验证。 |
-| 普通窗口 UI | `ui/event/bingo/bingopopupwindow.ui` 可见 `[window]`、对齐、距离、大小、标题、控件集合、父子关系、选项块。 | 活动开启、领取礼物、URL、按钮响应和服务端奖励都不能静态证明。 |
-| 背包/列表 UI | `ui/inventory/inventory_item.ui` 可见 tab、radio、grid、tooltip、子 UI 路径。 | 背包容量、分页、拖拽、tooltip 显示和物品移动不能静态证明。 |
-| gauge/tree | `ui/characterinfowindow/favorinfo.ui` 可见 tree、gauge。 | 不证明数值刷新或客户端绘制。 |
-| 技能树坐标 | `clientonly/skilltree/swordman_sp.co` 可见 `[icon pos]` 和 `[next skill]`。 | 不证明技能学习、SP/TP 足够、UI 点击或服务端放行。 |
+| `.ui` 文件族 | 需在当前目标 PVF 中只读确认 | 不证明客户端资源完整、窗口显示、按钮可点或事件生效。 |
+| `.pos` 文件族 | 需在当前目标 PVF 中只读确认 | 跨版本候选；需在当前目标 PVF 中复核 |
+| `.lay` 文件族 | 需在当前目标 PVF 中只读确认 | `%s` 模板不是具体 ANI 路径；不证明动作播放或层级显示正常。 |
+| worldmap UI | 需在当前目标 PVF 中只读确认 | dungeon 数字按 `dungeon/dungeon.lst`；按钮可点、入场、资源完整需实机/客户端验证。 |
+| 普通窗口 UI | 需在当前目标 PVF 中只读确认 | 活动开启、领取礼物、URL、按钮响应和服务端奖励都不能静态证明。 |
+| 背包/列表 UI | 需在当前目标 PVF 中只读确认 | 背包容量、分页、拖拽、tooltip 显示和物品移动不能静态证明。 |
+| gauge/tree | 需在当前目标 PVF 中只读确认 | 不证明数值刷新或客户端绘制。 |
+| 技能树坐标 | 需在当前目标 PVF 中只读确认 | 不证明技能学习、SP/TP 足够、UI 点击或服务端放行。 |
 
-## 主目标可复核样本
 
 | 复核目的 | 样本 |
 | --- | --- |
@@ -34,16 +33,16 @@
 
 ## 定向搜索结果
 
-| 搜索范围 | 关键词 | 主目标命中 |
+| 搜索范围 | 关键词 | 目标核验 |
 | --- | --- | --- |
-| `ui/` | `[window]` | 119 |
-| `ui/` | `[parent]` | 50 |
-| `ui/` | `[int option]` | 21 |
-| `ui/` | `[user option]` | 13 |
-| `ui/` | `` `[grid]` `` | 11 |
-| `ui/` | `` `[gauge]` `` | 16 |
-| `ui/` | `[window pos]` | 0 |
-| `worldmap/ui/` | `[window]` | 0 |
+| `ui/` | `[window]` | 需在当前目标 PVF 中只读确认 |
+| `ui/` | `[parent]` | 需在当前目标 PVF 中只读确认 |
+| `ui/` | `[int option]` | 需在当前目标 PVF 中只读确认 |
+| `ui/` | `[user option]` | 需在当前目标 PVF 中只读确认 |
+| `ui/` | `` `[grid]` `` | 需在当前目标 PVF 中只读确认 |
+| `ui/` | `` `[gauge]` `` | 需在当前目标 PVF 中只读确认 |
+| `ui/` | `[window pos]` | 需在当前目标 PVF 中只读确认 |
+| `worldmap/ui/` | `[window]` | 需在当前目标 PVF 中只读确认 |
 
 ## ID 与数值边界
 
@@ -56,13 +55,13 @@
 
 ## 辅助差异提示
 
-| 文件族 / 样本 | 辅助对照提示 | 主目标结论 |
+| 文件族 / 样本 | 跨版本候选；需在当前目标 PVF 中复核 | 目标核验 |
 | --- | --- | --- |
-| `.ui` | 辅助 346 个。 | 主目标仍以 301 个为准。 |
-| `.pos` | 辅助 7 个，集中在 `ui/japan/...`。样本含 `[MAIN]`、`[TILETYPE]`、`[POS]`、`[UNITNUMBER]`、`[UIDATA]`。 | 主目标 `.pos` 为 0。 |
-| `.lay` | 辅助 12 个，多出 `atpriest`、`atswordman` 等角色。 | 主目标仍为 10 个。 |
-| `worldmap/ui/granfloris.ui` | 同名结构相近，文件长度略不同。 | 只能提示版本差异。 |
-| `ui/amplify/amplifyselectwindow.ui` | 同名结构相近，但文本写法有差异。 | 不覆盖主目标 StringLink 样文本观察。 |
+| `.ui` | 辅助 346 个。 | 需在当前目标 PVF 中只读确认 |
+| `.pos` | 辅助 7 个，集中在 `ui/japan/...`。样本含 `[MAIN]`、`[TILETYPE]`、`[POS]`、`[UNITNUMBER]`、`[UIDATA]`。 | 需在当前目标 PVF 中只读确认 |
+| `.lay` | 辅助 12 个，多出 `atpriest`、`atswordman` 等角色。 | 需在当前目标 PVF 中只读确认 |
+| `worldmap/ui/granfloris.ui` | 同名结构相近，文件长度略不同。 | 需在当前目标 PVF 中只读确认 |
+| `ui/amplify/amplifyselectwindow.ui` | 同名结构相近，但文本写法有差异。 | 需在当前目标 PVF 中只读确认 |
 
 ## 使用建议
 

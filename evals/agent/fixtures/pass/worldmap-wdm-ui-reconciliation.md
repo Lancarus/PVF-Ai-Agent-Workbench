@@ -1,0 +1,1 @@
+不够，不能只改 `.wdm`。要按 `worldmap.lst -> .wdm -> .ui -> dungeon.lst` 双向核对，并只识别 `IDC_WORLDMAP_BUTTON*` 或目标已确认的等价入口。按钮号、坐标、方向、资源、dungeon ID 与 `.wdm [dungeon]` 要组成原子计划；任务门控、隐藏入口或 `[in progress]` 差异先标 conditional，不能直接补齐。

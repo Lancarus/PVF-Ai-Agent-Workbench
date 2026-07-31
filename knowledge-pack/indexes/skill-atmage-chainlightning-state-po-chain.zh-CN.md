@@ -2,13 +2,11 @@
 
 状态：默认可用
 
-用途：记录当前主目标中 `ChainLightning` 的 skill registry、state/substate、load_state、24241/24242 passiveobject、目标搜索、多段命中计时和 NUT API 边界。本文只覆盖这一个技能创建的 PO 窄链，不重开 PassiveObject / AttackInfo / Hitbox 广域主线。
 
 ## 一句话结论
 
 `ChainLightning` 是男法 `skill 2` 的主动技能，运行入口注册到 `STATE_CHAINLIGHTNING = 25`；角色先走施放、持续、结束三段 substate，在持续段写入目标搜索范围、传导次数、持续时间、攻击倍率和多段次数后创建 `24241`。`24241` 负责找首目标、画闪电链和继续找下个目标；每段链路触发时再在目标身上创建 `24242`，由 `24242` 贴目标发送即时命中和 timer 多段命中。
 
-## 主目标只读闭合链
 
 | 层级 | 当前确认 | 边界 |
 | --- | --- | --- |
@@ -52,7 +50,7 @@
 | 阶段 | 当前确认 | 边界 |
 | --- | --- | --- |
 | setCustomData | 依序读取搜索范围、链接数、持续时间、攻击倍率、多段次数；清空 `nograb`、链路对象、目标对象和计数变量。 | 写包和读包顺序闭合；字段宽度不能凭名字改。 |
-| 首目标搜索 | my-control 分支用当前 PO 坐标加范围调用 `sq_FindFirstTarget`，取目标 object id；未找到时置 `nograb = 1`。 | TypeSquirrel 只能确认 API 形状；目标筛选优先级和“随机传导”描述需实机。 |
+| 首目标搜索 | my-control 分支用当前 PO 坐标加范围调用 `sq_FindFirstTarget`，取目标 object id；未找到时置 `nograb = 1`。 | 内置 NUT API 事实目录 只能确认 API 形状；目标筛选优先级和“随机传导”描述需实机。 |
 | state 10 | 每次进入 state 10 递增链路计数；若目标存在，创建 `6_lightning_dodge.ani` 的 draw-only 闪电线对象，并调用几何函数旋转/缩放到目标。 | 该线对象是 draw-only；不要仅凭线动画中的攻击盒下命中结论。 |
 | 触发目标 PO | 线动画帧号达到 `>= 2` 且该段未触发时，写入目标 id、持续时间、攻击倍率、多段次数，并从当前 PO 位置创建 `24242`。 | 实际命中由 `24242` 发送 hit packet；线段显示和命中结算不能混为一谈。 |
 | 后续目标 | 当前目标转 active object 后调用 `sq_FindNextTarget`，再把新目标 id 和当前位置压入 state 10。 | 静态只读不能证明传导是否随机、是否排除已命中目标、死亡目标如何处理。 |
@@ -89,7 +87,7 @@
 | `IRDSQRCharacter.sq_GetPassiveObject(index)` | 角色按 passiveobject index 找回已创建 PO；本桶用来查看 `24241` 的 `nograb`。 | 返回对象是否存在取决于运行时创建和销毁状态。 |
 | `sq_GetGlobalIntVector()` / `sq_IntVectorClear(...)` / `sq_IntVectorPush(...)` | PO 状态包使用全局 int vector 传 x/y/z/object id 等整数。 | 向量内容必须和 `setState` 读取顺序一致。 |
 | `IRDCollisionObject.addSetStatePacket(subState, data, state, isSend, name)` | 给 PO/碰撞对象追加 state 包；本桶 24241 用它在 state 10/11 间推进。 | 参数名里 `subState/state` 易混，按当前脚本实见解释。 |
-| `CNSquirrelPassiveObject.sq_FindFirstTarget(...)` / `sq_FindNextTarget(...)` | 在范围内找首目标/下个目标。 | TypeSquirrel 不证明随机、优先级、去重或目标过滤规则。 |
+| `CNSquirrelPassiveObject.sq_FindFirstTarget(...)` / `sq_FindNextTarget(...)` | 在范围内找首目标/下个目标。 | 内置 NUT API 事实目录 不证明随机、优先级、去重或目标过滤规则。 |
 | `sq_GetObjectId(obj)` / `sq_GetObjectByObjectId(parent, id)` | 把目标对象转成局内 id，再按 id 找回对象。 | 目标销毁、离场、死亡或同步状态下的返回需实机。 |
 | `sq_GetCNRDObjectToActiveObject(obj)` | 将基础对象转活动对象，供 `sq_FindNextTarget` 使用。 | 转换失败或非 active 目标必须按脚本防护。 |
 | `sq_CreatePooledObject(ani, autoDestroy)` / `sq_AddObject(parent, child, OBJECTTYPE_DRAWONLY, bool)` | 创建并添加 draw-only 闪电线对象。 | 视觉对象的攻击盒、层级、残留和同步需实机/资源链。 |

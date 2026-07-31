@@ -1,6 +1,6 @@
 # Client Assets / ImagePacks2 / NPK / UI / IMG 只读审计
 
-状态：已完成静态只读封存
+状态：需验证
 
 ## 什么时候读
 
@@ -12,25 +12,15 @@
 
 1. 先确认问题是资源侧，不把它误判成 PVF registry 缺失。
 2. 查 `dictionaries/client-assets-imagepacks-ui-fields.zh-CN.md` 确认 `.ui/.ani/.act/.ptl/.til/.lay/.img/.npk` 的层级。
-3. 查 `indexes/client-assets-imagepacks-ui-boundary.zh-CN.md` 看主目标静态覆盖和风险边界。
 4. 若只看到 Script.pvf 引用，不写“客户端资源完整”。
 5. 若 ImagePacks2 静态命中，只写“索引命中”，不写“实机显示正常”。
 6. 若 ImagePacks2 静态未命中，写成客户端资源风险；需要实机或专门资源包验证。
 7. 若目标是光环、时装或角色外观动画，区分图标 IMG、外观 ANI 内部 IMG、NPK 容器来源和目标客户端加载结果；任一静态命中都不能替代实机视觉。
 8. 自制整合 NPK 工具可读、条目数正确或无解析异常，只能作为打包质量线索；不能单独证明目标客户端会按预期加载并显示。
 
-## 主目标已观察
 
-- 主目标 PVF 文件总数为 402963。
-- 第一桶扫描 `.ui/.pos/.wdm/.twn/.dgn/.map/.act/.ptl/.als/.til/.lay` 共 35828 个文件，读错 0。
-- 第一桶观察到唯一外部 `.img` 引用 409 个；当前 ImagePacks2 静态命中 362 个，未命中 47 个。
-- 主目标全量 `.ani` 扫描 236510 个文件，读错 12。
-- 动画桶观察到唯一外部 `.img` 引用 19064 个；当前 ImagePacks2 静态命中 13108 个，未命中 5956 个。
 - 当前 ImagePacks2 只读索引观察到 NPK 1612 个、NPK 内 IMG 条目 80941 个、异常 NPK 容器 0 个。
 
-## 辅助对照
-
-辅助对照第一桶规模更大，观察到唯一外部 `.img` 引用 919 个，静态命中 878 个，未命中 41 个。辅助对照只提示差异，不覆盖主目标事实。
 
 ## 不要写成
 

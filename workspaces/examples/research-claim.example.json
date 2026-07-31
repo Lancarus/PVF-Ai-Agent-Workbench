@@ -1,0 +1,20 @@
+[
+  {
+    "claimId": "example.nut.api.sample",
+    "domain": "nut-api",
+    "subjectType": "function",
+    "subject": "sampleFunction",
+    "statement": "Example candidate only; verify against the declared runtime and target PVF before use.",
+    "status": "candidate",
+    "sourceConfidence": "candidate",
+    "versionApplicability": "unknown",
+    "distributionStatus": "facts-only",
+    "sourceRefs": [
+      {
+        "sourceId": "fixture-self-test",
+        "relativePath": "README.zh-CN.md",
+        "locator": "example"
+      }
+    ]
+  }
+]

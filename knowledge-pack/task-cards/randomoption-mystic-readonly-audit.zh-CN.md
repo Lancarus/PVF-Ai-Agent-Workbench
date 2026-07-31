@@ -18,16 +18,12 @@
 4. 读取固定配置文件：`randomizedoptionoverall1.etc`、`randomizedoptionoverall2.etc`、`optiongrouping.etc`、`optiongroupselection.etc`、`optionquantity.etc`、`partselection.etc`、`optionnumbering.etc`、`auctionrandomcategory.etc`、`regenerationrandomoption.etc`。
 5. 如核查装备侧随机规则，必须通过 `equipment/equipment.lst` 定位 `.equ`，再读 `[random option]`、`[no random]` 和 `[Force Result Item Rule]`。
 6. 如核查 mystic / avatar hidden option，读取 `etc/avatar_roulette/avatarfixedhiddenoptionlist.etc`；其中 ID 不能直接猜成装备或道具，必须按 registry 查。
-7. 对 `randomoptionskill.lst` 单独处理：主目标当前注册项未闭合到文件，不能当可用技能随机词条池。
-8. 辅助对照 PVF 只记录结构和规模差异，不提升为主目标事实。
 
 ## 验收
 
 - 能说清 `randomoption.lst` 到 `options/*.etc` 的闭合链路。
 - 能区分随机词条池、全局选择/数量/部位配置、装备侧标记和 avatar roulette 配置。
-- 能说明主目标 `randomoptionskill.lst` 当前是缺文件风险，而不是可用技能随机词条结论。
 - 能把装备 `[random option]` 写成装备文件内的静态规则字段，而不是随机词条池本体。
-- 能说明主目标没有 equipment `[hidden option]`，也没有 `stackable/emblem/hidden_option.stk`。
 - 能说明 mystic circle 内部 ID 当前未在常规 `.lst` registry 中闭合。
 - 不生成输出 PVF，不改客户端，不写运行产物进 knowledge-pack。
 

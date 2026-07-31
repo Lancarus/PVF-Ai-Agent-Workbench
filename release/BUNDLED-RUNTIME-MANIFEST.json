@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "1.0",
+  "generatedAt": "2026-07-31",
+  "platform": "win32",
+  "architecture": "x64",
+  "artifacts": [
+    {
+      "id": "node-runtime",
+      "path": "runtime/node/node.exe",
+      "version": "v24.18.1",
+      "bytes": 92540232,
+      "sha256": "ac51903c4c111815d52280b1fdcc8da067cbb37e2fe1a765097b85c3292c8582",
+      "upstream": "https://nodejs.org/dist/v24.18.1/node-v24.18.1-win-x64.zip",
+      "upstreamArchiveSha256": "ec56b84a7551893ab2324ebdfdc4ab974a63b4781162600b68a1293cc3e53765",
+      "licensePath": "runtime/node/LICENSE",
+      "licenseSha256": "d9c4eeda951d6d08f4aa1316b61aafcf67e6da5f79b18f8edeb56fa6abdc038c",
+      "authenticodeVerifiedAtReleaseAudit": true,
+      "publisher": "OpenJS Foundation"
+    },
+    {
+      "id": "pvf-native-backend",
+      "path": "tools/pvf-bridge/native/pvf_rust_core.node",
+      "reportedVersion": "0.1.0",
+      "bytes": 5585920,
+      "sha256": "08066afb76d45f1184470daeeadcbfb7dab6b698805f632e1cb37b132f7d1610",
+      "format": "Windows x64 Node-API addon",
+      "distributionPackage": {
+        "publisher": "DOF",
+        "id": "pvf-x-pilot",
+        "version": "2.0.11",
+        "targetPlatform": "win32-x64",
+        "sha256": "67bd0b95a8faccd6eaca3e33f69839e2e4753d6a98af2a41c06edede261a302a"
+      },
+      "licensePath": "docs/licenses/PVF-X-PILOT-MIT.txt",
+      "licenseSha256": "a3c4fc9568c98cd6aada9d106131ae1bce80114c68223848c6509356f345cf83",
+      "noticesPath": "docs/THIRD-PARTY-NOTICES.md",
+      "sourceAvailability": "not-bundled",
+      "authenticodeSigned": false,
+      "operatingSystemDependencies": [
+        "Windows Universal CRT",
+        "Microsoft Visual C++ v14 runtime (VCRUNTIME140.dll)"
+      ],
+      "loadTestRequired": true
+    }
+  ],
+  "releaseBoundary": {
+    "ordinaryTaskLaneRequiresNetwork": false,
+    "ordinaryTaskLaneRequiresNpm": false,
+    "ordinaryTaskLaneRequiresExternalMcp": false,
+    "ordinaryTaskLaneRequiresTypeSquirrel": false,
+    "supportedOperatingSystem": "64-bit Windows",
+    "nativeSourceAndDependencyLockIncluded": false
+  }
+}

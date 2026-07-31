@@ -3,16 +3,19 @@
   "schemaVersion": "1.0",
   "phase": "agent-workspace-portable-release",
   "packageName": "PVF-Agent-Workbench",
-  "packageVersion": "1.1.0",
-  "generatedAt": "2026-07-06",
-  "purpose": "Portable PVF Agent workspace with a bundled Agent Skill adapter, Node.js, read-only PVF tools, controlled output, clean knowledge routing, release gates, and deterministic Agent evaluations.",
+  "packageVersion": "2.0.0",
+  "purpose": "Portable self-contained PVF Agent workspace with a preferred native backend, a bundled JavaScript read-only fallback, Agent Skill adapter, built-in NUT/tag/bookmark facts, dungeon/world and cross-cutting productized capability models, controlled output, clean knowledge routing, release gates, and deterministic Agent evaluations.",
   "portableCore": {
     "include": [
+      ".gitattributes",
       ".gitignore",
+      "LICENSE",
+      "LICENSE-KNOWLEDGE-CC0.md",
       "VERSION",
       "CHANGELOG.zh-CN.md",
       "AGENTS.md",
       ".agents/",
+      "README.md",
       "README.zh-CN.md",
       "workbench.bat",
       "agents/",
@@ -24,6 +27,7 @@
       "knowledge-pack/",
       "release/",
       "runtime/node/node.exe",
+      "runtime/node/LICENSE",
       "tools/",
       "workspaces/README.zh-CN.md",
       "workspaces/absorption-checklists/README.zh-CN.md",
@@ -66,7 +70,7 @@
     "mountedUserData": [
       "real PVF paths",
       "client paths",
-      "raw materials",
+      "task source materials",
       "machine-specific profiles"
     ],
     "heavyArtifacts": [
@@ -84,15 +88,19 @@
     "knowledgePack": "workbench.bat knowledge-check",
     "agentEval": "workbench.bat eval self-test",
     "agentSkill": "workbench.bat skill self-test",
+    "knowledgeQuery": "workbench.bat knowledge-query self-test",
+    "readOnlyFallback": "workbench.bat fallback-self-test",
     "doctor": "workbench.bat doctor check --skip-profiles",
     "gate1": "workbench.bat release gate1",
     "gate2": "workbench.bat release gate2",
     "gate3": "workbench.bat release gate3"
   },
+  "runtimeIntegrity": "release/BUNDLED-RUNTIME-MANIFEST.json",
   "safety": {
     "defaultMode": "read-only",
     "sourcePvfOverwriteAllowed": false,
     "clientResourceWriteAllowedByDefault": false,
+    "readOnlyFallbackWriteAllowed": false,
     "realPvfRequiredForReleaseGates": false,
     "writeRequiresExplicitOutputBackupReadbackManifest": true
   }

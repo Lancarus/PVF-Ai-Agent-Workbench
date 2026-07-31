@@ -1,0 +1,281 @@
+"use strict";
+
+const crypto = require("crypto");
+const fs = require("fs");
+const path = require("path");
+
+const rawArgs = process.argv.slice(2);
+const rootIndex = rawArgs.indexOf("--root");
+const workbenchRoot = rootIndex >= 0 && rawArgs[rootIndex + 1]
+  ? path.resolve(rawArgs[rootIndex + 1])
+  : path.resolve(__dirname, "../../..");
+const args = rawArgs.filter((item, index) => item !== "--root" && rawArgs[index - 1] !== "--root");
+
+function option(name, fallback) {
+  const index = args.indexOf(name);
+  return index >= 0 && args[index + 1] ? args[index + 1] : fallback;
+}
+
+function options(name) {
+  const values = [];
+  for (let index = 0; index < args.length - 1; index += 1) {
+    if (args[index] === name) values.push(args[index + 1]);
+  }
+  return values;
+}
+
+function required(name) {
+  const value = option(name);
+  if (!value) throw new Error(`${name} is required.`);
+  return path.resolve(value);
+}
+
+function readJson(file) {
+  return JSON.parse(fs.readFileSync(file, "utf8"));
+}
+
+function sha256(buffer) {
+  return crypto.createHash("sha256").update(buffer).digest("hex");
+}
+
+function stableUnique(values) {
+  return [...new Set(values.filter((value) => value !== undefined && value !== null && value !== ""))];
+}
+
+function writeJson(file, value) {
+  const buffer = Buffer.from(`${JSON.stringify(value, null, 2)}\n`, "utf8");
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, buffer);
+  return { bytes: buffer.length, sha256: sha256(buffer) };
+}
+
+function compactParameter(parameter) {
+  if (!parameter || typeof parameter !== "object") return parameter;
+  return Object.fromEntries(Object.entries(parameter).filter(([key, value]) =>
+    ["name", "type", "optional", "defaultValue", "variadic"].includes(key) && value !== undefined && value !== null && value !== ""));
+}
+
+function compactReturn(value) {
+  if (!value || typeof value !== "object") return value || null;
+  const compact = Object.fromEntries(Object.entries(value).filter(([key, item]) =>
+    ["name", "type", "optional"].includes(key) && item !== undefined && item !== null && item !== ""));
+  return Object.keys(compact).length ? compact : null;
+}
+
+function compactVersion(value) {
+  return value ? String(value).replace(/\s+https?:\/\/\S+/gi, "").trim() : null;
+}
+
+function buildNutCatalog(source) {
+  if (!Array.isArray(source.declarations)) throw new Error("NUT catalog has no declarations array.");
+  const conflictNames = new Set();
+  for (const conflict of source.conflicts || []) {
+    for (const value of [conflict.name, conflict.qualifiedName, conflict.symbol]) if (value) conflictNames.add(String(value).toLowerCase());
+    if (conflict.key) conflictNames.add(String(conflict.key).replace(/^[^:]+:/, "").toLowerCase());
+  }
+  const declarations = source.declarations.map((item) => {
+    const row = {
+      kind: item.kind,
+      name: item.name,
+      qualifiedName: item.qualifiedName || item.name,
+      className: item.className || null,
+      extends: item.extends || null,
+      signature: item.signature || null,
+      parameters: (item.parameters || []).map(compactParameter),
+      returns: compactReturn(item.returns),
+      value: item.value === undefined ? null : item.value,
+      package: item.package || null,
+      version: compactVersion(item.version),
+      group: item.group || "unknown",
+    };
+    if (conflictNames.has(String(row.name || "").toLowerCase()) || conflictNames.has(String(row.qualifiedName || "").toLowerCase())) row.conflict = true;
+    return row;
+  });
+  return {
+    schemaVersion: "1.0",
+    phase: "builtin-nut-api-facts",
+    declaredRuntimeVersion: source.source?.declaredRuntimeVersion || "3.0.7",
+    summary: {
+      declarationCount: declarations.length,
+      functionCount: declarations.filter((item) => item.kind === "function").length,
+      constantCount: declarations.filter((item) => item.kind === "constant").length,
+      classCount: declarations.filter((item) => item.kind === "class").length,
+      dnfFunctionCount: declarations.filter((item) => item.kind === "function" && item.group === "dnf").length,
+      dnfConstantCount: declarations.filter((item) => item.kind === "constant" && item.group === "dnf").length,
+      conflictMarkedCount: declarations.filter((item) => item.conflict).length,
+    },
+    declarations,
+  };
+}
+
+function buildTagCatalog(source) {
+  const corruptText = (value) => /\uFFFD|[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/.test(String(value || ""));
+  const rowKeys = new Set();
+  const newRows = [];
+  for (const item of source.community?.newRows || []) {
+    if (!item.normalizedSection) continue;
+    if ([item.section, item.normalizedSection, item.comment, item.normalizedComment].some(corruptText)) continue;
+    const row = {
+      section: item.section || item.normalizedSection,
+      normalizedSection: item.normalizedSection,
+      comment: item.normalizedComment || item.comment || "",
+      normalizedComment: item.normalizedComment || item.comment || "",
+      fileType: item.fileType ?? null,
+    };
+    const key = JSON.stringify(row);
+    if (!rowKeys.has(key)) {
+      rowKeys.add(key);
+      newRows.push(row);
+    }
+  }
+  const layeredTags = (source.layeredTags?.tags || []).map((item) => ({
+    normalizedTag: item.normalizedTag,
+    displayTag: item.displayTag,
+    officialOriginalOccurrences: item.officialOriginalOccurrences?.length ? [{ layer: "official-original", occurrenceCount: item.officialOriginalOccurrences.length }] : [],
+    toolExtensionOccurrences: item.toolExtensionOccurrences?.length ? [{ layer: "tool-extension", occurrenceCount: item.toolExtensionOccurrences.length }] : [],
+  }));
+  const registryEntries = (source.registryHints?.entries || []).map((item) => ({
+    nodeType: item.nodeType || null,
+    fileName: item.fileName || null,
+    SectionName: item.SectionName || null,
+    ParentSectionName: item.ParentSectionName || null,
+    LstFileName: item.LstFileName || null,
+    Description: item.Description || null,
+    registryStatus: "unverified-source-hint",
+  }));
+  const spellingCandidates = (source.registryHints?.suspiciousRegistryCandidates || []).map((item) => ({
+    observed: item.observed,
+    candidate: item.candidate,
+    status: "spelling-candidate-not-registry-fact",
+    context: item.context ? {
+      fileName: item.context.fileName || null,
+      SectionName: item.context.SectionName || null,
+      LstFileName: item.context.LstFileName || null,
+    } : null,
+  }));
+  return {
+    schemaVersion: "1.0",
+    phase: "builtin-pvf-tag-facts",
+    safety: {
+      targetPvfReadbackRequired: true,
+      zeroMatchesProveTagUnavailable: false,
+      officialOriginalAndToolExtensionSeparated: true,
+      translationsSeparated: true,
+      registryHintsAreFacts: false,
+    },
+    summary: {
+      communityEntryCount: newRows.length,
+      layeredTagCount: layeredTags.length,
+      registryHintCount: registryEntries.length,
+      suspiciousRegistryCandidateCount: spellingCandidates.length,
+    },
+    community: { kind: "compiled-community-facts", rows: newRows },
+    layeredTags: { kind: "compiled-trust-layer-facts", tags: layeredTags },
+    registryHints: { kind: "compiled-registry-hints", entries: registryEntries, suspiciousRegistryCandidates: spellingCandidates },
+  };
+}
+
+function buildBookmarkCatalog(source) {
+  const byPath = new Map();
+  let rawEntryCount = 0;
+  for (const folder of source.folders || []) {
+    for (const item of folder.items || []) {
+      rawEntryCount += 1;
+      const normalizedPath = String(item.path || "").replace(/\\/g, "/").replace(/^\/+/, "");
+      if (!normalizedPath) continue;
+      const key = normalizedPath.toLowerCase();
+      if (!byPath.has(key)) byPath.set(key, { path: normalizedPath, labels: [], groups: [] });
+      const row = byPath.get(key);
+      row.labels.push(String(item.label || "").trim());
+      row.groups.push(String(folder.name || "").trim());
+    }
+  }
+  const bookmarks = [...byPath.values()].map((item) => {
+    return {
+      path: item.path,
+      labels: stableUnique(item.labels),
+      groups: stableUnique(item.groups),
+    };
+  }).sort((left, right) => left.path.localeCompare(right.path, "en"));
+  return {
+    schemaVersion: "1.0",
+    phase: "builtin-pvf-task-bookmarks",
+    safety: {
+      navigationCandidatesOnly: true,
+      targetPvfExistenceCheckRequired: true,
+      targetPvfReadbackRequiredForMeaning: true,
+      originalSpellingPreserved: true,
+    },
+    summary: {
+      uniquePathCount: bookmarks.length,
+    },
+    bookmarks,
+  };
+}
+
+function updateKnowledgeManifest(outputs) {
+  const manifestPath = path.join(workbenchRoot, "knowledge-pack", "MANIFEST.json");
+  const manifest = readJson(manifestPath);
+  const outputByDest = new Map(outputs.map((item) => [item.dest, item]));
+  manifest.entries = (manifest.entries || []).filter((item) => !outputByDest.has(item.dest));
+  for (const item of outputs) {
+    manifest.entries.push({
+      dest: item.dest,
+      bytes: item.bytes,
+      sha256: item.sha256,
+    });
+  }
+  const additionalCleanFiles = ["dictionaries/pvf-task-bookmarks-boundary-quick.zh-CN.md"];
+  for (const dest of additionalCleanFiles) {
+    if (!manifest.entries.some((item) => item.dest === dest)) {
+      manifest.entries.push({
+        dest,
+        bytes: 0,
+        sha256: "",
+      });
+    }
+  }
+  for (const entry of manifest.entries) {
+    const file = path.join(workbenchRoot, "knowledge-pack", entry.dest);
+    if (!fs.existsSync(file) || !fs.statSync(file).isFile()) throw new Error(`Knowledge manifest entry is missing: ${entry.dest}`);
+    const buffer = fs.readFileSync(file);
+    entry.bytes = buffer.length;
+    entry.sha256 = sha256(buffer);
+  }
+  manifest.schemaVersion = "2.0";
+  manifest.purpose = "Integrity-only manifest for the portable clean knowledge pack.";
+  manifest.entries = manifest.entries
+    .map(({ dest, bytes, sha256: digest }) => ({ dest, bytes, sha256: digest }))
+    .sort((left, right) => left.dest.localeCompare(right.dest, "en"));
+  manifest.summary = {
+    entryCount: manifest.entries.length,
+    totalBytes: manifest.entries.reduce((sum, item) => sum + Number(item.bytes || 0), 0),
+  };
+  for (const key of ["phase", "generatedAt", "sourceVariables", "pathReferences", "externalSourcePolicy"]) delete manifest[key];
+  writeJson(manifestPath, manifest);
+}
+
+function main() {
+  const nutSource = readJson(required("--nut-catalog"));
+  const tagSource = readJson(required("--tag-catalog"));
+  const bookmarkSource = readJson(required("--bookmarks"));
+  const outputDir = path.join(workbenchRoot, "knowledge-pack", "indexes");
+  const products = [
+    { dest: "indexes/nut-api-facts.compact.json", value: buildNutCatalog(nutSource) },
+    { dest: "indexes/pvf-tag-facts.compact.json", value: buildTagCatalog(tagSource) },
+    { dest: "indexes/pvf-task-bookmarks.compact.json", value: buildBookmarkCatalog(bookmarkSource) },
+  ];
+  const outputs = products.map((product) => ({
+    dest: product.dest,
+    ...writeJson(path.join(outputDir, path.basename(product.dest)), product.value),
+  }));
+  updateKnowledgeManifest(outputs);
+  process.stdout.write(`${JSON.stringify({ ok: true, command: "build-clean-builtin-knowledge", outputs, summaries: Object.fromEntries(products.map((item) => [item.dest, item.value.summary])) }, null, 2)}\n`);
+}
+
+try {
+  main();
+} catch (error) {
+  process.stderr.write(`ERROR ${error.stack || error.message}\n`);
+  process.exitCode = 1;
+}

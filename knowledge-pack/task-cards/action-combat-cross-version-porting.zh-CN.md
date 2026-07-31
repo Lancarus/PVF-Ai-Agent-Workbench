@@ -44,7 +44,7 @@
 2. 解析 `character/character.lst`、`skill/skilllist.lst` 和目标职业 skill registry。
 3. 解析并读回 `基础精通 / BasicAttackUp` 的 `.skl`，不要只相信数字。
 4. 闭合目标职业的 `load_state`、`passive_skill_<job>.nut`、appendage 脚本和候选主动技能入口。
-5. 查目标 PVF 是否已有 appendage helper、对象查找、距离、阵营、APC 判断、hit confirm 或控制 API；没有 TypeSquirrel 或目标脚本证据时不要补 API 名。
+5. 查目标 PVF 是否已有 appendage helper、对象查找、距离、阵营、APC 判断、hit confirm 或控制 API；没有 内置 NUT API 事实目录 或目标脚本证据时不要补 API 名。
 
 ## 写入边界
 
