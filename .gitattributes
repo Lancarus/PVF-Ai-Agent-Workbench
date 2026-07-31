@@ -1,3 +1,4 @@
 knowledge-pack/** text eol=lf
+runtime/node/LICENSE -text
 *.exe binary
 *.node binary
