@@ -1,6 +1,6 @@
 # Avatar / Emblem / Socket / Clone / Aura / Fashion Package 只读审计任务卡
 
-状态：默认可用。
+状态：默认可用
 
 用途：当任务涉及时装、徽章、镶嵌孔、克隆时装、光环、时装礼包、礼包开出装备或 `aura/aura.lst` 时，先读本任务卡，再进入字段字典和边界索引。
 
@@ -23,7 +23,6 @@
 6. 如涉及普通装备字段，只引用 `dictionaries/equipment-fields.zh-CN.md`
 7. 如涉及容器/礼包通用字段，只引用 `indexes/stackable-container-package-boundary.zh-CN.md`
 
-## 主目标已确认
 
 | 项目 | 数量 |
 | --- | ---: |
@@ -65,15 +64,10 @@
 - 不把 clone 关键词写成克隆系统可用。
 - 不把 aura 字段写成光环实机显示、传送、冷却或特效正常。
 - 不把 `.ani/.ptl/.img` 引用写成客户端资源完整。
-- 不把辅助对照差异提升为主目标事实。
 - 不把某个 `[avatar func filter]` 数字写成所有光环导入的通用修复。
 
 ## 允许的结论口径
 
-- “主目标静态观察到该时装装备已通过 equipment registry 注册，并带有 avatar 类型字段。”
-- “主目标静态观察到该徽章道具通过 stackable registry 注册，目标 socket token 位于 `[avatar emblem target type]`。”
-- “主目标静态观察到该礼包 `[package data]` 中的 ID 可解析到 equipment / stackable registry。”
-- “主目标静态观察到该光环存在 aura 字段或 `.ora` registry 链，但不证明客户端显示正常。”
 
 ## 下一步测试建议
 

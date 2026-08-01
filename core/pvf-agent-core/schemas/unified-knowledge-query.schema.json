@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.pvf-agent-workbench/schemas/unified-knowledge-query.schema.json",
+  "type": "object",
+  "required": ["schemaVersion", "phase", "generatedAt", "kind", "artifact", "query", "summary", "results", "boundaries"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "phase": { "const": "unified-workbench-query" },
+    "kind": { "enum": ["source", "claims", "nut", "tag", "bookmark", "lineage", "planner", "client"] },
+    "artifact": {
+      "type": "object",
+      "required": ["path", "sha256"],
+      "properties": { "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" } }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["matchCount", "returnedCount", "truncated"]
+    },
+    "results": { "type": "array" },
+    "boundaries": {
+      "type": "object",
+      "required": ["readOnly", "generatedArtifactIsFinalEvidence", "targetPvfReadbackRequiredForPvfConclusion", "zeroMatchesProveAbsence", "directWriteAllowed", "clientWriteAllowed", "requiredPvfWriteLane", "outputArtifactsAndMachinePathsExternalOnly"],
+      "properties": {
+        "readOnly": { "const": true },
+        "generatedArtifactIsFinalEvidence": { "const": false },
+        "zeroMatchesProveAbsence": { "const": false },
+        "directWriteAllowed": { "const": false },
+        "clientWriteAllowed": { "const": false },
+        "requiredPvfWriteLane": { "const": "workbench.bat pvf-change" },
+        "outputArtifactsAndMachinePathsExternalOnly": { "const": true }
+      }
+    }
+  }
+}

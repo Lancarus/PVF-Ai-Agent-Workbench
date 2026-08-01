@@ -18,6 +18,7 @@ const command = args[0] || "check";
 
 const REQUIRED_PLANNER_SCRIPTS = [
   "tools/pvf-bridge/dungeon-workflow.js",
+  "tools/pvf-bridge/native-backend.js",
   "tools/pvf-bridge/extract-dungeon.js",
   "tools/pvf-bridge/import-dungeon-extract.js",
   "tools/pvf-bridge/package-dungeon-assets.js",
@@ -111,30 +112,33 @@ function buildCapabilityLevels() {
       ],
     },
     {
-      id: "mcp-read-lane-config",
-      label: "MCP read lane config",
+      id: "bundled-pvf-backend",
+      label: "Bundled PVF backend",
       required: true,
       files: [
-        "config/mcp.json",
         "config/pvf-adapter.json",
         "tools/pvf-bridge/server.js",
+        "tools/pvf-bridge/native-backend.js",
         "tools/pvf-bridge/native/pvf_rust_core.node",
-        "core/pvf-agent-core/mcp/server.js",
+        "tools/pvf-bridge/fallback/codec.ts",
+        "tools/pvf-bridge/fallback/script.ts",
+        "tools/pvf-bridge/fallback/ani.ts",
+        "tools/pvf-bridge/fallback/pvf-readonly-backend.ts",
+        "core/pvf-agent-core/contracts/typescript-readonly-backend-contract.v1.json",
+        "core/pvf-agent-core/schemas/typescript-readonly-backend-contract.schema.json",
+        "core/pvf-agent-core/scripts/fallback-backend-self-test.js",
       ],
-      note: "This checks local MCP config and server files only; current Agent registration is external.",
+      note: "Self-contained backend used by workbench.bat.",
     },
     {
-      id: "host-agent-mcp-templates",
-      label: "Host Agent MCP templates",
+      id: "bundled-domain-knowledge",
+      label: "Bundled NUT, tag, and bookmark facts",
       required: true,
       files: [
-        "config/mcp-templates/README.zh-CN.md",
-        "config/mcp-templates/pvf-agent-core.windows-bundled-node.fragment.json",
-        "config/mcp-templates/pvf-agent-core.system-node.fragment.json",
-        "config/mcp-templates/host-agent-notes.zh-CN.md",
-        "config/mcp-templates/typesquirrel-optional.zh-CN.md",
+        "knowledge-pack/indexes/nut-api-facts.compact.json",
+        "knowledge-pack/indexes/pvf-tag-facts.compact.json",
+        "knowledge-pack/indexes/pvf-task-bookmarks.compact.json",
       ],
-      note: "Reference fragments only. Actual MCP exposure depends on the host Agent.",
     },
     {
       id: "controlled-write-lane",
@@ -161,20 +165,6 @@ function buildCapabilityLevels() {
     files: pathDetails(REQUIRED_PLANNER_SCRIPTS),
     optionalFiles: pathDetails(OPTIONAL_PLANNER_SCRIPTS),
     note: "Portable X-Pilot planner cohort carried by this Workbench. These scripts are helpers; PVF writes still go through the controlled write lane.",
-  });
-  lanes.push({
-    id: "mcp-registered-in-current-agent",
-    label: "MCP registered in current Agent",
-    required: false,
-    level: "UNKNOWN_EXTERNAL",
-    note: "Workbench can provide config and servers, but the running Agent must expose MCP tools in its own tool list.",
-  });
-  lanes.push({
-    id: "typesquirrel-live-tools",
-    label: "TypeSquirrel live tools",
-    required: false,
-    level: "OPTIONAL_EXTERNAL",
-    note: "Use TypeSquirrel when the Agent exposes it; otherwise follow knowledge-pack boundaries and target PVF files.",
   });
   return {
     lanes,
@@ -454,6 +444,19 @@ function runAgentSkillSelfTest() {
   };
 }
 
+function runFallbackSelfTest() {
+  const result = runNodeScript("core/pvf-agent-core/scripts/fallback-backend-self-test.js", []);
+  const parsed = parseJsonOutput(result.stdout);
+  return {
+    ok: result.ok && parsed?.summary?.ok === true,
+    exitCode: result.exitCode,
+    summary: parsed?.summary || null,
+    checks: parsed?.checks || null,
+    stdoutTail: result.ok ? undefined : result.stdout.slice(-2000),
+    stderr: result.stderr || undefined,
+  };
+}
+
 async function runCheck() {
   const runRoot = option("--out")
     ? path.resolve(option("--out"))
@@ -478,6 +481,7 @@ async function runCheck() {
           "README.md",
           "README.zh-CN.md",
           "docs/CLEAN-COPY.zh-CN.md",
+          "docs/READONLY-FALLBACK.zh-CN.md",
           "VERSION",
           "CHANGELOG.zh-CN.md",
           "release/PORTABLE-RELEASE-MANIFEST.json",
@@ -501,13 +505,17 @@ async function runCheck() {
           "commands/pvf-index.bat",
           "commands/pvf-backend-contract.bat",
           "runtime/node/node.exe",
-          "config/mcp-templates/README.zh-CN.md",
-          "config/mcp-templates/pvf-agent-core.windows-bundled-node.fragment.json",
-          "config/mcp-templates/pvf-agent-core.system-node.fragment.json",
-          "config/mcp-templates/host-agent-notes.zh-CN.md",
-          "config/mcp-templates/typesquirrel-optional.zh-CN.md",
+          "config/pvf-adapter.json",
+          "knowledge-pack/indexes/nut-api-facts.compact.json",
+          "knowledge-pack/indexes/pvf-tag-facts.compact.json",
+          "knowledge-pack/indexes/pvf-task-bookmarks.compact.json",
           "tools/pvf-bridge/server.js",
+          "tools/pvf-bridge/native-backend.js",
           "tools/pvf-bridge/native/pvf_rust_core.node",
+          "tools/pvf-bridge/fallback/codec.ts",
+          "tools/pvf-bridge/fallback/script.ts",
+          "tools/pvf-bridge/fallback/ani.ts",
+          "tools/pvf-bridge/fallback/pvf-readonly-backend.ts",
           ".agents/skills/dnf-pvf-xpilot/SKILL.md",
           ".agents/skills/dnf-pvf-xpilot/agents/openai.yaml",
           ...REQUIRED_PLANNER_SCRIPTS,
@@ -523,6 +531,8 @@ async function runCheck() {
           "core/pvf-agent-core/scripts/portable-package-dry-run.js",
           "core/pvf-agent-core/scripts/portable-stage-copy-dry-run.js",
           "core/pvf-agent-core/scripts/portable-cold-start-dry-run.js",
+          "core/pvf-agent-core/scripts/fallback-backend-self-test.js",
+          "core/pvf-agent-core/scripts/fallback-backend-differential.js",
           "core/pvf-agent-core/lib/release-utils.js",
           "core/pvf-agent-core/lib/runtime-state.js",
           "core/pvf-agent-core/lib/agent-skill.js",
@@ -536,6 +546,8 @@ async function runCheck() {
           "core/pvf-agent-core/schemas/portable-stage-copy-dry-run-report.schema.json",
           "core/pvf-agent-core/schemas/portable-cold-start-dry-run-report.schema.json",
           "core/pvf-agent-core/contracts/pvf-backend-contract.v1.json",
+          "core/pvf-agent-core/contracts/typescript-readonly-backend-contract.v1.json",
+          "core/pvf-agent-core/schemas/typescript-readonly-backend-contract.schema.json",
           "core/pvf-agent-core/contracts/fixtures/apc-swordman-gsd.fixture.json",
           "core/pvf-agent-core/contracts/fixtures/itemshop-birken.fixture.json",
           "core/pvf-agent-core/contracts/fixtures/skill-swordman-bloodyrave.fixture.json",
@@ -578,7 +590,9 @@ async function runCheck() {
           "core/pvf-agent-core/schemas/portable-runtime-overlay-report.schema.json",
           "core/pvf-agent-core/schemas/real-task-runs-check-report.schema.json",
           "core/pvf-agent-core/schemas/backend-fixtures-check-report.schema.json",
+          "core/pvf-agent-core/schemas/typescript-readonly-backend-contract.schema.json",
           "core/pvf-agent-core/contracts/pvf-backend-contract.v1.json",
+          "core/pvf-agent-core/contracts/typescript-readonly-backend-contract.v1.json",
           "core/pvf-agent-core/contracts/fixtures/apc-swordman-gsd.fixture.json",
           "core/pvf-agent-core/contracts/fixtures/itemshop-birken.fixture.json",
           "core/pvf-agent-core/contracts/fixtures/skill-swordman-bloodyrave.fixture.json",
@@ -644,6 +658,14 @@ async function runCheck() {
     const result = runAgentSkillSelfTest();
     if (!result.ok) {
       throw new Error(`Agent Skill self-test failed.\n${result.stderr}\n${result.stdoutTail}`);
+    }
+    return result;
+  });
+
+  await record(checks, "readonly-fallback.self-test", async () => {
+    const result = runFallbackSelfTest();
+    if (!result.ok) {
+      throw new Error(`Read-only fallback self-test failed.\n${result.stderr || ""}\n${result.stdoutTail || ""}`);
     }
     return result;
   });

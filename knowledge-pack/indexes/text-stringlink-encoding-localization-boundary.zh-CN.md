@@ -2,36 +2,35 @@
 
 状态：默认可用
 
-用途：记录主目标 PVF 的文本承载文件、StringLink 样 token、文本字段、字符串资源候选、编码形态、辅助差异和只读边界。本文不授权写 PVF。
 
 ## 审计快照
 
-| 项 | 主目标静态结论 |
+| 项 | 目标核验 |
 | --- | ---: |
-| PVF 文件总数 | 402963 |
-| 扫描文本承载文件 | 120571 |
-| 读取失败 | 0 |
-| 字符串资源候选文件 | 61 |
-| 含 StringLink 样 token 的文件 | 14926 |
-| StringLink 样 token | 27719 |
-| 唯一 StringLink key | 18904 |
-| StringLink 内嵌非 ASCII/CJK 文本 | 19405 |
-| StringLink 内嵌 replacement char | 0 |
-| 含反引号 token 的文件 | 116514 |
-| 反引号 token | 3428094 |
+| PVF 文件总数 | 需在当前目标 PVF 中只读确认 |
+| 扫描文本承载文件 | 需在当前目标 PVF 中只读确认 |
+| 读取失败 | 需在当前目标 PVF 中只读确认 |
+| 字符串资源候选文件 | 需在当前目标 PVF 中只读确认 |
+| 含 StringLink 样 token 的文件 | 需在当前目标 PVF 中只读确认 |
+| StringLink 样 token | 需在当前目标 PVF 中只读确认 |
+| 唯一 StringLink key | 需在当前目标 PVF 中只读确认 |
+| StringLink 内嵌非 ASCII/CJK 文本 | 需在当前目标 PVF 中只读确认 |
+| StringLink 内嵌 replacement char | 需在当前目标 PVF 中只读确认 |
+| 含反引号 token 的文件 | 需在当前目标 PVF 中只读确认 |
+| 反引号 token | 需在当前目标 PVF 中只读确认 |
 
 ## 编码形态
 
-| 形态 | 主目标观察 | 口径 |
+| 形态 | 目标核验 | 口径 |
 | --- | ---: | --- |
-| 文件级 CJK 字形 | 94665 文件 | Tw 解码下可观察到 CJK 字形 |
-| 文件级 ASCII | 25635 文件 | 纯 ASCII 或近似纯 ASCII |
-| 文件级 replacement char | 270 文件 | 编码/反编译风险桶 |
-| StringLink 内嵌 CJK | 19405 个 | 可见文本，不证明 UI 成功 |
-| StringLink 内嵌 ASCII | 8289 个 | key、英文或符号文本 |
-| StringLink 内嵌 replacement char | 0 个 | 当前未观察到 |
-| 反引号 token 中 CJK | 218794 个 | 包含说明、名称、文本，也可能混有非显示字段 |
-| 反引号 token 中 replacement char | 1951 个 | 需要单独风险复核 |
+| 文件级 CJK 字形 | 需在当前目标 PVF 中只读确认 | Tw 解码下可观察到 CJK 字形 |
+| 文件级 ASCII | 需在当前目标 PVF 中只读确认 | 纯 ASCII 或近似纯 ASCII |
+| 文件级 replacement char | 需在当前目标 PVF 中只读确认 | 编码/反编译风险桶 |
+| StringLink 内嵌 CJK | 需在当前目标 PVF 中只读确认 | 可见文本，不证明 UI 成功 |
+| StringLink 内嵌 ASCII | 需在当前目标 PVF 中只读确认 | key、英文或符号文本 |
+| StringLink 内嵌 replacement char | 需在当前目标 PVF 中只读确认 | 当前未观察到 |
+| 反引号 token 中 CJK | 需在当前目标 PVF 中只读确认 | 包含说明、名称、文本，也可能混有非显示字段 |
+| 反引号 token 中 replacement char | 需在当前目标 PVF 中只读确认 | 需要单独风险复核 |
 
 ## 扫描文件类型
 
@@ -108,11 +107,9 @@
 | `11` | 387 | quest |
 | `21` | 242 | pvp_mission |
 
-边界：namespace 是主目标分布提示，不是正式 registry。不能把 namespace 数字当 item、monster、quest、skill 或 passiveobject ID。
 
 ## 字符串资源候选
 
-主目标观察到 61 个字符串资源候选文件，覆盖：
 
 - `n_string.lst`
 - `stringtable.bin`
@@ -126,18 +123,16 @@
 - `stringtable.bin` 是二进制字符串表候选。
 - 当前不证明运行时加载优先级，也不证明改哪个文件会影响客户端 UI。
 
-## 辅助对照提示
 
-| 项 | 主目标 | 辅助对照 | 差异提示 |
+| 项 | 目标核验 | 跨版本候选；需在当前目标 PVF 中复核 | 差异提示 |
 | --- | ---: | ---: | --- |
-| PVF 文件总数 | 402963 | 1052773 | 辅助体量更大 |
-| 扫描文本承载文件 | 120571 | 194048 | 辅助扫描量更大 |
-| 字符串资源候选文件 | 61 | 59 | 接近 |
-| 含 StringLink 文件 | 14926 | 1091 | 辅助明显更少 |
-| StringLink 样 token | 27719 | 4105 | 辅助明显更少 |
-| 反引号 token | 3428094 | 5204863 | 辅助更多 |
+| PVF 文件总数 | 需在当前目标 PVF 中只读确认 | 1052773 | 辅助体量更大 |
+| 扫描文本承载文件 | 需在当前目标 PVF 中只读确认 | 194048 | 辅助扫描量更大 |
+| 字符串资源候选文件 | 需在当前目标 PVF 中只读确认 | 59 | 接近 |
+| 含 StringLink 文件 | 需在当前目标 PVF 中只读确认 | 1091 | 辅助明显更少 |
+| StringLink 样 token | 需在当前目标 PVF 中只读确认 | 4105 | 辅助明显更少 |
+| 反引号 token | 需在当前目标 PVF 中只读确认 | 5204863 | 辅助更多 |
 
-辅助对照提示：辅助文本组织方式可能更偏直接文本或不同本地化形态；这些差异不能覆盖主目标结论。
 
 ## 静态与动态边界
 
@@ -158,7 +153,6 @@
 
 ## 当前已收窄的运行边界
 
-- 已有当前主目标样本证明：含中文字符串的 stackable 文件做数字字段最小替换时，安全参数路线可以保持客户端道具名和描述正常。
 - 已有反例证明：读回看似正常的输出 PVF 仍可能在客户端出现道具名、描述和副本文本乱码。
 - 因此 Workbench 写出流程必须把“客户端 UI 文本 smoke check”列为中文/StringLink 文件的部署验收项。
 

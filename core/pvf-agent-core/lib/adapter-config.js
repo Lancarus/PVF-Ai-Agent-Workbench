@@ -34,11 +34,6 @@ function loadAdapterConfig(workbenchRoot) {
     SOURCE_WORKSPACE: path.dirname(root),
   };
   const config = expandVars(raw, vars);
-  const envServer = config.upstream?.serverPathEnv ? process.env[config.upstream.serverPathEnv] : null;
-  if (envServer) {
-    config.upstream.command = "node";
-    config.upstream.args = [envServer];
-  }
   config.workbenchRoot = root;
   config.configPath = configPath;
   config.allowedToolsSet = new Set(config.allowedTools || []);

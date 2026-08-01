@@ -2,7 +2,6 @@
 
 状态：默认可用
 
-用途：整理主目标 PVF 中 appendage、消耗品共通效果入口、装备 passive object 和附加效果映射的字段路由。字段存在只证明静态结构存在，不证明运行成功。
 
 ## 字段路由
 
@@ -16,7 +15,7 @@
 | APD `[buff]` / `[icon image]` | `appendage/**/*.apd`。 | 记录 buff 标志和图标引用。 | UI 图标显示、资源存在和服务端同步不由静态证明。 |
 | APD `[max overlap]` | `appendage/**/*.apd`。 | 记录最大重叠参数。 | 实际叠加规则、覆盖优先级需运行验证。 |
 | APD `[string data]` / `[int data]` / `[float data]` | `appendage/**/*.apd`。 | 按原列保留，常见于 change status 参数。 | 不能脱离 APD `[type]` 和父装备块解释。 |
-| `[appendage group]` | 消耗品 `.stk`。 | 当前只记录为 stackable 效果分组入口。 | 分组编号不是 appendage registry ID；分组实际规则未在当前样本闭合。 |
+| `[appendage group]` | 消耗品 `.stk`。 | 当前只记录为 stackable 效果分组入口。 | 分组编号不是 appendage registry ID；分组实际规则未在示例闭合。 |
 | `[passive object in stackable]` | 消耗品 `.stk` 闭合块。 | 第一列按 `passiveobject/passiveobject.lst` 解析；其余列按原样保留。 | 列公式、使用条件、创建成功和目标选择需运行验证。 |
 | `[passive object]` | 装备 `.equ` 的 `[then]` 效果块。 | 第一列按 `passiveobject/passiveobject.lst` 解析，再继续读 `.obj/.act/.atk/.ani`。 | 不可作为快速安全写入入口；对象链闭合也不证明命中或伤害。 |
 | `[consume item]` | 装备 `.equ` 的 `[then]` 效果块。 | 常见形态为 stackable ID 与数量；ID 按 `stackable/stackable.lst` 解析。 | 是否实际扣除、失败处理、背包检查和服务端放行需实机。 |
@@ -25,18 +24,17 @@
 | `[effect]` / `[index]` | `etc/additionaleffectlist.etc`。 | `[index]` 与 `[additional effect index]` 对应，可继续读 `[type]`、`[animation]`、term 参数。 | 动画资源存在不证明客户端实际显示。 |
 | `item_common` 文件名 | 当前只命中 `ui/craneminigame/animation/crane_item_common.*`。 | 按 UI 动画资源处理。 | 未确认存在 `item_common` 通用物品效果数据家族。 |
 
-## 主目标命中概览
 
-| 入口 | 主目标只读命中 |
+| 入口 | 目标核验 |
 | --- | ---: |
-| equipment `[appendage]` | 549 |
-| equipment `[my appendage]` | 279 |
-| equipment `[appendage unique]` | 1 |
-| equipment `[passive object]` | 575 |
-| stackable `[appendage group]` | 107 |
-| stackable `[passive object in stackable]` | 5 |
-| `[additional effect index]` | 17 |
-| `item_common` 文件名字面 | 3 个 UI 动画资源 |
+| equipment `[appendage]` | 需在当前目标 PVF 中只读确认 |
+| equipment `[my appendage]` | 需在当前目标 PVF 中只读确认 |
+| equipment `[appendage unique]` | 需在当前目标 PVF 中只读确认 |
+| equipment `[passive object]` | 需在当前目标 PVF 中只读确认 |
+| stackable `[appendage group]` | 需在当前目标 PVF 中只读确认 |
+| stackable `[passive object in stackable]` | 需在当前目标 PVF 中只读确认 |
+| `[additional effect index]` | 需在当前目标 PVF 中只读确认 |
+| `item_common` 文件名字面 | 需在当前目标 PVF 中只读确认 |
 
 ## Registry 规则
 

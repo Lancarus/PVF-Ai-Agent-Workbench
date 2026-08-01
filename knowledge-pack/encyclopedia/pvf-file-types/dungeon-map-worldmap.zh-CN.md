@@ -28,6 +28,8 @@ dungeon registry
 
 ## 完整主线入口
 
+- `indexes/dungeon-world-standardization-capability-router.zh-CN.md`
+- `encyclopedia/pvf-file-types/dungeon-world-standardization.zh-CN.md`
 - `task-cards/dungeon-map-spawn-entry-clear-resource-readonly-audit.zh-CN.md`
 - `dictionaries/dungeon-map-spawn-entry-clear-resource-fields.zh-CN.md`
 - `indexes/dungeon-map-spawn-entry-clear-resource-boundary.zh-CN.md`
@@ -39,6 +41,10 @@ dungeon registry
 - Script.pvf 内引用资源不代表客户端资源存在。
 - 自定义副本和成熟副本导入不是同一个任务。
 - 区域化、入口、任务链、门票、等级条件、结算奖励需要单独验证。
+- 地图宽屏按“目标玩法 + 供体布局”做同路径结构迁移，不能整文件覆盖。
+- worldmap 接口布局要双向核对 `.wdm [dungeon]` 与 `.ui` 副本按钮。
+- 深渊组要区分 monster 与 APC registry，并闭合 `.dgn -> hell map -> hellparty.etc`。
+- 难度 `.tbl` 与 `ultimatedungeonlist.etc` 是两条独立配置线。
 
 ## 写入边界
 

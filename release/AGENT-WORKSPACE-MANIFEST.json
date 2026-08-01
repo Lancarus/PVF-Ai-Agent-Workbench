@@ -1,11 +1,11 @@
 {
   "schemaVersion": "1.0",
   "packageName": "PVF-Agent-Workbench",
-  "packageVersion": "1.0.0",
-  "purpose": "Clean workspace with a single root command entry for desktop Agents to inspect and safely modify PVF through controlled output workflows.",
-  "generatedAt": "2026-06-20",
+  "packageVersion": "2.1.0",
+  "purpose": "Self-contained clean workspace with a preferred native PVF backend, a bundled dependency-free TypeScript read-only fallback, NUT/tag/bookmark facts, portable dungeon/world models, and seven cross-cutting productized PVF workflows for safe inspection and controlled output.",
   "includes": [
     ".gitattributes",
+    ".gitignore",
     "AGENTS.md",
     "LICENSE",
     "LICENSE-KNOWLEDGE-CC0.md",
@@ -19,8 +19,6 @@
     "commands/",
     "docs/",
     "release/",
-    "config/mcp.json",
-    "config/mcp-templates/",
     "config/pvf-adapter.json",
     "config/write-policy.json",
     "config/workspace-profiles.json",
@@ -28,7 +26,10 @@
     "evals/agent/",
     "knowledge-pack/",
     "runtime/node/node.exe",
+    "runtime/node/LICENSE",
     "tools/pvf-bridge/server.js",
+    "tools/pvf-bridge/native-backend.js",
+    "tools/pvf-bridge/fallback/",
     "tools/pvf-bridge/dungeon-workflow.js",
     "tools/pvf-bridge/extract-dungeon.js",
     "tools/pvf-bridge/import-dungeon-extract.js",
@@ -52,35 +53,27 @@
     "API keys",
     "real PVF files",
     "client files",
-    "generated indexes",
+    "target-PVF generated indexes and caches",
     "generated reports",
     "OpenCode Desktop runtime",
     "roadmap / staging task documents",
-    "pvf-bridge evidence and historical candidate artifacts",
-    "knowledge-pack/source-workspace-docs/"
+    "backend evidence and historical candidate artifacts"
   ],
   "safety": {
     "defaultMode": "read-only",
     "sourcePvfOverwriteAllowed": false,
     "clientResourceWriteAllowedByDefault": false,
-    "writeRequiresExplicitOutputBackupReadbackManifest": true
+    "writeRequiresExplicitOutputBackupReadbackManifest": true,
+    "readOnlyFallbackWriteAllowed": false
   },
   "release": {
     "manifest": "release/PORTABLE-RELEASE-MANIFEST.json",
     "agentSkill": "workbench.bat skill self-test",
     "agentEval": "workbench.bat eval self-test",
+    "knowledgeQuery": "workbench.bat knowledge-query self-test",
+    "readOnlyFallback": "workbench.bat fallback-self-test",
     "gate1": "workbench.bat release gate1",
     "gate2": "workbench.bat release gate2",
     "gate3": "workbench.bat release gate3"
-  },
-  "releaseValidation": {
-    "validatedAt": "2026-06-20",
-    "gate1PackageManifest": true,
-    "gate2StageCopyHashes": true,
-    "gate3NoPvfColdStart": true,
-    "agentEvalSelfTest": true,
-    "agentSkillSelfTest": true,
-    "sourcePvfUsed": false,
-    "clientModified": false
   }
 }

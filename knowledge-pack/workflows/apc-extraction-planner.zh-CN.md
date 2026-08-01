@@ -8,6 +8,8 @@
 
 本流程不写 PVF，不生成可直接导入的补丁，不证明 APC 战斗行为、技能释放节奏或门控逻辑在实机中成功。
 
+普通依赖预览优先使用 `workbench.bat dependency-plan --domain apc`；需要传统提取目录或 AI/key 专项摘要时再使用本 workflow。
+
 ## 输入
 
 - 源 PVF 或已经提取出的工作目录。

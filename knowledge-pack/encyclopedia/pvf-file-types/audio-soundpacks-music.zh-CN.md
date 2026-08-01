@@ -1,12 +1,11 @@
 # Audio / SoundPacks / Music / audio.xml
 
-状态：默认可用。
+状态：默认可用
 
 本页说明音频资源相关文件类型和静态边界。它不替代字段字典和边界索引。
 
 ## audio.xml
 
-`audio.xml` 是客户端音频 ID 索引。主目标静态观察到三类核心登记：
 
 - EFFECT：音效 ID 到音频文件。
 - MUSIC：音乐 ID 到音乐文件。
@@ -34,7 +33,6 @@ SoundPacks 是音效资源容器层，主要以 NPK 承载音频条目。
 
 ## Music / Mp3
 
-Music / Mp3 是背景音乐资源目录。主目标当前静态观察到 Music 层 `.ogg` 文件；辅助对照提示另一套客户端还存在 Mp3 层。
 
 MUSIC ID 静态闭合口径：
 

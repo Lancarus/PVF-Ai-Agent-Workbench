@@ -54,4 +54,4 @@ entriesByPath["skill/atfighter/1000hands1000eyes.skl"].level.meanings[1] -> colu
 - `task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md`
 - `workflows/skill-derivative-and-cancel.zh-CN.md`
 - `workflows/skill-runtime-parameter-edit.zh-CN.md`
-- `indexes/skill-gunner-gatling-steyr-runtime-sample.zh-CN.md`
+- `dictionaries/skill-static-level-parameter-columns.zh-CN.md`

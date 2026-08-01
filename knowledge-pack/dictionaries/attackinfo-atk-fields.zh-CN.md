@@ -2,7 +2,6 @@
 
 状态：需验证
 
-本文记录主目标 PVF 只读观察到的 `.atk` 结构入口。`.atk` 字段描述攻击信息，但不单独证明伤害公式、命中结果、hit stop、击退、浮空、异常概率、PVP 差异或最终结算。
 
 ## 文件边界
 
@@ -57,7 +56,7 @@
 | --- | --- | --- |
 | `[active status]` | 状态 token 后跟数值列；样本中可见三数值列、四数值列、五数值列和七数值列。 | 概率、等级、持续、伤害或抗性含义需专项验证；样本未观察到 `[/active status]` 闭合标签。 |
 | `[pvp] ... [/pvp]` | 闭合覆盖块，内部可重写 `[hit info]`、`[damage reaction]`、`[damage bonus]`、`[lift up]`、`[push aside]` 等局部字段。 | 只证明 PVP 覆盖结构存在，不证明竞技场最终规则；块内字段集合可变。 |
-| `[active status apply weapon]` | 主目标 `passiveobject/` 范围未观察到。 | 辅助对照有样本也不能提升为主目标字段结论。 |
+| `[active status apply weapon]` | 需在目标文件中确认。 | 未读回目标 PVF 前，不判断字段是否存在或如何生效。 |
 
 ## 与 Hitbox 的边界
 
@@ -67,17 +66,8 @@
 | `.ani` 有 `[ATTACK BOX]` 就一定造成伤害？ | 不能这么写。还要结合触发动作、`.atk`、目标状态和实机。 |
 | `[DAMAGE BOX]` 未被脚本搜索命中怎么办？ | 只能写成当前脚本文本索引未命中；二进制 ANI 仍需反编译检查。 |
 
-## 覆盖
+## 继续读取
 
-- 通用入口：见 `indexes/passiveobject-coverage-ledger.zh-CN.md`。
-- 状态 / PVP 专项：见 `indexes/attackinfo-status-pvp-ledger.zh-CN.md`。
-- PVP 块全量盘点：见 `indexes/attackinfo-pvp-block-inventory.zh-CN.md`。
-- PVP 触发链试点：见 `indexes/attackinfo-pvp-chain-pilot-ledger.zh-CN.md`。
-- 枪手 PVP owner/ANI 链路：见 `indexes/attackinfo-pvp-gunner-chain-ledger.zh-CN.md`。
-- Fighter PVP owner/ANI 链路：见 `indexes/attackinfo-pvp-fighter-chain-ledger.zh-CN.md`。
-- Mage PVP owner/ANI 链路：见 `indexes/attackinfo-pvp-mage-chain-ledger.zh-CN.md`。
-- Priest / Swordman / Thief PVP owner/ANI 链路：见 `indexes/attackinfo-pvp-priest-swordman-thief-chain-ledger.zh-CN.md`。
-- Common / Equipment PVP owner/ANI 链路：见 `indexes/attackinfo-pvp-common-equipment-chain-ledger.zh-CN.md`。
-- zrr_skill PVP owner 审计：见 `indexes/attackinfo-pvp-zrr-skill-chain-ledger.zh-CN.md`。
-- 详细标签路由：见 `indexes/attackinfo-atk-observed-tag-router.zh-CN.md`。
-- 详细 token 路由：见 `indexes/attackinfo-atk-backtick-token-router.zh-CN.md`。
+- 标签：`indexes/attackinfo-atk-observed-tag-router.zh-CN.md`。
+- 反引号 token：`indexes/attackinfo-atk-backtick-token-router.zh-CN.md`。
+- 完整闭环：`task-cards/passiveobject-nonmonster-readonly-audit.zh-CN.md`。

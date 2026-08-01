@@ -5,7 +5,7 @@ const path = require("path");
 const {
   backtickValues,
   commonReadOptions,
-  findBundledNativeBackend,
+  loadPvfBackend,
   firstBacktick,
   normalizeEncoding,
   normalizeKey,
@@ -15,9 +15,10 @@ const {
   parseLstContent,
   tagBlocks,
 } = require("./pvf_graph_common");
+const { runtimePath } = require("../../core/pvf-agent-core/lib/runtime-state");
 
 const WORKBENCH_ROOT = process.env.DNFPVF_WORKSPACE || path.resolve(__dirname, "..", "..");
-const DEFAULT_OUT_DIR = path.join(WORKBENCH_ROOT, "workspaces", "planner-runs", "scope");
+const DEFAULT_OUT_DIR = runtimePath(WORKBENCH_ROOT, "planner-runs", "scope");
 const DATE_TAG = new Date().toISOString().slice(0, 10);
 
 const REGISTRY_SPECS = [
@@ -75,7 +76,7 @@ const KNOWN_EXTENSIONS = new Set([
   "ui",
 ]);
 
-const EXPAND_VALUES = new Set(["auto", "dungeon", "map", "npc_shop", "equipment", "monster", "passiveobject", "quest", "skill", "attack", "action_script"]);
+const EXPAND_VALUES = new Set(["auto", "dungeon", "map", "town", "npc_shop", "equipment", "monster", "passiveobject", "quest", "skill", "attack", "action_script", "file"]);
 const CONFIDENCE_RANK = { low: 1, medium: 2, high: 3 };
 const ATTACK_PAYLOAD_TAG_GROUPS = {
   damage_amount: ["damage bonus", "damage", "absolute damage", "weapon damage apply"],
@@ -110,7 +111,7 @@ function parseArgs(argv) {
 
 function printUsage() {
   console.log(`Usage:
-  node tools/pvf-bridge/pvf-scope-planner.js --pvf=Script.pvf --query="item or skill name" [--expand=auto] [--out-dir=workspaces/planner-runs/scope]
+  node tools/pvf-bridge/pvf-scope-planner.js --pvf=Script.pvf --query="item or skill name" [--expand=auto] [--out-dir=EXTERNAL_DIR]
 
 Rules:
   --pvf and --query are required. This is a read-only planner and writes preview reports only.
@@ -705,18 +706,22 @@ async function expandCandidates(ctx) {
     const mode = ctx.args.expand === "auto" ? defaultExpandFor(candidate.type) : ctx.args.expand;
     if (mode === "dungeon") await guardedExpand(ctx, mode, candidate, ctx.args.depth, expandDungeonLike);
     else if (mode === "map") await guardedExpand(ctx, mode, candidate, ctx.args.depth, expandMap);
+    else if (mode === "town") await guardedExpand(ctx, mode, candidate, ctx.args.depth, expandTown);
     else if (mode === "npc_shop") await guardedExpand(ctx, mode, candidate, ctx.args.depth, expandNpcShop);
     else if (mode === "equipment") await guardedExpand(ctx, mode, candidate, ctx.args.depth, expandEquipment);
     else if (mode === "monster") await guardedExpand(ctx, mode, candidate, ctx.args.depth, expandMonster);
     else if (mode === "passiveobject") await guardedExpand(ctx, mode, candidate, ctx.args.depth, expandPassiveObject);
     else if (mode === "action_script") await guardedExpand(ctx, mode, candidate, ctx.args.depth, expandActionScript);
     else if (mode === "attack") await guardedExpand(ctx, mode, candidate, ctx.args.depth, expandAttackPayload);
-    else if (mode === "quest" || mode === "skill") await guardedExpand(ctx, mode, candidate, ctx.args.depth, (innerCtx, innerCandidate) => expandDirectFile(innerCtx, innerCandidate, mode));
+    else if (mode === "quest") await guardedExpand(ctx, mode, candidate, ctx.args.depth, expandQuest);
+    else if (mode === "skill") await guardedExpand(ctx, mode, candidate, ctx.args.depth, (innerCtx, innerCandidate) => expandDirectFile(innerCtx, innerCandidate, mode));
+    else if (mode === "file") await guardedExpand(ctx, mode, candidate, ctx.args.depth, (innerCtx, innerCandidate) => expandDirectFile(innerCtx, innerCandidate, null));
   }
 }
 
 function defaultExpandFor(type) {
   if (type === "dungeon" || type === "map") return "dungeon";
+  if (type === "town") return "town";
   if (type === "npc" || type === "itemshop" || type === "secretshop") return "npc_shop";
   if (type === "equipment") return "equipment";
   if (type === "passiveobject") return "passiveobject";
@@ -790,6 +795,16 @@ async function expandMap(ctx, candidate, _remainingDepth = ctx.args.depth) {
   }
   for (const id of unique(parseAiCharacterRows(text)).slice(0, ctx.args.limit)) {
     addResolvedRelation(ctx, candidate, "map.aicharacter", resolveRegistry(ctx, "aicharacter", id), "aicharacter", id);
+  }
+}
+
+async function expandTown(ctx, candidate, _remainingDepth = ctx.args.depth) {
+  if (candidate.type !== "town" && extensionOf(candidate.pvfPath) !== "twn") return;
+  const text = await safeRead(ctx, candidate.pvfPath);
+  if (!text) return;
+  addFileRelations(ctx, candidate, text, "town.fileRef");
+  for (const id of unique(numbers(tagBlocks(text, "dungeon").join("\n")).filter((value) => value > 0)).slice(0, ctx.args.limit)) {
+    addResolvedRelation(ctx, candidate, "town.dungeon", resolveRegistry(ctx, "dungeon", id), "dungeon", id);
   }
 }
 
@@ -984,6 +999,41 @@ async function expandDirectFile(ctx, candidate, expectedType, _remainingDepth = 
   const text = await safeRead(ctx, candidate.pvfPath);
   if (!text) return;
   addFileRelations(ctx, candidate, text, `${candidate.type}.fileRef`);
+}
+
+function groupedIds(block, groupSize, column) {
+  const values = numbers(block);
+  const result = [];
+  for (let index = column; index < values.length; index += groupSize) if (values[index] > 0) result.push(values[index]);
+  return unique(result);
+}
+
+async function expandQuest(ctx, candidate, _remainingDepth = ctx.args.depth) {
+  if (candidate.type !== "quest" && extensionOf(candidate.pvfPath) !== "qst") return;
+  const text = await safeRead(ctx, candidate.pvfPath);
+  if (!text) return;
+  addFileRelations(ctx, candidate, text, "quest.fileRef");
+  const addIds = (relationKind, registryKinds, ids) => {
+    for (const id of unique(ids).slice(0, ctx.args.limit * 4)) {
+      const hit = registryKinds.length === 1 ? resolveRegistry(ctx, registryKinds[0], id) : resolveAnyRegistry(ctx, registryKinds, id);
+      addResolvedRelation(ctx, candidate, relationKind, hit, hit.kind || registryKinds.join("|"), id);
+    }
+  };
+  addIds("quest.preRequiredQuest", ["quest"], tagBlocks(text, "pre required quest").flatMap(firstNumberPerLine));
+  addIds("quest.limitDungeon", ["dungeon"], [
+    ...tagBlocks(text, "limit dungeon index").flatMap(firstNumberPerLine),
+    ...tagBlocks(text, "dungeon info").flatMap(firstNumberPerLine),
+  ]);
+  addIds("quest.appearMapDungeon", ["dungeon"], tagBlocks(text, "appear map").flatMap((block) => groupedIds(block, 2, 0)));
+  addIds("quest.monsterRewardMonster", ["monster"], tagBlocks(text, "monster reward item").flatMap((block) => groupedIds(block, 4, 0)));
+  addIds("quest.monsterRewardDungeon", ["dungeon"], tagBlocks(text, "monster reward item").flatMap((block) => groupedIds(block, 4, 1)));
+  addIds("quest.monsterRewardItem", ["stackable", "equipment"], tagBlocks(text, "monster reward item").flatMap((block) => groupedIds(block, 4, 3)));
+  addIds("quest.clearRewardDungeon", ["dungeon"], tagBlocks(text, "clear reward item").flatMap((block) => groupedIds(block, 3, 0)));
+  addIds("quest.clearRewardItem", ["stackable", "equipment"], tagBlocks(text, "clear reward item").flatMap((block) => groupedIds(block, 3, 2)));
+  addIds("quest.rewardItem", ["stackable", "equipment"], [
+    ...tagBlocks(text, "reward int data").flatMap(firstNumberPerLine),
+    ...tagBlocks(text, "depend give item").flatMap(firstNumberPerLine),
+  ]);
 }
 
 function addResolvedRelation(ctx, sourceCandidate, relationKind, hit, targetKind, id) {
@@ -1229,7 +1279,7 @@ async function main() {
   };
   validateArgs(args);
 
-  const native = require(findBundledNativeBackend());
+  const native = loadPvfBackend().api;
   const pvf = await openPvf(native, args.pvf, args.encoding);
   const ctx = {
     args,

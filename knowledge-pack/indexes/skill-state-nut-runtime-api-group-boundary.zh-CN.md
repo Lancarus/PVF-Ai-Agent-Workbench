@@ -1,48 +1,27 @@
-# Skill / State / NUT Runtime API 分组边界验收索引
+# Skill / State / NUT Runtime API 分组边界
 
-状态：默认可用
+状态：需验证
 
-用途：作为 Skill / State / NUT Runtime Boundary 高覆盖主线的 API 分组收口入口。本文把已由主目标 PVF 只读样本和 TypeSquirrel 查询支撑过的 NUT API，按功能组整理成“最低可用含义、代表样本、不可静态证明边界”。本文不是完整 API 手册，不授权写 PVF，不替代运行测试。
+用途：把技能脚本问题按功能组路由，不保存职业样本覆盖率或历史验收状态。
 
-## 100% 高覆盖口径
-
-| 验收项 | 当前结论 |
-| --- | --- |
-| load_state 入口 | `sqr/character/*_load_state.nut` 12/12 已纳入入口矩阵。 |
-| 模式桶 | 重型 state+PO、state+appendage/buff/throw、Avenger `CNAvenger`、Creator hybrid/mouse-control、Common loop state、script-only 被动入口、Priest light state 均已有代表样本。 |
-| registry 规则 | skill、passiveobject、monster、APC 等数字 ID 不按外形猜，必须按父块和上下文走正确 `.lst`。 |
-| API 分组 | 已把现有 API 按入口、技能使用、state 参数、appendage、PO、AttackInfo、对象/场景、timer/冷却、移动/输入、视觉/粒子、弱定义 helper 分组。 |
-| Workbench 闭环 | 本索引用于最终 MANIFEST 与检查脚本验收；静态结论仍保留运行风险。 |
-
-## API 功能组总览
-
-| 功能组 | 代表 API / 对象 | 代表样本 | 最低可用结论 | 不可静态证明 |
-| --- | --- | --- | --- | --- |
-| 入口注册 | `IRDSQRCharacter.pushScriptFiles`、`pushState`、`pushPassiveObj`、`CNAvenger.push*` | load_state 矩阵、Avenger、Creator、Common、Priest | 判断脚本是否可能进入运行时的第一入口。 | 函数被注册不等于技能实际可用、命中或资源完整。 |
-| skill registry / 数据 | `skill/*.lst`、`.skl [static data]`、`[level info]`、`sq_GetLevelData`、`sq_GetIntData` | Burster、ReleaseBuffs、Creator、Avenger | skill ID 必须按当前职业 registry 闭合；数据列只能按目标脚本读取点解释。 | 数据列最终数值、面板、PVP 修正和服务端结算。 |
-| 技能使用 / 命令 | `sq_IsCommandEnable`、`sq_IsEnterSkill`、`sq_IsUseSkill`、`setSkillCommandEnable` | Burster、Gunner comminterrupt、ReleaseBuffs | 说明脚本尝试释放或开放命令。 | 是否学会、冷却、输入窗口、释放成功和手感。 |
-| state packet / substate | `sq_IntVectClear`、`sq_IntVectPush`、`sq_AddSetStatePacket`、`sq_GetVectorData`、`setSkillSubState` | Gunner、ReleaseBuffs、AT Mage 多 state | int vector 和 substate 是状态参数通道，必须按当前链读取端闭合。 | 抢占优先级、取消窗口、同步和通用化 substate 含义。 |
-| script-only / 被动回调 | `ProcPassiveSkill_*`、`procAppend_*`、`checkExecutableSkill_*`、`checkCommandEnable_*` | Swordman、Gunner、Priest | load_state 只推脚本也可能通过引擎回调进入逻辑。 | 回调频率、默认学习、外部注入和失败恢复。 |
-| Appendage / buff | `CNSquirrelAppendage.sq_AppendAppendage`、`sq_AddFunctionName`、`sq_SetValidTime`、`sq_AddChangeStatusAppendageID`、`sq_AppendAppendageID` | MagicShield、ManaBurst、PowerOfDarkness、Gunner、Burster | appendage 是持续效果、proc、buff 和 change status 的主要挂载层。 | 生命周期、叠加、刷新、死亡清理、Buff UI 和最终数值。 |
-| PassiveObject 创建 / receiveData | `pushPassiveObj`、`sq_SendCreatePassiveObjectPacket*`、`sq_StartWrite`、`sq_Write*`、`receiveData.read*` | AT Mage 多 PO、Avenger、Creator | PO ID 必须走 `passiveobject/passiveobject.lst`；写包顺序必须和读取端闭合。 | 轨迹、命中、销毁时序、同步、客户端资源完整性。 |
-| AttackInfo / hit packet | `sq_GetCurrentAttackInfo`、`sq_SetCurrentAttackInfo`、`sq_SetCurrentAttackBonusRate`、`sq_SendHitObjectPacket*`、异常状态写入 | WindStrike、DarkChange、LightningWall、MagicShield | 说明脚本尝试改写攻击包、发送命中包或异常状态。 | 最终伤害、命中、卡肉、浮空、抗性、PVP 和服务端结算。 |
-| 对象 / 场景 / 目标 | `getObjectManager`、`isEnemy`、`sq_GetObjectId`、`sq_GetObjectByObjectId`、`sq_getGrowType`、`sq_IsTowerDungeon` | BlueDragonWill、ChainLightning、Gunner、Common | 支撑目标搜索、对象找回、转职分支和场景排除。 | 目标优先级、死亡/离场、特殊免疫、性能和联机一致性。 |
-| Timer / 冷却 / 队列 | `setTimeEvent`、`EventTimer`、`sq_AddSkillLoad`、`startSkillCoolTime`、`CNRDSkill.isInCoolTime`、`setEnableChangeState` | PowerOfDarkness、ChainLightning、HolongLight、Burster、ReleaseBuffs | 支撑多段时序、冷却、装载和队列推进。 | timer 精度、UI 显示、失败释放恢复、跨图和服务端一致性。 |
-| 移动 / 坐标 / 输入 | `sq_GetUniformVelocity`、`sq_SetMoveParticle`、`isMovablePos`、`IMouse.GetXPos/YPos`、`stage.getMainControl()` | Teleport、WaterCannon、PieceOfIce、CreatorMage | 支撑位移、轨迹、鼠标坐标和按键状态。 | 真实落点、阻挡、碰撞、手感、输入容错和同步。 |
-| 动画 / 视觉 / 粒子 | `sq_CreateAnimation`、draw-only、`sq_flashScreen`、`sq_SetShake`、`GetparticleCreaterMap`、aura master | LightningWall、FrozenLand、PieceOfIce、Burster | 支撑视觉层、粒子、震动、吸附视觉或 draw-only 对象。 | 资源存在、图层、残留、实际吸附、攻击来源和多人显示。 |
-
-## API 可信度分层
-
-| 层级 | 可写入 Workbench 的结论 | 例子 | 边界 |
+| 功能组 | 常见入口 | 最低可用结论 | 不可静态证明 |
 | --- | --- | --- | --- |
-| TypeSquirrel 已查 + 主目标脚本实见 | 可写最低含义和目标链用途。 | `sq_AddSetStatePacket`、`sq_AppendAppendage`、`sq_GetSkillLevel`。 | 仍不能证明运行结果。 |
-| 主目标脚本实见但 TypeSquirrel 未完整闭合 | 只能写“目标脚本观察到该调用形态”。 | `receiveData.read*`、部分 `getVar` 变量容器、`IMouse` 直接定义。 | 不写成完整 API 手册。 |
-| 搜不到定义或目标未命中 | 不能作为当前主目标事实。 | `ForceUse_Character`、当前未闭合的 `IsInterval` 定义。 | 只能作为风险或线索。 |
-| 运行效果层 | 必须另走运行测试或目标 PVF 实验。 | 伤害、命中、卡肉、击退、浮空、追踪、销毁、同步、PVP。 | 静态 Workbench 不替代实机。 |
+| 入口注册 | `pushScriptFiles`、`pushState`、`pushPassiveObj` | 脚本或对象可能进入运行时。 | 技能可用、命中或资源完整。 |
+| skill 数据 | 职业 skill registry、`.skl [static data]`、`[level info]` | ID 按职业 registry 解析，数据列按读取点解释。 | 面板、PVP 修正和最终结算。 |
+| 技能使用 | `sq_IsCommandEnable`、`sq_IsEnterSkill`、`sq_IsUseSkill` | 脚本检查命令或技能使用条件。 | 是否学会、冷却、输入窗口和释放成功。 |
+| state / substate | state packet、int vector、`setSkillSubState` | 状态参数通道必须在写入端与读取端闭合。 | 抢占、取消窗口、同步和通用 substate 含义。 |
+| 被动回调 | `ProcPassiveSkill_*`、`procAppend_*`、`checkExecutableSkill_*` | script-only 入口可能由引擎回调触发。 | 回调频率、默认学习和失败恢复。 |
+| appendage / buff | appendage 挂载、proc、有效期和属性变更 | 持续效果通过 appendage 链承载。 | 叠加、刷新、死亡清理、Buff UI 和最终数值。 |
+| PassiveObject | 创建包、`receiveData.read*` | PO ID 走 `passiveobject.lst`，写包顺序与读取端闭合。 | 轨迹、命中、销毁、同步和客户端资源。 |
+| AttackInfo | 当前攻击信息、倍率、命中包、异常状态 | 脚本尝试改写或发送攻击包。 | 最终伤害、命中、卡肉、浮空、抗性和 PVP。 |
+| 对象 / 场景 | 对象管理器、敌我判断、对象 ID、职业与场景检查 | 支撑目标搜索和分支条件。 | 目标优先级、免疫、性能和联机一致性。 |
+| timer / 冷却 | time event、skill load、cool time、队列 | 支撑时序、装载和冷却入口。 | 计时精度、UI、跨图和失败恢复。 |
+| 移动 / 输入 | 速度、坐标、可移动检查、鼠标/按键 | 支撑位移、轨迹和输入。 | 真实落点、碰撞、手感和同步。 |
+| 视觉 / 粒子 | animation、draw-only、flash、shake、particle | 支撑表现候选。 | 资源存在、图层、残留和多人显示。 |
 
-## 后续默认动作
+## 固定规则
 
-1. 用户问 Skill / State / NUT 入口、注册、API 边界时，先读高覆盖矩阵和本文。
-2. 已有代表模式只复核、引用、汇报风险；不默认继续采样。
-3. 只有明确出现“现有组无法解释的新 API 类别”或“某字段缺口待补”，才补一个最小主目标只读样本。
-4. 运行效果、PVP、同步、资源完整性问题，直接转运行测试或资源链检查，不用静态账本硬推。
+- 先查询随包 NUT 声明，再读回目标脚本的真实调用点；两者都不能单独证明运行可用。
+- 数字 ID 按父块和职业分支走正确 `.lst`，不能按数字外形猜。
+- 搜索 0 命中不证明 API 不存在；未知名称不使用近似函数替代。
+- 行为 PASS 必须绑定完整 PVF SHA、入口链、前置条件和测试范围，不跨版本自动继承。

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.pvf-agent-workbench/schemas/research-claim-store.schema.json",
+  "title": "External research claim store",
+  "type": "object",
+  "required": ["schemaVersion", "phase", "generatedAt", "updatedAt", "sourceManifests", "claims"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "phase": { "const": "external-research-claim-store" },
+    "sourceManifests": { "type": "array", "minItems": 1 },
+    "claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["claimId", "domain", "subjectType", "subject", "statement", "status", "sourceConfidence", "versionApplicability", "distributionStatus", "sourceRefs"]
+      }
+    }
+  }
+}

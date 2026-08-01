@@ -2,9 +2,8 @@
 
 本文件是 equipment 字段的主入口，不再承担完整字段百科。需要具体列形、低频边界或运行风险时，按下表进入对应专题索引。
 
-装备字段默认状态为 `需验证`：写 PVF 前必须重新读取目标 PVF、解析 registry、保存到显式输出并读回。本文不写来源链，不记录资料库路径，不授权直接写 PVF。
+装备字段默认状态为 `需验证`：写 PVF 前必须重新读取目标 PVF、解析 registry、保存到显式输出并读回。本文不授权直接写 PVF。
 
-当前已收窄的运行样本：当前主目标装备样本已经证明 `[minimum level]` 可限制低等级角色穿戴，`[usable job]` 可限制非目标职业穿戴。该结论只覆盖当前样本；不外推到所有装备部位、职业 token、转职映射、时装/宠物/称号/消耗品或正向满足条件后的穿戴行为。
 
 ## 使用方式
 
@@ -40,7 +39,6 @@
 ## 快速边界
 
 - `[need material]` 只有在 NPC 商店兑换链路中可作为 `默认可用` 入口；材料 ID 仍需 registry 解析。
-- `[minimum level]` 与 `[usable job]` 已有当前主目标装备穿戴限制样本；写入时仍必须按目标装备、角色等级和职业做 readback 与游戏内验证。
 - `[price]`、`[cash]`、`[medal]`、`[value]` 等经济字段必须按商店、掉落、装备主段或 stackable 上下文分别解释。
 - `[physical attack]`、`[magical attack]`、`[physical defense]`、`[magical defense]` 在本目标语境下不是简单按英文直译；详细见基础字段索引。
 - `[HP MAX]`、`[MP MAX]`、`[SKILL_LEVEL]`、`[STUCK ON ATTACK]` 等大小写敏感 token 必须原样保存。

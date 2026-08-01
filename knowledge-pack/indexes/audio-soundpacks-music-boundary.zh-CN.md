@@ -1,6 +1,6 @@
 # Audio / SoundPacks / Music / audio.xml Boundary
 
-状态：已完成静态只读封存。
+状态：需验证
 
 本索引用于路由 PVF 音频 token、`audio.xml`、SoundPacks、Music 之间的静态闭合关系。它只覆盖静态配置与资源索引，不覆盖实机播放、客户端加载顺序、音量、循环、混音、补丁优先级或服务端放行。
 
@@ -26,14 +26,12 @@ PVF 声音字段 token
     -> 弱静态闭合或风险提示
 ```
 
-## 主目标静态覆盖
 
 | 桶 | 扫描文件 | 读取错误 | 唯一 token | 未闭合 token |
 | --- | ---: | ---: | ---: | ---: |
 | 默认桶 | 149943 | 0 | 4030 | 281 |
 | `.ani` 桶 | 236510 | 12 | 1100 | 246 |
 
-主目标音频索引：
 
 | 项目 | 数量 |
 | --- | ---: |
@@ -88,32 +86,27 @@ PVF 声音字段 token
 | `[sound]` | `.map` | token 列表 -> MUSIC/EFFECT/RANDOM | 同行可能混合音乐与环境音。 |
 | `[opening bgm]` | `.map` | token -> MUSIC -> Music | 不能证明进图后开场音乐实际播放。 |
 
-## 主目标已确认的闭合类型
 
 | 类型 | 结论 |
 | --- | --- |
-| EFFECT -> SoundPacks | 主目标存在大量强静态闭合样本。 |
-| MUSIC -> Music | 主目标存在强静态闭合样本，同时有少量缺失音乐文件。 |
-| RANDOM -> EFFECT | 主目标存在随机组闭合样本，同时有部分随机子项缺失。 |
-| token -> SoundPacks stem | 主目标存在弱闭合样本，不能替代 `audio.xml` 完整闭合。 |
-| 显式音频路径 | 主目标默认桶未发现显式音频路径引用。 |
+| EFFECT -> SoundPacks | 需在当前目标 PVF 中只读确认 |
+| MUSIC -> Music | 需在当前目标 PVF 中只读确认 |
+| RANDOM -> EFFECT | 需在当前目标 PVF 中只读确认 |
+| token -> SoundPacks stem | 需在当前目标 PVF 中只读确认 |
+| 显式音频路径 | 需在当前目标 PVF 中只读确认 |
 
-## 主目标风险桶
 
-| 风险 | 主目标观察 | 写法 |
+| 风险 | 目标核验 | 写法 |
 | --- | --- | --- |
-| EFFECT 文件缺失 | 612 个 EFFECT 指向的文件未静态命中。 | 写为 SoundPacks 资源链风险。 |
-| MUSIC 文件缺失 | 24 个 MUSIC 指向的文件未静态命中。 | 写为 Music 资源链风险。 |
-| RANDOM 子项缺失 | 46 个 RANDOM 存在缺失子项。 | 写为随机组内部风险。 |
-| 重复 ID | `audio.xml` 有 38 个重复 ID。 | 写为静态索引歧义风险。 |
-| `.ani` 读取错误 | `.ani` 桶有 12 个读取错误。 | 写为动画层补样本风险，不扩大为整体失败。 |
-| 未闭合 token | 默认桶 281 个，`.ani` 桶 246 个。 | 写为未闭合资源链风险。 |
+| EFFECT 文件缺失 | 需在当前目标 PVF 中只读确认 | 写为 SoundPacks 资源链风险。 |
+| MUSIC 文件缺失 | 需在当前目标 PVF 中只读确认 | 写为 Music 资源链风险。 |
+| RANDOM 子项缺失 | 需在当前目标 PVF 中只读确认 | 写为随机组内部风险。 |
+| 重复 ID | 需在当前目标 PVF 中只读确认 | 写为静态索引歧义风险。 |
+| `.ani` 读取错误 | 需在当前目标 PVF 中只读确认 | 写为动画层补样本风险，不扩大为整体失败。 |
+| 未闭合 token | 需在当前目标 PVF 中只读确认 | 写为未闭合资源链风险。 |
 
-## 辅助对照提示
 
-辅助对照只作为差异提示，不覆盖主目标。
-
-| 项目 | 辅助对照 |
+| 项目 | 跨版本候选；需在当前目标 PVF 中复核 |
 | --- | ---: |
 | PVF 总文件 | 1052773 |
 | 扫描文件 | 275859 |
@@ -127,11 +120,6 @@ PVF 声音字段 token
 | 唯一 PVF 音频 token | 9728 |
 | 未闭合 token | 262 |
 
-辅助对照提示可写为：
-
-- “辅助对照音频资源层更大，提示主目标缺失项可能与客户端资源版本差异有关。”
-- “辅助对照存在 Music 与 Mp3 混合目录，主目标当前只观察到 Music 层 `.ogg`。”
-- “辅助对照显式路径引用全部静态命中，但该事实不覆盖主目标。”
 
 ## 与其他主线的边界
 
@@ -145,11 +133,10 @@ PVF 声音字段 token
 
 ## 验收口径
 
-本主线可以封存的条件：
+本主题可以整理的条件：
 
-- 已有只读脚本能重建主目标 `audio.xml`、SoundPacks、Music 与 PVF token 统计。
 - Workbench 具备 task-card、dictionary、index、encyclopedia 四个入口。
-- `knowledge-index.json` 能路由到本主线。
+- `knowledge-index.json` 能路由到本主题。
 - `MANIFEST.json` 已刷新。
 - 知识包检查、环境检查、工作区健康检查通过。
 - PVF 会话最终关闭。
@@ -159,11 +146,9 @@ PVF 声音字段 token
 可以使用：
 
 ```text
-主目标静态观察到该 PVF 音频 token 可通过 audio.xml EFFECT/MUSIC/RANDOM 闭合到 SoundPacks 或 Music 资源索引；该结论只证明静态资源链存在，不证明实机播放。
 ```
 
 风险写法：
 
 ```text
-主目标静态观察到该 token 未能通过 audio.xml 与 SoundPacks/Music 闭合，应作为音频资源链风险；是否实机无声、报错或被 fallback 覆盖，需要运行测试或客户端日志确认。
 ```

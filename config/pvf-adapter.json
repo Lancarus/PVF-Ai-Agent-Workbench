@@ -3,13 +3,12 @@
   "phase": "phase-4-readonly-session-index",
   "mode": "read-only",
   "upstream": {
-    "kind": "mcp-stdio",
+    "kind": "bundled-stdio-backend",
     "command": "${WORKBENCH_ROOT}/runtime/node/node.exe",
     "args": [
       "${WORKBENCH_ROOT}/tools/pvf-bridge/server.js"
     ],
-    "cwd": "${WORKBENCH_ROOT}",
-    "serverPathEnv": "PVF_AGENT_BRIDGE_SERVER"
+    "cwd": "${WORKBENCH_ROOT}"
   },
   "allowedTools": [
     "pvf_open",
@@ -21,7 +20,9 @@
     "pvf_list_registries",
     "pvf_resolve_lst_id",
     "pvf_resolve_id",
-    "pvf_read_file"
+    "pvf_resolve_path",
+    "pvf_read_file",
+    "pvf_read_files"
   ],
   "forbiddenTools": [
     "pvf_backup",

@@ -5,7 +5,7 @@ const path = require("path");
 const {
   backtickValues,
   commonReadOptions,
-  findBundledNativeBackend,
+  loadPvfBackend,
   firstBacktick,
   normalizeEncoding,
   normalizeKey,
@@ -15,10 +15,11 @@ const {
   resolveRegisteredPath,
   tagBlocks,
 } = require("./pvf_graph_common");
+const { runtimePath } = require("../../core/pvf-agent-core/lib/runtime-state");
 
 const WORKSPACE = process.env.DNFPVF_WORKSPACE || path.resolve(__dirname, "..", "..");
 const DATE_TAG = new Date().toISOString().slice(0, 10);
-const DEFAULT_OUT_DIR = path.join(WORKSPACE, "workspaces", "planner-runs", "item-stackable");
+const DEFAULT_OUT_DIR = runtimePath(WORKSPACE, "planner-runs", "item-stackable");
 
 const REGISTRY_SPECS = [
   { kind: "equipment", path: "equipment/equipment.lst" },
@@ -248,7 +249,7 @@ async function openFixtureSource(fixtureDir) {
 }
 
 async function openPvfSource(pvfPath, encoding) {
-  const native = require(findBundledNativeBackend());
+  const native = loadPvfBackend().api;
   const sourcePath = path.resolve(pvfPath);
   const session = await native.openSession(sourcePath, normalizeEncoding(encoding));
   const sessionId = session.sessionId;

@@ -2,13 +2,11 @@
 
 状态：默认可用
 
-用途：记录当前主目标中 `FireRoad` 的 skill registry、state/substate、load_state、`24212/24213` passiveobject、两段 AttackInfo 切换、写包字段、动画 frame 15 等待点和 NUT API 边界。本文只覆盖这一个技能创建的 PO 窄链，不重开 PassiveObject / AttackInfo / Hitbox 广域主线。
 
 ## 一句话结论
 
 `FireRoad` 是男法 `skill 6` 的主动技能，运行入口注册到 `STATE_FIRE_ROAD = 24`。角色先进入 substate `0` 做施放读条，`FireRoadCast1.ani` 的 frame 2 flag 触发批量创建 `24212/24213` 火柱；角色动作结束后切 substate `1` 播 `FireRoadCast2.ani`，再回站立。火柱 PO 初始使用 `ATFireRoad1.atk` 和第一次攻击倍率，在自身动画 frame 15 长停顿处观察父角色 state/substate；当父角色已进入 substate 1 或离开 FireRoad 时，切到 `ATFireRoad2.atk`、第二次攻击倍率并跳到 frame 16 继续播放。
 
-## 主目标只读闭合链
 
 | 层级 | 当前确认 | 边界 |
 | --- | --- | --- |
@@ -41,7 +39,7 @@
 | 释放入口 | `checkExecutableSkill_FireRoad` 成功使用 `SKILL_FIRE_ROAD` 后压入 int vector `0`，发送 `STATE_FIRE_ROAD` 且 `hasSubState=true`。 | 成功进入仍受技能条件和引擎判断影响。 |
 | 命令允许 | `checkCommandEnable_FireRoad` 在普通攻击 state 内额外查 `sq_IsCommandEnable`，其他状态返回 true。 | 只说明命令层检查，不等于任何状态都能实际释放。 |
 | substate 0 | 设置 `CUSTOM_ANI_FIRE_ROAD_CAST1`，播放 `MW_FIREROAD`，按技能 cast time 改写当前动画 frame 0 delay，开始施放读条，并追加火元素链。 | 读条、改帧延迟和施放手感需实机。 |
-| keyframe 创建 | 只在 substate 0 分支执行；脚本未检查 `flagIndex` 数值。当前 `FireRoadCast1.ani` 的 frame 2 有 `[SET FLAG] 1`，触发创建火柱。 | 若动画未来增加其他 flag，脚本也会进入同一分支；当前只按主目标动画闭合。 |
+| keyframe 创建 | 只在 substate 0 分支执行；脚本未检查 `flagIndex` 数值。当前 `FireRoadCast1.ani` 的 frame 2 有 `[SET FLAG] 1`，触发创建火柱。 | 需在当前目标 PVF 中只读确认 |
 | substate 0 结束 | 当前动画结束后压入 int vector `1`，再次发送 `STATE_FIRE_ROAD`。 | 切换时序和取消/受击中断需实机。 |
 | substate 1 | 设置 `CUSTOM_ANI_FIRE_ROAD_CAST2`；该动画 frame 2 也有 `[SET FLAG] 1`，但脚本的 keyframe 创建逻辑只处理 substate 0。 | 不要把 CAST2 写成二次创建入口。 |
 | substate 1 结束 | 当前动画结束后回 `STATE_STAND`。 | 回站立时序、硬直和同步需实机。 |

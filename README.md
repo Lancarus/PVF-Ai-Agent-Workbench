@@ -1,61 +1,45 @@
 # PVF AI Agent Workbench
 
-这是一个给 AI Agent 使用的 DNF / DFO PVF 工作台。
+这是一个让 AI Agent 帮你查看和修改 DNF `Script.pvf` 的便携工作台。你不需要先懂代码，只要告诉 Agent 想改什么，它会按内置知识查文件、核对 ID，并先给出安全方案。
 
-把 Codex、Claude Code、OpenCode、Trae 等 AI 工具的工作区指向这个文件夹，它就能按这里的资料和规则帮你分析 PVF 怎么改、该看哪些文件、哪些地方容易出错。
+## 下载和开始
 
-你可以一句话让 Ai Agent 修改任意内容；也可以只将其当做老师的角色，问询修改方法，然后利用 pvfUtility 之类的成熟修改工具自主修改
-
-## 下载使用
-
-点 GitHub 页面右侧的 **Releases**，下载最新版的 **Source code (zip)**。
-
-解压后，用你的 AI Agent 工具打开 `PVF-Agent-Workbench` 文件夹，然后将这段话发给 AI：
+1. 在 [Releases](https://github.com/Qswhisper/PVF-Ai-Agent-Workbench/releases) 下载最新版 **Source code (zip)**。
+2. 解压后运行 `workbench.bat check`。
+3. 用 Codex、Claude Code、OpenCode 或 Trae 打开整个工作台文件夹。
+4. 把下面这段话发给 Agent：
 
 ```text
-请先只读 AGENTS.md、knowledge-pack/README.zh-CN.md、knowledge-pack/safety/README.zh-CN.md 和 knowledge-pack/indexes/knowledge-index.json。
+请先读取 AGENTS.md，并按工作台规则帮助我处理 PVF。
 ```
 
-之后，Ai会向你提问：
+然后告诉 Agent：
 
-- 你的 `Script.pvf` 在哪里
-- 你想改什么，例如任务、商店、装备、技能、掉落、礼包、宠物或副本
-- 是否允许生成新的输出 PVF
-- 是否会进游戏实测
+- `Script.pvf` 在哪里；
+- 想修改什么；
+- 是否允许生成新的输出 PVF；
+- 是否可以进游戏测试。
 
-新手建议先让 AI 做只读分析，不要一上来就写 PVF。
+第一次使用时，建议先让 Agent 只读分析，不要直接写入 PVF。
 
-## 能帮你做什么
+## 能做什么
 
-- 查 PVF 字段、路径、ID 和注册表。
-- 判断一个修改大概要动哪些文件。
-- 提醒常见崩溃点和格式坑。
-- 让 AI 按“只读 -> dry-run -> 受控输出”的路线做事。
-- 减少 AI 靠猜修改 PVF 的概率。
+- 查 PVF 文件、字段、ID 和对应的登记表，减少凭数字猜测。
+- 分析商店、装备、技能、任务、掉落、礼包、宠物、副本、APC 和 NUT 脚本。
+- 规划内容提取、跨版本比较、依赖关系和客户端兼容性检查。
+- 按“只读分析 → dry-run 预演 → 用户批准 → 输出新 PVF”的流程执行修改。
 
-## 几条底线
+## 安全原则
 
-- 不要直接覆盖源 PVF。
-- 不要默认修改客户端资源。
-- 写 PVF 前先确认目标文件、ID、路径和注册表。
-- 写出后要 readback 检查。
-- 中文文本替换要用 PVF 原始文本，不要把简体显示文本或 HTML 实体写回去。
+- 默认只读，不覆盖源 PVF。
+- 不会默认修改客户端、NPK 或 IMG 文件。
+- 写出前必须核对目标、预演修改；写出时会备份并重新读取检查。
+- 不要把真实 PVF、客户端、账号信息或 API key 上传到仓库和 Issues。
 
-更多细节交给 AI 按需读取即可：
+## 运行环境
 
-- [AGENTS.md](AGENTS.md)
-- [README.zh-CN.md](README.zh-CN.md)
-- [knowledge-pack/README.zh-CN.md](knowledge-pack/README.zh-CN.md)
-- [docs/CLEAN-COPY.zh-CN.md](docs/CLEAN-COPY.zh-CN.md)
+当前版本支持 **64 位 Windows**，已自带 Node.js，不需要 npm、外部 MCP、TypeSquirrel 或已下架的 VSCode 插件。native 后端仍为首选；随包 TypeScript 只读后端由固定 Node.js runtime 直接执行，不需要转译或构建。
 
-## 知识包可以拿去用
+如果 native 后端因缺少 VC++ 运行库而无法加载，工作台会自动进入只读模式；查询仍可用，但不能输出 PVF。`workbench.bat check` 会说明原因并给出微软官方下载入口。
 
-`knowledge-pack/` 默认使用 CC0。你可以复制、吸收、改写、重新分发，不需要提前问我，也不强制署名。
-
-代码和工具脚本使用 MIT License。
-
-## 有问题怎么办
-
-点页面上方的 **Issues**，把你想改什么、已知 ID/路径、当前现象和尝试过的方法写清楚。
-
-不要上传真实 PVF、客户端文件、账号信息、API key 或私有路径截图。
+详细规则见 [AGENTS.md](AGENTS.md)，复制到新电脑前见 [docs/CLEAN-COPY.zh-CN.md](docs/CLEAN-COPY.zh-CN.md)。代码使用 MIT License，`knowledge-pack/` 使用 CC0。

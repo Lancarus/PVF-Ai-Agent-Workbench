@@ -2,66 +2,65 @@
 
 状态：默认可用
 
-用途：记录主目标 PVF 中 `etc/`、`event/`、活动配置、成长支援、签到、公告、黑钻/契约、清算/掉落支持表和特殊配置家族的静态只读边界。本文不授权写 PVF。
 
 ## 审计快照
 
-| 项 | 主目标静态结论 |
+| 项 | 目标核验 |
 | --- | ---: |
-| PVF 文件总数 | 402963 |
-| ETC/Event 关注文件 | 1334 |
-| 可读关注文件 | 489 |
-| 读取失败 | 0 |
-| `etc/` 顶层文件 | 896 |
-| `event/` 顶层文件 | 92 |
-| `event_config/` 顶层文件 | 0 |
-| `ui/event/` 文件 | 345 |
-| 关注范围 registry 文件 | 13 |
-| registry 条目 | 114 |
-| registry 存在条目 | 94 |
-| registry 缺失条目 | 20 |
-| 唯一标签 | 1153 |
-| 唯一路径引用 token | 6657 |
-| 日期形态文件 | 5 |
-| URL 形态文件 | 16 |
-| DB-like token 文件 | 44 |
-| replacement-char 风险文件 | 28 |
+| PVF 文件总数 | 需在当前目标 PVF 中只读确认 |
+| ETC/Event 关注文件 | 需在当前目标 PVF 中只读确认 |
+| 可读关注文件 | 需在当前目标 PVF 中只读确认 |
+| 读取失败 | 需在当前目标 PVF 中只读确认 |
+| `etc/` 顶层文件 | 需在当前目标 PVF 中只读确认 |
+| `event/` 顶层文件 | 需在当前目标 PVF 中只读确认 |
+| `event_config/` 顶层文件 | 需在当前目标 PVF 中只读确认 |
+| `ui/event/` 文件 | 需在当前目标 PVF 中只读确认 |
+| 关注范围 registry 文件 | 需在当前目标 PVF 中只读确认 |
+| registry 条目 | 需在当前目标 PVF 中只读确认 |
+| registry 存在条目 | 需在当前目标 PVF 中只读确认 |
+| registry 缺失条目 | 需在当前目标 PVF 中只读确认 |
+| 唯一标签 | 需在当前目标 PVF 中只读确认 |
+| 唯一路径引用 token | 需在当前目标 PVF 中只读确认 |
+| 日期形态文件 | 需在当前目标 PVF 中只读确认 |
+| URL 形态文件 | 需在当前目标 PVF 中只读确认 |
+| DB-like token 文件 | 需在当前目标 PVF 中只读确认 |
+| replacement-char 风险文件 | 需在当前目标 PVF 中只读确认 |
 
 ## 文件类型分布
 
-| 扩展名 | 文件数 | 口径 |
+| 扩展名 | 目标核验 | 口径 |
 | --- | ---: | --- |
-| `.rep` | 484 | 练习/回放类配置资源，归 ETC 关注范围但不等同活动 |
-| `.ani` | 291 | 活动/UI/引导引用的动画资源，需客户端资源主线验证 |
-| `.etc` | 267 | 通用配置表和支持表 |
-| `.gdata` | 75 | 引导/帮助页数据 |
-| `.evt` | 67 | 活动配置文件 |
-| `.ui` | 56 | UI 描述文件 |
-| `.als` | 27 | 活动或 ETC 资源附属文件 |
-| `.bt` | 13 | bluemarble tile |
-| `.lst` | 13 | 关注范围 registry |
-| `.act` | 12 | 动作资源 |
-| `.bm` | 5 | bluemarble map |
-| `.str` | 5 | 字符串资源 |
-| `.tbl` | 5 | 表格资源 |
-| `.vm` | 3 | vending machine 配置 |
+| `.rep` | 需在当前目标 PVF 中只读确认 | 练习/回放类配置资源，归 ETC 关注范围但不等同活动 |
+| `.ani` | 需在当前目标 PVF 中只读确认 | 活动/UI/引导引用的动画资源，需客户端资源主线验证 |
+| `.etc` | 需在当前目标 PVF 中只读确认 | 通用配置表和支持表 |
+| `.gdata` | 需在当前目标 PVF 中只读确认 | 引导/帮助页数据 |
+| `.evt` | 需在当前目标 PVF 中只读确认 | 活动配置文件 |
+| `.ui` | 需在当前目标 PVF 中只读确认 | UI 描述文件 |
+| `.als` | 需在当前目标 PVF 中只读确认 | 活动或 ETC 资源附属文件 |
+| `.bt` | 需在当前目标 PVF 中只读确认 | bluemarble tile |
+| `.lst` | 需在当前目标 PVF 中只读确认 | 关注范围 registry |
+| `.act` | 需在当前目标 PVF 中只读确认 | 动作资源 |
+| `.bm` | 需在当前目标 PVF 中只读确认 | bluemarble map |
+| `.str` | 需在当前目标 PVF 中只读确认 | 字符串资源 |
+| `.tbl` | 需在当前目标 PVF 中只读确认 | 表格资源 |
+| `.vm` | 需在当前目标 PVF 中只读确认 | vending machine 配置 |
 
 ## 目录家族
 
-| 家族 | 主目标观察 | 边界 |
+| 家族 | 目标核验 | 边界 |
 | --- | ---: | --- |
-| `etc/` | 896 | 通用配置大桶，必须按文件和父标签解释 |
-| `event/` | 92 | 活动 `.evt`、活动奖励、小游戏和活动资源 |
-| `ui/event/` | 345 | UI/客户端资源引用，不能证明显示正常 |
-| `event_config/` | 0 | 主目标未观察到该顶层目录 |
-| `event/bluemarble/` | 21 | bluemarble 活动子家族，含 map/tile registry |
-| `event/eventreward/` | 13 | 活动奖励子家族 |
-| `event/eventserver/` | 3 | 活动服务端相关文本/配置候选 |
-| `event/eventcharacter/` | 2 | 活动角色子家族，含小型 registry |
-| `etc/randomoption/` | 30 | 随机属性家族，已由 RandomOption 主线封存 |
-| `etc/pvpskilltree/` | 9 | PVP 技能树家族，已由 Skill Learnability 主线封存 |
-| `etc/independentdrop/` | 10 | 独立掉落家族，已由 Quest/Dungeon 主线复核 |
-| `etc/globaltutorialinfo/` | 10 | 全局教程/引导家族 |
+| `etc/` | 需在当前目标 PVF 中只读确认 | 通用配置大桶，必须按文件和父标签解释 |
+| `event/` | 需在当前目标 PVF 中只读确认 | 活动 `.evt`、活动奖励、小游戏和活动资源 |
+| `ui/event/` | 需在当前目标 PVF 中只读确认 | UI/客户端资源引用，不能证明显示正常 |
+| `event_config/` | 需在当前目标 PVF 中只读确认 | 需在当前目标 PVF 中只读确认 |
+| `event/bluemarble/` | 需在当前目标 PVF 中只读确认 | bluemarble 活动子家族，含 map/tile registry |
+| `event/eventreward/` | 需在当前目标 PVF 中只读确认 | 活动奖励子家族 |
+| `event/eventserver/` | 需在当前目标 PVF 中只读确认 | 活动服务端相关文本/配置候选 |
+| `event/eventcharacter/` | 需在当前目标 PVF 中只读确认 | 活动角色子家族，含小型 registry |
+| `etc/randomoption/` | 需在当前目标 PVF 中只读确认 | 随机属性家族，已由 RandomOption 主线整理 |
+| `etc/pvpskilltree/` | 需在当前目标 PVF 中只读确认 | PVP 技能树家族，已由 Skill Learnability 主线整理 |
+| `etc/independentdrop/` | 需在当前目标 PVF 中只读确认 | 独立掉落家族，已由 Quest/Dungeon 主线复核 |
+| `etc/globaltutorialinfo/` | 需在当前目标 PVF 中只读确认 | 全局教程/引导家族 |
 
 ## 代表活动文件
 
@@ -75,7 +74,7 @@
 | `event/growthweapon.evt` | `[gift growth weapon box]`、`[growth material item]`、`[growth equipment reward list]` | 成长武器活动配置 | item/equipment 数字必须按 registry 解析 |
 | `event/returnuserreward.evt` | `[pacakege item]`、`[reward equip item]`、职业标签 | 回归奖励/职业分组配置 | 不证明回归资格判断 |
 | `event/tw_creatednf.evt` | `[step]`、`[day]`、`[reward]` | 阶段、天数、奖励表 | 不证明活动进度计算 |
-| `event/seriablessing.evt` | `[Seria Blessing]` | 单独活动配置块 | 内部列语义未封存 |
+| `event/seriablessing.evt` | `[Seria Blessing]` | 单独活动配置块 | 内部列语义未整理 |
 
 ## 代表 ETC 支撑文件
 
@@ -108,26 +107,22 @@
 
 ## 资料线索命中口径
 
-资料线索只用于列出优先检查路径，不作为正式结论来源。主目标只读确认：
 
 - 成长武器、签到、活动任务、活动公告、活动 notice、回归奖励、创世纪/阶段奖励、Seria Blessing 等 `.evt` 文件存在。
 - 成长支援、契约/黑钻、全局参数、限制/重置、清算翻牌等 `.etc` 文件存在。
-- `etc/globaltutorialinfo.etc` 未命中，主目标是 `etc/globaltutorialinfo/` 子目录家族。
 
-## 辅助对照提示
 
-| 项 | 主目标 | 辅助对照 | 差异提示 |
+| 项 | 目标核验 | 跨版本候选；需在当前目标 PVF 中复核 | 差异提示 |
 | --- | ---: | ---: | --- |
-| PVF 文件总数 | 402963 | 1052773 | 辅助体量更大 |
-| ETC/Event 关注文件 | 1334 | 1879 | 辅助同族更多 |
-| 可读关注文件 | 489 | 902 | 辅助可读表更多 |
-| `etc/` 顶层文件 | 896 | 1351 | 辅助配置家族更大 |
-| `event/` 顶层文件 | 92 | 109 | 辅助活动文件略多 |
-| `event_config/` 顶层文件 | 0 | 0 | 两者均未观察到 |
-| registry 条目 | 114 | 419 | 辅助 registry 规模更大 |
-| registry 缺失条目 | 20 | 0 | 辅助缺失风险更少 |
+| PVF 文件总数 | 需在当前目标 PVF 中只读确认 | 1052773 | 辅助体量更大 |
+| ETC/Event 关注文件 | 需在当前目标 PVF 中只读确认 | 1879 | 辅助同族更多 |
+| 可读关注文件 | 需在当前目标 PVF 中只读确认 | 902 | 辅助可读表更多 |
+| `etc/` 顶层文件 | 需在当前目标 PVF 中只读确认 | 1351 | 辅助配置家族更大 |
+| `event/` 顶层文件 | 需在当前目标 PVF 中只读确认 | 109 | 辅助活动文件略多 |
+| `event_config/` 顶层文件 | 需在当前目标 PVF 中只读确认 | 0 | 两者均未观察到 |
+| registry 条目 | 需在当前目标 PVF 中只读确认 | 419 | 辅助 registry 规模更大 |
+| registry 缺失条目 | 需在当前目标 PVF 中只读确认 | 0 | 辅助缺失风险更少 |
 
-辅助对照只提示其他版本 ETC/Event 家族更完整，不能覆盖主目标缺失和规模事实。
 
 ## 静态与动态边界
 

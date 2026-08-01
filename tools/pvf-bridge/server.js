@@ -2,53 +2,44 @@
 
 const fs = require("fs");
 const path = require("path");
+const { loadPvfBackend } = require("./native-backend");
 
-function findBundledNativeBackend() {
-  if (process.env.PVF_XPILOT_NATIVE) {
-    return process.env.PVF_XPILOT_NATIVE;
-  }
-  const localCandidates = [
-    path.join(__dirname, "native", "pvf_rust_core.node"),
-    path.join(__dirname, "pvf_rust_core.node"),
-  ];
-  for (const candidate of localCandidates) {
-    if (fs.existsSync(candidate)) {
-      return candidate;
-    }
-  }
-  const homes = [process.env.USERPROFILE, process.env.HOME].filter(Boolean);
-  const extensionRoots = [];
-  for (const home of homes) {
-    extensionRoots.push(path.join(home, ".vscode", "extensions"));
-    extensionRoots.push(path.join(home, ".vscode-insiders", "extensions"));
-  }
-  const candidates = [];
-  for (const root of extensionRoots) {
-    if (!fs.existsSync(root)) {
-      continue;
-    }
-    for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
-      if (!entry.isDirectory() || !/^dof\.pvf-x-pilot-/i.test(entry.name)) {
-        continue;
-      }
-      const nativePath = path.join(root, entry.name, "dist", "native", "pvf_rust_core.node");
-      if (fs.existsSync(nativePath)) {
-        candidates.push(nativePath);
-      }
-    }
-  }
-  candidates.sort((a, b) => fs.statSync(b).mtimeMs - fs.statSync(a).mtimeMs);
-  if (!candidates.length) {
-    throw new Error("PVF X-Pilot native backend was not found. Set PVF_XPILOT_NATIVE to pvf_rust_core.node.");
-  }
-  return candidates[0];
-}
-
-const nativePath = findBundledNativeBackend();
-const native = require(nativePath);
+const selectedBackend = loadPvfBackend();
+const native = selectedBackend.api;
 
 const sessions = new Map();
 let currentSessionId;
+const READ_ONLY_TOOL_NAMES = new Set([
+  "pvf_open",
+  "pvf_session_info",
+  "pvf_close",
+  "pvf_list_files",
+  "pvf_list_files_page",
+  "pvf_search",
+  "pvf_list_registries",
+  "pvf_resolve_lst_id",
+  "pvf_resolve_id",
+  "pvf_resolve_path",
+  "pvf_summarize_npc_shop",
+  "pvf_read_file",
+  "pvf_read_files",
+]);
+
+function assertWritableBackend(operation) {
+  if (!selectedBackend.readOnly) return;
+  const error = new Error(
+    `The active PVF backend is the TypeScript read-only fallback; ${operation} is blocked. ` +
+    "Install the Microsoft Visual C++ v14 x64 runtime and rerun workbench.bat check before preparing or applying PVF writes.",
+  );
+  error.code = "READ_ONLY_FALLBACK";
+  throw error;
+}
+
+function assertToolAllowedForSelectedBackend(name, args) {
+  if (!selectedBackend.readOnly || READ_ONLY_TOOL_NAMES.has(name)) return;
+  if (name === "pvf_replace_text" && args?.dryRun === true) return;
+  assertWritableBackend(`tool ${name}`);
+}
 
 const REGISTRY_CATALOG = [
   { path: "town/town.lst", label: "town", description: "城镇" },
@@ -178,6 +169,7 @@ function makeSearchQuery(args) {
     isUseLikeSearchPath: Boolean(args.isUseLikeSearchPath),
     searchType: args.searchType || "SearchName",
     matchMode: args.matchMode || "Like",
+    pvfEncoding: args.pvfEncoding ? normalizeEncoding(args.pvfEncoding) : undefined,
     convertToSimplifiedChinese: args.convertToSimplifiedChinese !== false,
     sourceFiles: Array.isArray(args.sourceFiles) ? args.sourceFiles : undefined,
   };
@@ -243,6 +235,7 @@ function extractFirstNumberAfterTag(content, tag) {
 function parseLstEntries(content, lstPath) {
   const entries = [];
   const baseDir = path.posix.dirname(normalizePvfPath(lstPath));
+  const basePrefix = baseDir === "." ? "" : `${baseDir}/`;
   const lines = String(content || "").split(/\r?\n/);
   for (let index = 0; index < lines.length; index += 1) {
     const line = lines[index];
@@ -252,7 +245,9 @@ function parseLstEntries(content, lstPath) {
     }
     const id = Number(match[1]);
     const rawPath = match[2].replace(/\\/g, "/").replace(/^\/+/, "");
-    const resolvedPath = normalizePvfPath(rawPath.toLowerCase().startsWith(`${baseDir.toLowerCase()}/`) ? rawPath : `${baseDir}/${rawPath}`);
+    const resolvedPath = normalizePvfPath(
+      !basePrefix || rawPath.toLowerCase().startsWith(basePrefix.toLowerCase()) ? rawPath : `${basePrefix}${rawPath}`,
+    );
     entries.push({
       id,
       rawPath,
@@ -438,6 +433,8 @@ async function toolOpen(args) {
     encoding: session.encoding || encoding,
     fileCount: session.fileCount,
     openedAt: new Date().toISOString(),
+    backend: selectedBackend.source,
+    readOnly: selectedBackend.readOnly,
   });
   return text({
     ok: true,
@@ -529,14 +526,20 @@ async function toolSearch(args) {
   }
   const result = await native.searchFiles(sessionId, makeSearchQuery(args));
   const items = Array.isArray(result.items) ? result.items : [];
+  const errors = Array.isArray(result.errors) ? result.errors : [];
   const limit = Math.max(1, Math.min(Number(args.limit || 50), 500));
+  const returnedCount = Math.min(limit, items.length);
   return text({
     ok: true,
     sessionId,
     matchedCount: result.matchedCount,
     searchedCount: result.searchedCount,
-    returnedCount: Math.min(limit, items.length),
-    items: items.slice(0, limit),
+    returnedCount,
+    truncated: Boolean(result.truncated) || items.length > returnedCount,
+    errorCount: Number(result.errorCount || 0),
+    errorsTruncated: Boolean(result.errorsTruncated),
+    errors,
+    items: items.slice(0, returnedCount),
   });
 }
 
@@ -553,7 +556,7 @@ async function toolReadFile(args) {
   };
   const file = await native.readFile(sessionId, pvfPath, readOptions);
   const content = typeof file.textContent === "string" ? sliceLines(file.textContent, args.startLine, args.endLine) : undefined;
-  const limited = content === undefined ? {} : limitText(content, Number(args.maxChars || 30000));
+  const limited = content === undefined ? {} : limitText(content, Number(args.maxChars ?? 30000));
   return text({
     ok: true,
     sessionId,
@@ -569,6 +572,52 @@ async function toolReadFile(args) {
   });
 }
 
+async function toolReadFiles(args) {
+  const sessionId = resolveSessionId(args);
+  const pvfPaths = Array.isArray(args.pvfPaths) ? args.pvfPaths.map(normalizePvfPath) : [];
+  if (!pvfPaths.length) throw new Error("pvfPaths must contain at least one path.");
+  if (pvfPaths.length > 100) throw new Error("pvfPaths may contain at most 100 paths.");
+  const maxCharsPerFile = Math.max(1, Math.min(Number(args.maxCharsPerFile ?? 30000), 1000000));
+  const maxTotalChars = Math.max(1, Math.min(Number(args.maxTotalChars ?? 300000), 5000000));
+  const items = [];
+  let returnedCharCount = 0;
+  let truncatedByTotalLimit = false;
+  for (const pvfPath of pvfPaths) {
+    if (returnedCharCount >= maxTotalChars) {
+      truncatedByTotalLimit = true;
+      items.push({ pvfPath, skipped: true, reason: "maxTotalChars reached" });
+      continue;
+    }
+    try {
+      const file = await native.readFile(sessionId, pvfPath, commonReadOptions(args));
+      const content = typeof file.textContent === "string" ? sliceLines(file.textContent, args.startLine, args.endLine) : undefined;
+      const remaining = Math.max(0, maxTotalChars - returnedCharCount);
+      const limited = content === undefined ? {} : limitText(content, Math.min(maxCharsPerFile, remaining));
+      returnedCharCount += String(limited.textContent || "").length;
+      items.push({
+        ok: true,
+        pvfPath,
+        metadata: { fileName: file.fileName, dataLength: file.dataLength, isScriptFile: file.isScriptFile, isBinaryAniFile: file.isBinaryAniFile },
+        ...limited,
+        base64Content: content === undefined && file.base64Content ? file.base64Content : undefined,
+      });
+      if (remaining === 0 || (limited.truncated && remaining <= maxCharsPerFile)) truncatedByTotalLimit = true;
+    } catch (error) {
+      items.push({ ok: false, pvfPath, error: error && error.message ? error.message : String(error) });
+    }
+  }
+  return text({
+    ok: true,
+    sessionId,
+    requestedCount: pvfPaths.length,
+    readCount: items.filter((item) => item.ok).length,
+    errorCount: items.filter((item) => item.ok === false).length,
+    returnedCharCount,
+    truncatedByTotalLimit,
+    items,
+  });
+}
+
 async function writeText(sessionId, pvfPath, textContent, args) {
   const options = {
     pvfEncoding: args.pvfEncoding ? normalizeEncoding(args.pvfEncoding) : undefined,
@@ -580,6 +629,7 @@ async function writeText(sessionId, pvfPath, textContent, args) {
 }
 
 async function toolReplaceText(args) {
+  if (args.dryRun !== true) assertWritableBackend("PVF text replacement");
   const sessionId = resolveSessionId(args);
   const pvfPath = normalizePvfPath(args.pvfPath);
   if (typeof args.previousText !== "string" || typeof args.newText !== "string") {
@@ -611,6 +661,7 @@ async function toolReplaceText(args) {
 }
 
 async function toolWriteFile(args) {
+  assertWritableBackend("PVF file creation");
   const sessionId = resolveSessionId(args);
   const pvfPath = normalizePvfPath(args.pvfPath);
   if (typeof args.textContent !== "string") {
@@ -621,6 +672,7 @@ async function toolWriteFile(args) {
 }
 
 async function toolSave(args) {
+  assertWritableBackend("PVF save");
   const sessionId = resolveSessionId(args);
   const session = sessions.get(sessionId);
   const targetPath = args.targetPath ? path.resolve(String(args.targetPath)) : session && session.sourcePath;
@@ -636,6 +688,7 @@ async function toolSave(args) {
 }
 
 async function toolBackup(args) {
+  assertWritableBackend("PVF backup for a write run");
   const sourcePath = path.resolve(String(args.path || (currentSessionId && sessions.get(currentSessionId)?.sourcePath) || ""));
   if (!sourcePath || !fs.existsSync(sourcePath)) {
     throw new Error(`PVF file does not exist: ${sourcePath}`);
@@ -718,6 +771,31 @@ async function toolResolveId(args) {
     matchedCount: matches.length,
     matches,
   });
+}
+
+async function toolResolvePvfPath(args) {
+  const sessionId = resolveSessionId(args);
+  const pvfPath = normalizePvfPath(args.pvfPath);
+  const target = pvfPath.toLowerCase();
+  const includeSecondary = args.includeSecondary === true;
+  const registryPaths = Array.isArray(args.registryPaths) && args.registryPaths.length
+    ? args.registryPaths.map(normalizePvfPath)
+    : REGISTRY_CATALOG.filter((item) => includeSecondary || !item.secondary).map((item) => item.path);
+  const matches = [];
+  const errors = [];
+  for (const registryPath of registryPaths) {
+    try {
+      const registry = await getRegistry(sessionId, registryPath, args);
+      for (const entry of registry.entries) {
+        if (String(entry.pvfPath || "").toLowerCase() === target) {
+          matches.push({ registry: { path: registry.path, label: registry.label, description: registry.description, secondary: Boolean(registry.secondary) }, entry });
+        }
+      }
+    } catch (error) {
+      if (args.includeErrors === true) errors.push({ registryPath, error: error && error.message ? error.message : String(error) });
+    }
+  }
+  return text({ ok: true, sessionId, pvfPath, searchedRegistryCount: registryPaths.length, matchedCount: matches.length, matches, errors });
 }
 
 async function resolveNpcSource(sessionId, args) {
@@ -974,6 +1052,7 @@ const tools = [
           enum: ["SearchNum", "SearchStrings", "SearchFileName", "SearchScript", "SearchName", "SearchCode", "SearchNutText"],
         },
         matchMode: { type: "string", enum: ["None", "Like", "Regex"] },
+        pvfEncoding: { type: "string" },
         convertToSimplifiedChinese: { type: "boolean" },
         sourceFiles: { type: "array", items: { type: "string" } },
         limit: { type: "integer", minimum: 1, maximum: 500 },
@@ -1033,6 +1112,24 @@ const tools = [
     },
   },
   {
+    name: "pvf_resolve_path",
+    title: "Resolve PVF Path Across Registries",
+    description: "Find the numeric ID and .lst registry entries that register an exact PVF path.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        sessionId: { type: "string" },
+        pvfPath: { type: "string" },
+        registryPaths: { type: "array", items: { type: "string" } },
+        includeSecondary: { type: "boolean" },
+        includeErrors: { type: "boolean" },
+        pvfEncoding: { type: "string" },
+        convertToSimplifiedChinese: { type: "boolean" },
+      },
+      required: ["pvfPath"],
+    },
+  },
+  {
     name: "pvf_summarize_npc_shop",
     title: "Summarize NPC Shop",
     description:
@@ -1072,6 +1169,29 @@ const tools = [
         maxChars: { type: "integer", minimum: 0 },
       },
       required: ["pvfPath"],
+    },
+  },
+  {
+    name: "pvf_read_files",
+    title: "Read Multiple PVF Files",
+    description: "Read and decompile up to 100 explicitly named files in one read-only session with per-file and total output limits.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        sessionId: { type: "string" },
+        pvfPaths: { type: "array", minItems: 1, maxItems: 100, items: { type: "string" } },
+        pvfEncoding: { type: "string" },
+        decompileScript: { type: "boolean" },
+        decompileBinaryAni: { type: "boolean" },
+        autoConvertStringLink: { type: "boolean" },
+        useCompatibleDecompiler: { type: "boolean" },
+        convertToSimplifiedChinese: { type: "boolean" },
+        startLine: { type: "integer", minimum: 1 },
+        endLine: { type: "integer", minimum: 1 },
+        maxCharsPerFile: { type: "integer", minimum: 1 },
+        maxTotalChars: { type: "integer", minimum: 1 },
+      },
+      required: ["pvfPaths"],
     },
   },
   {
@@ -1142,8 +1262,10 @@ const handlers = {
   pvf_list_registries: toolListRegistries,
   pvf_resolve_lst_id: toolResolveLstId,
   pvf_resolve_id: toolResolveId,
+  pvf_resolve_path: toolResolvePvfPath,
   pvf_summarize_npc_shop: toolSummarizeNpcShop,
   pvf_read_file: toolReadFile,
+  pvf_read_files: toolReadFiles,
   pvf_replace_text: toolReplaceText,
   pvf_write_file: toolWriteFile,
   pvf_save: toolSave,
@@ -1166,15 +1288,25 @@ async function handle(message) {
         result: {
           protocolVersion: message.params && message.params.protocolVersion ? message.params.protocolVersion : "2025-06-18",
           capabilities: { tools: { listChanged: false } },
-          serverInfo: { name: "codex-pvf-bridge", version: "1.0.0" },
+          serverInfo: {
+            name: "pvf-workbench-bundled-backend",
+            version: "2.1.0",
+            backend: selectedBackend.source,
+            readOnly: selectedBackend.readOnly,
+          },
           instructions:
-            "Use pvf_open first to create a PVF session. Use pvf_list_registries, pvf_resolve_lst_id, pvf_resolve_id, and pvf_summarize_npc_shop for registered PVF data. Use pvf_backup before edits. Use pvf_replace_text with dryRun=true before writing. Use pvf_save with targetPath to avoid overwriting the original PVF.",
+            selectedBackend.readOnly
+              ? "The native backend could not be loaded, so this process is using the read-only TypeScript fallback. Inspection is available; every PVF write is blocked with READ_ONLY_FALLBACK."
+              : "Use pvf_open first to create a PVF session. Use pvf_list_registries, pvf_resolve_lst_id, pvf_resolve_id, and pvf_summarize_npc_shop for registered PVF data. Use pvf_backup before edits. Use pvf_replace_text with dryRun=true before writing. Use pvf_save with targetPath to avoid overwriting the original PVF.",
         },
       });
       return;
     }
     if (message.method === "tools/list") {
-      send({ jsonrpc: "2.0", id, result: { tools } });
+      const advertisedTools = selectedBackend.readOnly
+        ? tools.filter((tool) => READ_ONLY_TOOL_NAMES.has(tool.name))
+        : tools;
+      send({ jsonrpc: "2.0", id, result: { tools: advertisedTools } });
       return;
     }
     if (message.method === "tools/call") {
@@ -1186,10 +1318,15 @@ async function handle(message) {
         return;
       }
       try {
+        assertToolAllowedForSelectedBackend(name, args);
         const result = await fn(args);
         send({ jsonrpc: "2.0", id, result });
       } catch (err) {
-        send({ jsonrpc: "2.0", id, result: errorResult(err && err.message ? err.message : String(err)) });
+        send({
+          jsonrpc: "2.0",
+          id,
+          result: errorResult(err && err.message ? err.message : String(err), err && err.code ? { code: err.code } : undefined),
+        });
       }
       return;
     }

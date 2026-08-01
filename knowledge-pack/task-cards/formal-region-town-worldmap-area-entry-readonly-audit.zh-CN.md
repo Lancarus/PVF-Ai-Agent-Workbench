@@ -10,11 +10,10 @@
 2. 再读 `dictionaries/formal-region-town-worldmap-area-entry-fields.zh-CN.md`，确认字段和标签的上下文。
 3. 需要矩阵结论时读 `indexes/formal-region-town-worldmap-area-entry-boundary.zh-CN.md`。
 4. 需要文件类型解释时读 `encyclopedia/pvf-file-types/region-town-worldmap-area-entry.zh-CN.md`。
-5. 如果任务扩展到副本房间、刷怪、掉落、清算、地图对象或客户端资源，再转读已经封存的 Dungeon / Map / Spawn / Entry / Clear / Resource、Client Assets、Audio 等对应主线。
+5. 如果任务扩展到副本房间、刷怪、掉落、清算、地图对象或客户端资源，再转读已经整理的 Dungeon / Map / Spawn / Entry / Clear / Resource、Client Assets、Audio 等对应主线。
 
 ## 核查顺序
 
-1. 资料库、教程、社区说明、工具字段只能先做定向线索；字段结论必须回到主目标 PVF 只读观察。
 2. `region/region.lst` 解析 region ID；不要把 region ID 当 town/worldmap/dungeon ID。
 3. `region/*.rgn` 的 `[towns]` 逐项按 `town/town.lst` 解析；缺号只能记为静态风险。
 4. `town/town.lst` 解析 town ID；`town/*.twn` 的 `[area]` 先看地图路径和区域类型。
@@ -27,7 +26,6 @@
 ## 可接受结论
 
 - 可以说某个 ID 在某个 registry 内解析到哪个 PVF 内部路径。
-- 可以说主目标中某个注册项存在、缺失、未注册、未被观察到 town gate 引用。
 - 可以说 `town/*.twn [area]` 的地图入口在观察样本中是直接地图路径，不是裸 `map/map.lst` ID。
 - 可以说同一个数字在 region、town、worldmap、dungeon 中含义不同，必须按父块和 registry 解析。
 
@@ -37,8 +35,7 @@
 - 不把 `.wdm [ui path]` 或 `.ui` 控件写成 UI 正常显示。
 - 不把地图路径、图片路径、音频 token 写成客户端资源完整。
 - 不把 `[limit level]`、清图前置、任务/物品条件写成服务端放行。
-- 不把辅助对照 PVF 独有扩展提升为主目标事实。
 
 ## 验收提示
 
-本主线封存后，日常问到“新城镇怎么接入口”“某数字是 worldmap 还是 dungeon”“为什么静态有入口但进不去图”等问题，优先从本 task-card 进入，再按具体子问题转到 dungeon、map、client assets 或 quest/drop 相关封存主线。
+本主题整理后，日常问到“新城镇怎么接入口”“某数字是 worldmap 还是 dungeon”“为什么静态有入口但进不去图”等问题，优先从本 task-card 进入，再按具体子问题转到 dungeon、map、client assets 或 quest/drop 相关整理主线。

@@ -21,7 +21,6 @@
 7. 如果核查宠物脚本或名称文本，读 `creature/script/creature.lst` 到 `.wrd`。
 8. 如果核查 `pet/pet.lst`，单独按 pet registry 读取 `.pet`，不要和 creature registry 混为一类。
 9. 如果涉及宠物技能、攻击、被动对象或动画，只做静态入口闭合；命中、伤害、AI、资源和同步必须另验。
-10. 辅助对照 PVF 只记录结构和规模差异，不提升为主目标事实。
 
 ## 验收
 

@@ -6,14 +6,13 @@
 
 ## 是什么
 
-本主线不是单一业务系统，而是一组位于 `etc/` 的静态参数和特权支持文件族：
+本主题不是单一业务系统，而是一组位于 `etc/` 的静态参数和特权支持文件族：
 
 - `etc/serverparameter.etc`：全局参数大表，可同时出现经验倍率、掉落/奖励倍率、疲劳活动参数、成长 buff 参数、premium card、PVP、经济和杂项表。
 - `etc/premiumlist.etc`、`etc/premiumlist_new.etc`：契约、黑钻、特权、疲劳、经验、掉率和期限类条目。
 - `etc/premiumserviceeffect.etc`：premium service 的图片索引、附加装备或可选附加装备入口。
 - `etc/pcroom*.vm`：PC 房/黑钻贩卖机样输出池配置。
 - `etc/worlddroppcroom*.etc`：PC 房/黑钻世界掉落相邻表。
-- `etc/growthpowerrewardbuff.etc`、`etc/growthpowernpcdialog.etc`：成长支援 reward buff 和 NPC 对话入口；主目标当前只观察到空块骨架。
 
 ## 常见 registry
 
@@ -30,7 +29,6 @@
 3. 查特权效果展示或附加装备：读 `etc/premiumserviceeffect.etc`，再按 equipment registry 解析 `[add equipment list]`。
 4. 查 PC 房/黑钻贩卖机：读 `etc/pcroom*.vm`，再解析 `[material]` 与 `[output]`。
 5. 查 PC 房/黑钻世界掉落：读 `etc/worlddroppcroom*.etc [world drop]`，再解析候选物品。
-6. 查成长支援：读 `etc/growthpowerrewardbuff.etc` 和 `etc/growthpowernpcdialog.etc`；主目标当前只可说有空块骨架。
 
 ## 常见误区
 
@@ -39,7 +37,6 @@
 - 不要把倍率、阈值、权重、等级段写成最终概率、经验、疲劳或掉率公式。
 - 不要把贩卖机输出池、premium card、world drop 或 growth package 写成物品实际发放。
 - 不要把图片索引、服务效果装备或 UI 线索写成客户端显示正常。
-- 不要用辅助对照的非空成长支援内容补主目标空块。
 
 ## 必须验证的地方
 
@@ -57,7 +54,6 @@
 
 1. 黑钻契约：确认 `premiumlist_new` 目标条目、stackable contract、premium service effect、UI/资源和账号状态。
 2. PC 房世界掉落：确认 `worlddroppcroom` 候选物品、PC 房识别条件、掉落入口和实机发放。
-3. 成长支援：确认主目标是否需要填充 growthpower 空块，再验证 NPC、等级段、礼包 registry 和实机发放。
 4. 疲劳/经验倍率：确认 `serverparameter` 父标签、服务端采用路径和实机结算日志。
 
 所有验证都必须走受控输出 PVF、读回和实机检查；不要覆盖源 PVF。

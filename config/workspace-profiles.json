@@ -33,7 +33,7 @@
         "This is a disabled example profile.",
         "Replace paths with local machine paths before enabling.",
         "Prefer workbench.bat profile init to create config/workspace-profiles.local.json.",
-        "Do not bind a redistributable package to DNFPVFwork paths."
+        "Do not bind a redistributable package to machine-local development paths."
       ]
     }
   ]

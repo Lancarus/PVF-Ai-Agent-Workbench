@@ -30,6 +30,12 @@
       "requiredTools": ["pvf_read_file"]
     },
     {
+      "id": "text.read-batch",
+      "level": "required",
+      "summary": "Read up to 100 explicit PVF paths in one read-only session with bounded output.",
+      "requiredTools": ["pvf_read_files"]
+    },
+    {
       "id": "registry.list",
       "level": "required",
       "summary": "List primary .lst registries and, when requested, parse entry counts.",
@@ -40,6 +46,12 @@
       "level": "required",
       "summary": "Resolve numeric IDs through an explicit .lst registry and return the registered PVF path.",
       "requiredTools": ["pvf_resolve_lst_id"]
+    },
+    {
+      "id": "registry.resolve-path",
+      "level": "required",
+      "summary": "Resolve an exact PVF path back to the .lst registries and numeric IDs that register it.",
+      "requiredTools": ["pvf_resolve_path"]
     },
     {
       "id": "index.path-lst",
@@ -61,13 +73,13 @@
         "overwrite-source-pvf",
         "write-client-resources",
         "apply-without-readback",
-        "apply-through-default-agent-mcp-write-tool"
+        "apply-through-public-write-tool"
       ]
     }
   ],
   "safetyInvariants": [
     "Default adapter mode is read-only.",
-    "Agent-facing MCP must not expose write tools by default.",
+    "Ordinary read-only commands must not expose write tools.",
     "A write smoke test must write to an explicit output path and must not modify the source PVF.",
     "Every numeric ID used by a test must be resolved through the exact .lst registry named by the fixture.",
     "Local indexes are acceleration artifacts only; stale indexes cannot replace target PVF readback."

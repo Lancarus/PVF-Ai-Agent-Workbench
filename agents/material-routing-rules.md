@@ -1,10 +1,10 @@
-# Material Routing Rules
+# Knowledge Routing Rules
 
 ## 默认原则
 
-- 知识包优先，原始资料按需倒查。
-- 结论层优先于旧报告。
-- 目标 PVF 可观察事实优先于教程和社区资料。
+- 普通任务只使用工作台内置知识包、目标 PVF 读回结果和用户在当前任务中明确提供的文件。
+- 工作台内置结论用于定位和规划；最终判断仍以目标 PVF 的原始文本、正确 registry 和必要的实机结果为准。
+- 不因内置查询零命中而断言目标能力不存在。
 - Script.pvf 引用不证明客户端 ImagePacks2/NPK 资源完整。
 
 ## 推荐读取顺序
@@ -12,19 +12,19 @@
 1. `knowledge-pack/README.zh-CN.md`
 2. `knowledge-pack/indexes/knowledge-index.json`
 3. 路由命中的 `knowledge-pack/encyclopedia/`、`knowledge-pack/dictionaries/`、`knowledge-pack/workflows/` 或 `knowledge-pack/task-cards/`
-4. workspace profile 指向的外部资料库
+4. 按路由调用 `workbench.bat knowledge-query`、`pvf-read`、`pvf-index` 或只读规划命令
+5. 读回目标文件并闭合 registry、引用和写入边界
 
-## 资料可信等级
+## 状态含义
 
-- `runtime-validated`：目标 PVF 写入、读回、实机验证，可作为配方基础，但仍需目标文件复核。
-- `production-recipe`：已整理成生产流程，可执行但必须按目标闭合。
-- `target-readonly`：目标 PVF 只读闭合，只能做规划或前置小样本。
-- `source-position`：教程、源码、工具字段和社区资料线索，不授权写 PVF。
-- `negative-sample`：失败或禁止外推路线，不应重复。
+- `默认可用`：可以按正文执行，但不跳过目标文件复核和受控写入生命周期。
+- `需验证`：只作候选线索，必须在目标 PVF 或客户端中继续确认。
+- `禁用`：不得照做或据此生成写入计划。
 
 ## 禁止默认行为
 
-- 不全量读取 candidate artifacts。
-- 不全量读取高价值资料库。
+- 不要求用户另带教程、旧报告、源码目录或历史实验资料。
+- 不在普通任务中寻找来源正文、证据账本或旧路径。
 - 不把路径相似当作闭合证据。
 - 不把跨客户端样例直接套入当前目标。
+- 不把统一查询、planner 或 client matrix 结果当最终证据或可直接 apply 的计划。

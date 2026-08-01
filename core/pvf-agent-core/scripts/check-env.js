@@ -4,6 +4,13 @@ const fs = require("fs");
 const path = require("path");
 const childProcess = require("child_process");
 const { validateBundledSkill } = require("../lib/agent-skill");
+const {
+  helpLines: nativeRuntimeHelpLines,
+  isLikelyNativeRuntimeFailure,
+  openOfficialRuntimePage,
+  shouldAutoOpen: shouldAutoOpenRuntimeHelp,
+} = require("../lib/native-runtime-help");
+const { sha256File } = require("../lib/release-utils");
 
 const args = process.argv.slice(2);
 const rootArgIndex = args.indexOf("--root");
@@ -131,11 +138,9 @@ function checkRequiredPaths(errors) {
       "release",
       "runtime/node",
       "config",
-      "config/mcp-templates",
       "agents",
       "core/pvf-agent-core/cli",
       "core/pvf-agent-core/lib",
-      "core/pvf-agent-core/mcp",
       "core/pvf-agent-core/scripts",
       "core/pvf-agent-core/schemas",
       "core/pvf-agent-core/contracts",
@@ -170,9 +175,20 @@ function checkRequiredPaths(errors) {
       "README.md",
       "README.zh-CN.md",
       "docs/CLEAN-COPY.zh-CN.md",
+      "docs/READONLY-FALLBACK.zh-CN.md",
+      "docs/RESEARCH-INTAKE.zh-CN.md",
+      "docs/NUT-API-CATALOG.zh-CN.md",
+      "docs/TAG-KNOWLEDGE-CATALOG.zh-CN.md",
+      "docs/PVF-SEMANTIC-LINEAGE.zh-CN.md",
+      "docs/CLEAN-ROOM-DEPENDENCY-PLANNER.zh-CN.md",
+      "docs/CLIENT-PVF-COMPATIBILITY-MATRIX.zh-CN.md",
+      "docs/UNIFIED-KNOWLEDGE-QUERY.zh-CN.md",
+      "docs/THIRD-PARTY-NOTICES.md",
       "VERSION",
       "CHANGELOG.zh-CN.md",
       "release/PORTABLE-RELEASE-MANIFEST.json",
+      "release/BUNDLED-RUNTIME-MANIFEST.json",
+      "release/GITHUB-PUBLISH-CHECKLIST.zh-CN.md",
       "docs/release/RELEASE-GATE-1.zh-CN.md",
       "docs/release/RELEASE-GATE-2.zh-CN.md",
       "docs/release/RELEASE-GATE-3.zh-CN.md",
@@ -192,10 +208,23 @@ function checkRequiredPaths(errors) {
       "commands/pvf-change-set.bat",
       "commands/pvf-index.bat",
       "commands/pvf-backend-contract.bat",
+      "commands/research-intake.bat",
+      "commands/nut-api.bat",
+      "commands/tag-knowledge.bat",
+      "commands/pvf-lineage.bat",
+      "commands/dependency-planner.bat",
+      "commands/client-compat-matrix.bat",
+      "commands/unified-knowledge-query.bat",
       "commands/workbench-doctor.bat",
       "runtime/node/node.exe",
+      "runtime/node/LICENSE",
       "tools/pvf-bridge/server.js",
+      "tools/pvf-bridge/native-backend.js",
       "tools/pvf-bridge/native/pvf_rust_core.node",
+      "tools/pvf-bridge/fallback/codec.ts",
+      "tools/pvf-bridge/fallback/script.ts",
+      "tools/pvf-bridge/fallback/ani.ts",
+      "tools/pvf-bridge/fallback/pvf-readonly-backend.ts",
       "tools/pvf-bridge/dungeon-workflow.js",
       "tools/pvf-bridge/extract-dungeon.js",
       "tools/pvf-bridge/import-dungeon-extract.js",
@@ -208,12 +237,6 @@ function checkRequiredPaths(errors) {
       "tools/pvf-bridge/compare-dungeon-extracts.js",
       "tools/pvf-bridge/clean-client-compatible-extract.js",
       "tools/pvf-bridge/materialize-dungeon-preset.js",
-      "config/mcp.json",
-      "config/mcp-templates/README.zh-CN.md",
-      "config/mcp-templates/pvf-agent-core.windows-bundled-node.fragment.json",
-      "config/mcp-templates/pvf-agent-core.system-node.fragment.json",
-      "config/mcp-templates/host-agent-notes.zh-CN.md",
-      "config/mcp-templates/typesquirrel-optional.zh-CN.md",
       "config/pvf-adapter.json",
       "config/write-policy.json",
       "config/workspace-profiles.json",
@@ -223,6 +246,10 @@ function checkRequiredPaths(errors) {
       ".agents/skills/dnf-pvf-xpilot/agents/openai.yaml",
       "core/pvf-agent-core/README.zh-CN.md",
       "core/pvf-agent-core/scripts/check-env.js",
+      "core/pvf-agent-core/scripts/native-runtime-help.js",
+      "core/pvf-agent-core/scripts/fallback-backend-self-test.js",
+      "core/pvf-agent-core/scripts/fallback-backend-differential.js",
+      "core/pvf-agent-core/lib/native-runtime-help.js",
       "core/pvf-agent-core/scripts/workbench.js",
       "core/pvf-agent-core/scripts/workbench-profile.js",
       "core/pvf-agent-core/scripts/runtime-absorb-checklist.js",
@@ -234,22 +261,34 @@ function checkRequiredPaths(errors) {
       "core/pvf-agent-core/scripts/agent-eval.js",
       "core/pvf-agent-core/scripts/install-agent-skill.js",
       "core/pvf-agent-core/scripts/portable-package-dry-run.js",
+      "core/pvf-agent-core/scripts/build-clean-builtin-knowledge.js",
       "core/pvf-agent-core/scripts/portable-stage-copy-dry-run.js",
       "core/pvf-agent-core/scripts/portable-cold-start-dry-run.js",
       "core/pvf-agent-core/cli/pvf-readonly.js",
       "core/pvf-agent-core/cli/pvf-change-set.js",
       "core/pvf-agent-core/cli/pvf-index.js",
       "core/pvf-agent-core/cli/pvf-backend-contract.js",
-      "core/pvf-agent-core/lib/mcp-stdio-client.js",
+      "core/pvf-agent-core/cli/research-intake.js",
+      "core/pvf-agent-core/cli/nut-api.js",
+      "core/pvf-agent-core/cli/tag-knowledge.js",
+      "core/pvf-agent-core/cli/pvf-lineage.js",
+      "core/pvf-agent-core/cli/dependency-planner.js",
+      "core/pvf-agent-core/cli/client-compat-matrix.js",
+      "core/pvf-agent-core/cli/unified-knowledge-query.js",
+      "core/pvf-agent-core/lib/backend-stdio-client.js",
       "core/pvf-agent-core/lib/adapter-config.js",
       "core/pvf-agent-core/lib/workspace-profiles.js",
       "core/pvf-agent-core/lib/pvf-index-store.js",
       "core/pvf-agent-core/lib/release-utils.js",
       "core/pvf-agent-core/lib/runtime-state.js",
       "core/pvf-agent-core/lib/agent-skill.js",
-      "core/pvf-agent-core/mcp/server.js",
+      "core/pvf-agent-core/lib/research-store.js",
       "core/pvf-agent-core/contracts/pvf-backend-contract.zh-CN.md",
       "core/pvf-agent-core/contracts/pvf-backend-contract.v1.json",
+      "core/pvf-agent-core/contracts/typescript-readonly-backend-contract.v1.json",
+      "core/pvf-agent-core/contracts/dependency-planner.v1.json",
+      "core/pvf-agent-core/contracts/client-compatibility-matrix.v1.json",
+      "core/pvf-agent-core/contracts/unified-knowledge-query.v1.json",
       "core/pvf-agent-core/contracts/fixtures/README.zh-CN.md",
       "core/pvf-agent-core/contracts/fixtures/apc-swordman-gsd.fixture.json",
       "core/pvf-agent-core/contracts/fixtures/itemshop-birken.fixture.json",
@@ -261,6 +300,7 @@ function checkRequiredPaths(errors) {
       "core/pvf-agent-core/schemas/pvf-index-manifest.schema.json",
       "core/pvf-agent-core/schemas/pvf-index-catalog.schema.json",
       "core/pvf-agent-core/schemas/pvf-backend-contract.schema.json",
+      "core/pvf-agent-core/schemas/typescript-readonly-backend-contract.schema.json",
       "core/pvf-agent-core/schemas/pvf-backend-contract-report.schema.json",
       "core/pvf-agent-core/schemas/workbench-doctor-report.schema.json",
       "core/pvf-agent-core/schemas/real-task-runs-check-report.schema.json",
@@ -271,11 +311,22 @@ function checkRequiredPaths(errors) {
       "core/pvf-agent-core/schemas/portable-package-dry-run-report.schema.json",
       "core/pvf-agent-core/schemas/portable-stage-copy-dry-run-report.schema.json",
       "core/pvf-agent-core/schemas/portable-cold-start-dry-run-report.schema.json",
+      "core/pvf-agent-core/schemas/research-source-manifest.schema.json",
+      "core/pvf-agent-core/schemas/research-claim-store.schema.json",
+      "core/pvf-agent-core/schemas/nut-api-catalog.schema.json",
+      "core/pvf-agent-core/schemas/tag-knowledge-catalog.schema.json",
+      "core/pvf-agent-core/schemas/pvf-lineage-catalog.schema.json",
+      "core/pvf-agent-core/schemas/dependency-plan.schema.json",
+      "core/pvf-agent-core/schemas/client-compatibility-matrix.schema.json",
+      "core/pvf-agent-core/schemas/unified-knowledge-query.schema.json",
       "knowledge-pack/README.zh-CN.md",
       "knowledge-pack/EXPORT-POLICY.zh-CN.md",
       "knowledge-pack/MANIFEST.json",
       "knowledge-pack/safety/README.zh-CN.md",
       "knowledge-pack/indexes/knowledge-index.json",
+      "knowledge-pack/indexes/nut-api-facts.compact.json",
+      "knowledge-pack/indexes/pvf-tag-facts.compact.json",
+      "knowledge-pack/indexes/pvf-task-bookmarks.compact.json",
       "knowledge-pack/encyclopedia/README.zh-CN.md",
       "knowledge-pack/dictionaries/README.zh-CN.md",
       "knowledge-pack/workflows/README.zh-CN.md",
@@ -291,6 +342,7 @@ function checkRequiredPaths(errors) {
       "workspaces/examples/local-workspace-profile.example.json",
       "workspaces/examples/real-task-report-template.zh-CN.md",
       "workspaces/examples/real-task-summary.example.json",
+      "workspaces/examples/research-claim.example.json",
     ];
 
     for (const dir of requiredDirs) {
@@ -314,7 +366,6 @@ function checkRequiredPaths(errors) {
     "core/pvf-agent-core/bin",
     "core/pvf-agent-core/cli",
     "core/pvf-agent-core/lib",
-    "core/pvf-agent-core/mcp",
     "core/pvf-agent-core/scripts",
     "core/pvf-agent-core/schemas",
     "core/pvf-agent-core/contracts",
@@ -370,7 +421,6 @@ function checkRequiredPaths(errors) {
     "pvf-backend-contract.bat",
     "workbench-doctor.bat",
     "config/opencode.json",
-    "config/mcp.json",
     "config/pvf-adapter.json",
     "config/write-policy.json",
     "config/providers.example.json",
@@ -399,14 +449,14 @@ function checkRequiredPaths(errors) {
     "core/pvf-agent-core/cli/pvf-change-set.js",
     "core/pvf-agent-core/cli/pvf-index.js",
     "core/pvf-agent-core/cli/pvf-backend-contract.js",
-    "core/pvf-agent-core/lib/mcp-stdio-client.js",
+    "core/pvf-agent-core/lib/backend-stdio-client.js",
     "core/pvf-agent-core/lib/adapter-config.js",
     "core/pvf-agent-core/lib/workspace-profiles.js",
     "core/pvf-agent-core/lib/pvf-index-store.js",
     "core/pvf-agent-core/lib/runtime-state.js",
-    "core/pvf-agent-core/mcp/server.js",
     "core/pvf-agent-core/contracts/pvf-backend-contract.zh-CN.md",
     "core/pvf-agent-core/contracts/pvf-backend-contract.v1.json",
+    "core/pvf-agent-core/contracts/typescript-readonly-backend-contract.v1.json",
     "core/pvf-agent-core/contracts/fixtures/README.zh-CN.md",
     "core/pvf-agent-core/contracts/fixtures/apc-swordman-gsd.fixture.json",
     "core/pvf-agent-core/contracts/fixtures/itemshop-birken.fixture.json",
@@ -418,6 +468,7 @@ function checkRequiredPaths(errors) {
     "core/pvf-agent-core/schemas/pvf-index-manifest.schema.json",
     "core/pvf-agent-core/schemas/pvf-index-catalog.schema.json",
     "core/pvf-agent-core/schemas/pvf-backend-contract.schema.json",
+    "core/pvf-agent-core/schemas/typescript-readonly-backend-contract.schema.json",
     "core/pvf-agent-core/schemas/pvf-backend-contract-report.schema.json",
     "core/pvf-agent-core/schemas/workbench-doctor-report.schema.json",
     "core/pvf-agent-core/schemas/portable-release-manifest.schema.json",
@@ -502,6 +553,114 @@ function checkAgentWorkspaceRuntimePurity(errors, info) {
   info.push(`Runtime purity: ${unexpected.length === 0 ? "clean" : `${unexpected.length} generated file(s)`}`);
 }
 
+function checkNativeBackendResolver(errors, warnings, info) {
+  const modulePath = join("tools/pvf-bridge/native-backend.js");
+  if (!fs.existsSync(modulePath)) return;
+  try {
+    const { loadPvfBackend, nativeBackendSelfTest, resolveNativeBackend } = require(modulePath);
+    const resolved = resolveNativeBackend({ env: {} });
+    if (resolved.source !== "workbench-bundled") {
+      errors.push(`Native backend resolver did not select the bundled backend: ${resolved.source}`);
+    }
+    const selfTest = nativeBackendSelfTest();
+    if (!selfTest.ok) {
+      const failed = selfTest.checks.filter((check) => !check.ok).map((check) => check.id);
+      errors.push(`Native backend resolver self-test failed: ${failed.join(", ")}`);
+    }
+    const selected = loadPvfBackend({ env: {} });
+    if (selected.readOnly) {
+      const health = selected.api.health();
+      if (health?.readOnly !== true || health?.backend !== "typescript-readonly-fallback") {
+        errors.push("The TypeScript fallback backend did not report a healthy read-only state.");
+      } else {
+        warnings.push("PVF backend is in degraded read-only mode: inspection is available, but every PVF write is blocked.");
+      }
+      info.push(`PVF backend: ${selected.source} (native load error: ${selected.nativeError || "unknown"})`);
+    } else {
+      info.push(`PVF backend: ${selected.source} (${resolved.sha256.slice(0, 12)}, read/write core available)`);
+    }
+  } catch (error) {
+    errors.push(`Native backend resolver failed: ${error.message}`);
+  }
+}
+
+function checkBundledRuntimeIntegrity(errors, warnings, info, runtimeRecovery) {
+  const manifest = readJson("release/BUNDLED-RUNTIME-MANIFEST.json", errors);
+  if (!manifest) return;
+  if (manifest.schemaVersion !== "1.0") errors.push("BUNDLED-RUNTIME-MANIFEST schemaVersion must be 1.0.");
+  if (manifest.platform !== "win32" || manifest.architecture !== "x64") {
+    errors.push("Bundled runtime manifest must declare win32/x64.");
+  }
+  const artifacts = Array.isArray(manifest.artifacts) ? manifest.artifacts : [];
+  let nativeIntegrityOk = false;
+  for (const artifact of artifacts) {
+    if (!artifact?.id || !artifact?.path || !artifact?.sha256 || !Number.isInteger(artifact?.bytes)) {
+      errors.push("Bundled runtime artifact is missing id/path/bytes/sha256.");
+      continue;
+    }
+    const file = join(artifact.path);
+    if (!fs.existsSync(file) || !fs.statSync(file).isFile()) {
+      errors.push(`Bundled runtime artifact is missing: ${artifact.path}`);
+      continue;
+    }
+    const stat = fs.statSync(file);
+    const actualHash = sha256File(file);
+    if (artifact.id === "pvf-native-backend") {
+      nativeIntegrityOk = stat.size === artifact.bytes && actualHash === String(artifact.sha256).toLowerCase();
+    }
+    if (stat.size !== artifact.bytes) errors.push(`Bundled runtime size mismatch: ${artifact.path}`);
+    if (actualHash !== String(artifact.sha256).toLowerCase()) errors.push(`Bundled runtime SHA-256 mismatch: ${artifact.path}`);
+    if (artifact.licensePath) {
+      const licenseFile = join(artifact.licensePath);
+      if (!fs.existsSync(licenseFile) || !fs.statSync(licenseFile).isFile()) {
+        errors.push(`Bundled runtime license is missing: ${artifact.licensePath}`);
+      } else if (artifact.licenseSha256 && sha256File(licenseFile) !== String(artifact.licenseSha256).toLowerCase()) {
+        errors.push(`Bundled runtime license SHA-256 mismatch: ${artifact.licensePath}`);
+      }
+    }
+  }
+
+  const nodeArtifact = artifacts.find((item) => item.id === "node-runtime");
+  if (!nodeArtifact || nodeArtifact.version !== process.version) {
+    errors.push(`Bundled Node version mismatch: running ${process.version}, manifest ${nodeArtifact?.version || "missing"}.`);
+  }
+  if (process.features?.typescript !== "strip") {
+    errors.push(`Bundled Node must support direct TypeScript type stripping; reported ${process.features?.typescript || "unavailable"}.`);
+  } else {
+    info.push("TypeScript runtime: direct type stripping available");
+  }
+  const nativeArtifact = artifacts.find((item) => item.id === "pvf-native-backend");
+  if (nativeArtifact?.loadTestRequired === true) {
+    try {
+      const native = require(join(nativeArtifact.path));
+      if (typeof native.health !== "function") throw new Error("health() export is missing");
+      native.health();
+    } catch (error) {
+      let fallbackHealthy = false;
+      try {
+        const fallback = require(join("tools/pvf-bridge/fallback/pvf-readonly-backend.ts"));
+        const health = fallback.health();
+        fallbackHealthy = health?.readOnly === true && health?.backend === "typescript-readonly-fallback";
+      } catch {
+        fallbackHealthy = false;
+      }
+      const message =
+        `Bundled native backend load test failed: ${error.message}. ` +
+        "On 64-bit Windows, verify that the supported Microsoft Visual C++ v14 x64 Redistributable is installed.";
+      if (nativeIntegrityOk && fallbackHealthy) {
+        warnings.push(`${message} The TypeScript fallback remains available for read-only inspection; controlled PVF writes are unavailable.`);
+      } else {
+        errors.push(message);
+      }
+      if (nativeIntegrityOk && isLikelyNativeRuntimeFailure(error)) {
+        runtimeRecovery.needed = true;
+        runtimeRecovery.error = error.message;
+      }
+    }
+  }
+  info.push(`Runtime integrity: ${artifacts.length} pinned artifact(s)`);
+}
+
 function checkProviders(errors, warnings) {
   const providersExample = readJson("config/providers.example.json", errors);
   if (providersExample && hasInlineSecret(providersExample)) {
@@ -534,36 +693,6 @@ function checkRuntime(opencodeConfig, warnings, info) {
   warnings.push(`OpenCode runtime is not present: ${executable}`);
 }
 
-function checkMcpConfig(mcpConfig, errors, warnings) {
-  const server = mcpConfig?.servers?.["pvf-agent-core"];
-  if (!server) {
-    errors.push("mcp.json must define servers.pvf-agent-core.");
-    return;
-  }
-
-  if (server.phase !== "phase-4-readonly-session-index") {
-    errors.push("pvf-agent-core MCP phase must be phase-4-readonly-session-index.");
-  }
-  if (server.safety?.defaultMode !== "read-only") {
-    errors.push("pvf-agent-core MCP safety.defaultMode must be read-only.");
-  }
-  if (server.safety?.writeRequiresExplicitAuthorization !== true) {
-    errors.push("pvf-agent-core MCP must require explicit write authorization.");
-  }
-  if (server.safety?.clientWriteRequiresSeparateAuthorization !== true) {
-    errors.push("pvf-agent-core MCP must require separate client-write authorization.");
-  }
-
-  if (server.enabled === true) {
-    const script = Array.isArray(server.args) ? server.args.find((item) => /server\.js$/i.test(item)) : null;
-    if (script && !isFile(script)) {
-      errors.push(`Enabled MCP server points to a missing script: ${script}`);
-    }
-  } else {
-    warnings.push("pvf-agent-core MCP server is disabled, as expected for phase 1.");
-  }
-}
-
 function checkPvfAdapter(adapterConfig, errors, warnings) {
   if (!adapterConfig) {
     return;
@@ -584,7 +713,7 @@ function checkPvfAdapter(adapterConfig, errors, warnings) {
       errors.push(`pvf-adapter.json lists a forbidden tool as allowed: ${tool}`);
     }
   }
-  for (const requiredTool of ["pvf_open", "pvf_list_files", "pvf_list_files_page", "pvf_search", "pvf_read_file", "pvf_resolve_lst_id"]) {
+  for (const requiredTool of ["pvf_open", "pvf_list_files", "pvf_list_files_page", "pvf_search", "pvf_read_file", "pvf_read_files", "pvf_resolve_lst_id", "pvf_resolve_path"]) {
     if (!allowed.has(requiredTool)) {
       errors.push(`pvf-adapter.json is missing required read-only tool: ${requiredTool}`);
     }
@@ -609,8 +738,8 @@ function checkPvfAdapter(adapterConfig, errors, warnings) {
       .replace(/\$\{WORKBENCH_ROOT\}/g, workbenchRoot)
       .replace(/\$\{WORKBENCH_PARENT\}/g, path.dirname(workbenchRoot))
       .replace(/\$\{SOURCE_WORKSPACE\}/g, path.dirname(workbenchRoot));
-    if (!fs.existsSync(expanded) && !process.env[adapterConfig.upstream?.serverPathEnv || ""]) {
-      warnings.push(`Configured upstream pvf_bridge server was not found: ${expanded}`);
+    if (!fs.existsSync(expanded)) {
+      errors.push(`Configured bundled PVF backend server was not found: ${expanded}`);
     }
   }
 }
@@ -625,20 +754,23 @@ function checkWritePolicy(writePolicy, errors) {
   if (writePolicy.mode !== "controlled-output-only") {
     errors.push("write-policy.json mode must be controlled-output-only.");
   }
-  if (writePolicy.mcpWriteToolsEnabled !== false) {
-    errors.push("write-policy.json must keep mcpWriteToolsEnabled=false.");
+  if (writePolicy.publicWriteToolsEnabled !== false) {
+    errors.push("write-policy.json must keep publicWriteToolsEnabled=false.");
   }
   if (writePolicy.controlledApplyEnabled !== true) {
     errors.push("write-policy.json must set controlledApplyEnabled=true for phase 3 apply.");
   }
-  if (writePolicy.permissionModel?.agentMcpWriteToolsEnabled !== false) {
-    errors.push("write-policy.json permissionModel must keep agentMcpWriteToolsEnabled=false.");
+  if (writePolicy.permissionModel?.hostExposedWriteToolsEnabled !== false) {
+    errors.push("write-policy.json permissionModel must keep hostExposedWriteToolsEnabled=false.");
   }
   if (writePolicy.permissionModel?.sourceOverwriteAllowed !== false || writePolicy.controlledWriteRunner?.sourceOverwriteAllowed !== false) {
     errors.push("write-policy.json must keep controlled write sourceOverwriteAllowed=false.");
   }
   if (writePolicy.permissionModel?.clientWriteAllowed !== false || writePolicy.controlledWriteRunner?.clientWriteAllowed !== false) {
     errors.push("write-policy.json must keep controlled write clientWriteAllowed=false.");
+  }
+  if (writePolicy.controlledWriteRunner?.requiresDryRunFirst !== true || writePolicy.controlledWriteRunner?.requiresMatchingDryRunManifest !== true || writePolicy.controlledWriteRunner?.requiresExplicitAuthorizationCode !== true) {
+    errors.push("write-policy.json must require dry-run, a matching dry-run manifest, and an explicit authorization code.");
   }
   const runnerTools = new Set(writePolicy.controlledWriteRunner?.allowedBridgeTools || []);
   for (const tool of ["pvf_open", "pvf_read_file", "pvf_replace_text", "pvf_backup", "pvf_save", "pvf_close"]) {
@@ -647,13 +779,13 @@ function checkWritePolicy(writePolicy, errors) {
     }
   }
   const forbidden = new Set(writePolicy.forbiddenOperations || []);
-  for (const operation of ["overwrite-source-pvf", "client-resource-write", "apply-without-backup", "apply-without-explicit-output", "apply-without-readback"]) {
+  for (const operation of ["overwrite-source-pvf", "client-resource-write", "apply-without-backup", "apply-without-explicit-output", "apply-without-readback", "apply-without-matching-dry-run", "apply-without-explicit-authorization-code"]) {
     if (!forbidden.has(operation)) {
       errors.push(`write-policy.json must explicitly forbid: ${operation}`);
     }
   }
   const required = new Set(writePolicy.requiredBeforeApply || []);
-  for (const gate of ["explicit-user-authorization", "target-pvf-confirmed", "timestamped-backup", "explicit-output-path", "readback-after-save"]) {
+  for (const gate of ["explicit-user-authorization", "matching-dry-run-manifest", "target-pvf-confirmed", "timestamped-backup", "explicit-output-path", "readback-after-save"]) {
     if (!required.has(gate)) {
       errors.push(`write-policy.json missing apply gate: ${gate}`);
     }
@@ -711,8 +843,8 @@ function checkWorkspaceProfiles(profilesConfig, errors, warnings, localProfilesC
       profile.client,
       ...(Array.isArray(profile.materials) ? profile.materials : [profile.materials]),
     ].filter((value) => typeof value === "string");
-    if (item.source === "base" && pathValues.some((value) => /DNFPVFwork|Script\.pvf\.2026/i.test(value))) {
-      warnings.push(`${prefix} appears to reference the current development workspace; do not ship that as a default profile.`);
+    if (item.source === "base" && pathValues.some((value) => path.isAbsolute(value) && !/[\\/]MyDNFWork(?:[\\/]|$)/i.test(value))) {
+      warnings.push(`${prefix} appears to reference a machine-local development path; do not ship that as a default profile.`);
     }
 
     if (profile.enabled === true) {
@@ -742,6 +874,7 @@ function main() {
   const errors = [];
   const warnings = [];
   const info = [];
+  const runtimeRecovery = { needed: false, error: null };
   const agentWorkspaceMode = isAgentWorkspaceMode();
 
   if (!fs.existsSync(workbenchRoot)) {
@@ -764,13 +897,14 @@ function main() {
   if (agentWorkspaceMode) {
     checkAgentWorkspaceRootLayout(errors, info);
     checkAgentWorkspaceRuntimePurity(errors, info);
+    checkBundledRuntimeIntegrity(errors, warnings, info, runtimeRecovery);
+    checkNativeBackendResolver(errors, warnings, info);
     const skillValidation = validateBundledSkill(workbenchRoot);
     errors.push(...skillValidation.errors.map((error) => `Bundled Agent Skill: ${error}`));
     if (skillValidation.ok) info.push(`Bundled Agent Skill: ${skillValidation.skillName} (${skillValidation.sourceHash.slice(0, 12)})`);
   }
 
   const opencodeConfig = agentWorkspaceMode ? null : readJson("config/opencode.json", errors);
-  const mcpConfig = readJson("config/mcp.json", errors);
   const adapterConfig = readJson("config/pvf-adapter.json", errors);
   const writePolicy = readJson("config/write-policy.json", errors);
   const profilesConfig = readJson("config/workspace-profiles.json", errors);
@@ -810,7 +944,6 @@ function main() {
     checkRuntime(opencodeConfig, warnings, info);
     checkProviders(errors, warnings);
   }
-  checkMcpConfig(mcpConfig, errors, warnings);
   checkPvfAdapter(adapterConfig, errors, warnings);
   checkWritePolicy(writePolicy, errors);
   checkWorkspaceProfiles(profilesConfig, errors, warnings, localProfilesConfig);
@@ -823,6 +956,18 @@ function main() {
   }
   for (const line of errors) {
     console.error(`ERROR ${line}`);
+  }
+
+  if (runtimeRecovery.needed) {
+    const helpWriter = errors.length > 0 ? console.error : console.log;
+    for (const line of nativeRuntimeHelpLines()) helpWriter(`HELP ${line}`);
+    const openRequested = args.includes("--open-runtime-help");
+    const openSuppressed = args.includes("--no-open-runtime-help");
+    if (!openSuppressed && (openRequested || shouldAutoOpenRuntimeHelp())) {
+      const opened = openOfficialRuntimePage();
+      if (opened.ok) helpWriter(`HELP Opened the official Microsoft instructions: ${opened.url}`);
+      else helpWriter(`HELP Could not open the browser automatically: ${opened.error}`);
+    }
   }
 
   if (errors.length > 0) {

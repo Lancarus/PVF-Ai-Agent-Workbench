@@ -2,13 +2,11 @@
 
 状态：默认可用
 
-用途：记录当前主目标中 `LightningWall` 的 skill registry、state、load_state、`24218` passiveobject、AttackInfo 写入、移动粒子、onAttack 追加 appendage 和 NUT API 边界。本文只覆盖这一个技能创建的 PO/appendage 窄链，不重开 PassiveObject / AttackInfo / Hitbox 广域主线。
 
 ## 一句话结论
 
 `LightningWall` 是男法 `skill 29` 的主动技能，运行入口注册到 `STATE_LIGHTNING_WALL = 46`。角色状态本身不使用 substate：施放动作 `FRAME007 [SET FLAG] 1` 写入移动距离、攻击倍率、触电概率/等级/时间/攻击力后创建 `24218`；角色动画超过 frame 20 后向已创建的 wall PO 发送 move state。`24218` 再负责向前移动、用光属性 AttackInfo 攻击，并在 onAttack 中对可控制、可抓取、非 fixture 目标追加 `ap_LightningWall.nut` 的短时控制/电击视觉 appendage。
 
-## 主目标只读闭合链
 
 | 层级 | 当前确认 | 边界 |
 | --- | --- | --- |
@@ -77,7 +75,7 @@
 | --- | --- | --- |
 | onAttack gate | 只有 `sq_IsHoldable(obj, damager)`、`sq_IsGrabable(obj, damager)` 且 `!sq_IsFixture(damager)` 同时成立时才追加 appendage。 | 哪些目标满足条件、免疫和 PVP 规则必须实机。 |
 | 追加 appendage | 对 damager 追加 `ap_LightningWall.nut`，skill index 使用 `SKILL_LIGHTNING_WALL`。 | 追加成功、重复刷新和生命周期需实机。 |
-| hold/delay die 调用 | 目标脚本调用 `sq_HoldAndDelayDie(damager, obj, true, true, true, 200, 200, ENUM_DIRECTION_NEUTRAL, masterAppendage)`。 | TypeSquirrel 对该 API 只有变参签名且注释不可靠；这里只记录目标脚本调用形状，不写完整控制语义。 |
+| hold/delay die 调用 | 目标脚本调用 `sq_HoldAndDelayDie(damager, obj, true, true, true, 200, 200, ENUM_DIRECTION_NEUTRAL, masterAppendage)`。 | 内置 NUT API 事实目录 对该 API 只有变参签名且注释不可靠；这里只记录目标脚本调用形状，不写完整控制语义。 |
 | 有效期 | `appendage.getAppendageInfo().setValidTime(time)`，`time` 来自 static data index `3`。 | 有效期最终表现、提前失效和目标死亡边界需实机。 |
 | onStart | 创建 `12_el-shock_dodge.ani` draw-only 电击视觉，按目标高度调整大小，记录目标起始 Z，并播放 `LIGHTWALL_ELEC`。 | 视觉和音效资源完整性需资源链或实机。 |
 | proc | 用 `sq_GetShuttleValue` 按对象时间让目标 Z 在小范围内往复，并移动电击视觉；同时给目标当前动画设置单色效果层。 | 目标实际浮动、卡肉、受击状态和同步不能静态证明。 |
@@ -104,7 +102,7 @@
 | `sq_SetChangeStatusIntoAttackInfoWithEtc(...)` / `sq_SetCurrentAttackeHitStunTime(...)` | PO 写入触电异常参数，并把强制命中僵直时间设为 `0`。 | 触电概率、等级、伤害、僵直、抗性和 PVP 均不可静态证明。 |
 | `CNSquirrelPassiveObject.sq_SetMoveParticle(...)` / `sq_SetSpeedToMoveParticle(...)` / `sq_RemoveMoveParticle()` | PO move/destroy 阶段设置、调速并移除移动粒子。 | 轨迹、粒子资源、阻挡和同步需实机或资源链。 |
 | `sq_IsHoldable(...)` / `sq_IsGrabable(...)` / `sq_IsFixture(...)` | PO onAttack 用三者作为追加 appendage 的目标条件。 | 目标类型、免疫、PVP 和服务器判定需实机。 |
-| `sq_HoldAndDelayDie(...)` | 目标脚本以变参形式调用，用于和 appendage 绑定控制链。 | TypeSquirrel 注释不可靠；只记录当前调用形状，不写完整语义。 |
+| `sq_HoldAndDelayDie(...)` | 目标脚本以变参形式调用，用于和 appendage 绑定控制链。 | 内置 NUT API 事实目录 注释不可靠；只记录当前调用形状，不写完整语义。 |
 | `sq_AddDrawOnlyAniFromParent(...)` / `sq_ChangeDrawLayer(...)` | 创建 floor/electric mark、lightning body 和 appendage 电击视觉，并调整绘制层。 | draw-only 是视觉链路，不证明攻击来源。 |
 | `CNRDAnimation.resizeWithChild(size)` / `resize(size)` / `setEffectLayer(...)` | 缩放 wall/电击视觉，给目标动画设置单色效果层。 | 视觉缩放和效果层显示需资源链或实机。 |
 | `sq_GetShuttleValue(...)` / `sq_GetObjectTime(obj)` | appendage proc 里按对象时间计算目标 Z 往复偏移。 | 实际浮动、卡肉、同步和目标状态需实机。 |

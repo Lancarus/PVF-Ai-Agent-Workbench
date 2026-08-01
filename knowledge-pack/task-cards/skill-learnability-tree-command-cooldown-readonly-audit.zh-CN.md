@@ -12,7 +12,7 @@
 4. `indexes/skill-learnability-tree-command-cooldown-boundary.zh-CN.md`
 5. `indexes/skill-tree-default-pvp-entry-boundary.zh-CN.md`
 6. `indexes/skill-learnability-cost-sp-tp-ui-boundary.zh-CN.md`
-7. `indexes/skill-learnability-tree-command-cooldown-completion-audit.zh-CN.md`
+7. `workflows/skill-tree-layout-and-merge-safety.zh-CN.md`
 
 ## 只读步骤
 
@@ -48,7 +48,6 @@
 - 不要把 `[command key explain]` 当作唯一命令来源。
 - 不要把 `[executable states]` 写成强制、柔化或取消窗口。
 - 不要把 SP、TP、PVP、AutoSkill、`.chr` 默认技能互相替代。
-- 不要把辅助对照 PVF 的字段提升为主目标事实。
 
 ## 下一步测试建议
 

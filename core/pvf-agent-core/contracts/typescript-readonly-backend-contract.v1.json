@@ -1,0 +1,77 @@
+{
+  "$schema": "../schemas/typescript-readonly-backend-contract.schema.json",
+  "schemaVersion": "1.0",
+  "contractId": "typescript-readonly-backend-contract.v1",
+  "backendSource": "typescript-readonly-fallback",
+  "sourceLanguage": "typescript",
+  "sourceFiles": [
+    "tools/pvf-bridge/fallback/codec.ts",
+    "tools/pvf-bridge/fallback/script.ts",
+    "tools/pvf-bridge/fallback/ani.ts",
+    "tools/pvf-bridge/fallback/pvf-readonly-backend.ts"
+  ],
+  "runtime": {
+    "nodeMajor": 24,
+    "typescriptFeature": "strip",
+    "npmRequired": false,
+    "networkRequired": false,
+    "buildStepRequired": false,
+    "externalRuntimeDependencies": []
+  },
+  "advertisedTools": [
+    "pvf_open",
+    "pvf_session_info",
+    "pvf_close",
+    "pvf_list_files",
+    "pvf_list_files_page",
+    "pvf_search",
+    "pvf_list_registries",
+    "pvf_resolve_lst_id",
+    "pvf_resolve_id",
+    "pvf_resolve_path",
+    "pvf_summarize_npc_shop",
+    "pvf_read_file",
+    "pvf_read_files"
+  ],
+  "internalDryRunTools": [
+    "pvf_replace_text"
+  ],
+  "blockedTools": [
+    "pvf_backup",
+    "pvf_replace_text",
+    "pvf_write_file",
+    "pvf_save"
+  ],
+  "blockedApiMethods": [
+    "saveSession",
+    "upsertFile",
+    "upsertTextFileRaw",
+    "deleteEntries",
+    "renameEntries",
+    "importDirectory",
+    "extractEntries"
+  ],
+  "resourceLimits": {
+    "maxSessions": 4,
+    "maxTreeBytes": 536870912,
+    "maxFileCount": 5000000,
+    "maxSingleReadBytes": 536870912,
+    "cacheBytes": 67108864,
+    "maxSearchKeywordChars": 4096,
+    "maxSearchResults": 5000,
+    "maxReportedSearchErrors": 50,
+    "maxStringTableEntries": 5000000,
+    "maxDecodedStringCacheEntries": 100000,
+    "maxScriptTokens": 5000000,
+    "maxStringViewFiles": 1000000
+  },
+  "safetyInvariants": [
+    "The bundled native backend remains the automatic first choice.",
+    "The TypeScript backend opens source PVFs with read-only file handles and never creates PVF, backup, extraction, client, or cache output.",
+    "Write-capable tools are absent from tools/list in TypeScript mode and direct calls fail with READ_ONLY_FALLBACK before filesystem mutation.",
+    "pvf_replace_text is callable in TypeScript mode only when dryRun=true and never mutates the session or source PVF.",
+    "Malformed archives, duplicate normalized paths, checksum failures, and resource-limit violations fail closed.",
+    "Search truncation and per-file read errors remain visible to callers.",
+    "No npm package, network fetch, transpiler, VS Code runtime, or external parser is required."
+  ]
+}

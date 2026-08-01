@@ -2,7 +2,6 @@
 
 状态：需验证
 
-本文记录主目标 PVF 只读观察到的 passiveobject `.act` 结构入口。`.act` 可承载动作、动画、声音、触发器、行为、对象创建、怪物召唤和状态变量操作。字段存在不等于运行条件、目标选择、伤害、同步或表现已经验证。
 
 ## Motion 与资源
 
@@ -36,7 +35,7 @@
 | `[AI CHARACTER]` | `[WHICH]` 下的对象范围 token。 | 后续 `[IS INDEX]` 不按 passiveobject 创建 ID 解释。 |
 | `[ALL CHARACTER TEAM]` | `[WHICH]` 下的对象范围 token。 | 只证明可按全角色队伍做检查，不证明运行筛选结果。 |
 | `[ALL MONSTER TEAM]` | `[WHICH]` 下的对象范围 token。 | 只证明可按全怪物队伍做检查；后续 `[IS OBJECT TYPE] [AI CHARACTER]` 仍是检查结构。 |
-| `[ALL ENEMY]` | `[WHICH]` 下的对象范围 token，辅助对照样本中可见。 | 主目标是否使用该 token 仍需目标文件逐项复核。 |
+| `[ALL ENEMY]` | 跨版本候选；需在当前目标 PVF 中复核 | 需在当前目标 PVF 中只读确认 |
 | `[CHECK DISTANCE]` | 两个数值。 | 只证明距离检查结构存在，不证明实机距离坐标系。 |
 | `[RANDOM CHECK]` | 两个数值。 | 随机判定概率或周期需运行验证。 |
 | `[ZPOS]` + `[<=]` | Z 坐标条件和值。 | 只证明触发检查结构存在，不证明实际落地判定。 |
@@ -46,7 +45,7 @@
 | `[SAVE TARGET OBJECT]` | 后接一个数值。 | 只证明可保存目标对象引用，不证明运行目标一定存在或后续命中成功。 |
 | `[SET SPEED] ... [/SET SPEED]` | 闭合块，内部可见 `[X AXIS]`、`[Y AXIS]` 或 `[Z AXIS]`；数值也可接 `[RANDOM]`。 | 只记录速度设置结构，不解释实际运动公式。 |
 | `[SET POS FORCE] ... [/SET POS FORCE]` | 闭合块，内部可见 `[X START]`、`[Y START]`、`[Z START]`、`[MOVE ME]`。 | 只证明强制位置/移动样结构存在，不解释坐标系或位移公式。 |
-| `[X START]`、`[Y START]`、`[Z START]` | 每个标签后接一个数值。 | 当前样本位于 `[SET POS FORCE]` 内；坐标含义需运行验证。 |
+| `[X START]`、`[Y START]`、`[Z START]` | 每个标签后接一个数值。 | 示例位于 `[SET POS FORCE]` 内；坐标含义需运行验证。 |
 | `[MOVE ME]` | 空标签，样本位于 `[SET POS FORCE]` 内。 | 只证明位置强制块可指向自身移动，不解释运行效果。 |
 | `[SET TEAM]` | 一个数值。 | 只证明 action 可设置队伍数值；不等同最终敌我伤害规则。 |
 | `[SET COLOR]` | 三个数值。 | 只证明可设置颜色样参数，不解释客户端表现或渐变时序。 |
@@ -69,12 +68,12 @@
 
 | 字段 / 块 | 已观察列形 | 边界 |
 | --- | --- | --- |
-| `[CREATE PASSIVEOBJECT] ... [/CREATE PASSIVEOBJECT]` | 闭合块；当前 `passiveobject/` SearchScript 范围内 1653 个创建块均观察到 `[INDEX]`。 | 闭合块内 `[INDEX]` 必须回 `passiveobject/passiveobject.lst` 解析；不要扩写成其他目录或二进制内容的绝对结论。 |
+| `[CREATE PASSIVEOBJECT] ... [/CREATE PASSIVEOBJECT]` | 闭合创建块，通常包含 `[INDEX]`。 | 闭合块内 `[INDEX]` 必须回 `passiveobject/passiveobject.lst` 解析；缺失或异常形状必须保留为风险。 |
 | `[INDEX]` | 在创建块内可为一个 passiveobject ID，也可接 `[RANDOM SELECT]` 候选；还可在其他上下文出现。 | 不能脱离父块解释 registry；创建 ID 未命中 registry 时保留未闭合风险，不得猜目标路径。 |
 | `[PARTICLE FILENAME]` | 一个字符串或空字符串。 | 只证明粒子文件名参数，不证明资源完整。 |
 | `[LEVEL]` | 一个数值。 | 不直接证明实机等级缩放。 |
 | `[POS]` | 可见三个数值；也可见一个数值后接 `[RANDOM]` 位置参数。 | 不直接证明实际坐标或朝向；读取时必须看后续是否进入 `[RANDOM]`。 |
-| `[WARNING MARK]` | 四个数值。 | 当前样本位于创建块内，只证明预警标记参数存在，不证明客户端显示效果。 |
+| `[WARNING MARK]` | 四个数值。 | 示例位于创建块内，只证明预警标记参数存在，不证明客户端显示效果。 |
 | `[RANDOM SELECT] ... [/RANDOM SELECT]` | 多个数值。 | 必须看父块：在 `[DO BEHAVIOR]` 下是行为编号候选；在 `[CREATE PASSIVEOBJECT] [INDEX]` 下是 passiveobject ID 候选；在 `[SUMMON MONSTER] [INDEX]` 下是 monster ID 候选。 |
 | `[RANDOM]` | 数值区间或多值参数。 | 在创建块样本中可作为位置随机参数；随机规则需实机验证。 |
 | `[USE MY DIRECTION]` | 空标签。 | 只证明创建参数可引用自身朝向，不证明最终朝向。 |
@@ -83,7 +82,7 @@
 | `[USE MY BASEPOS]` | 空标签。 | 只证明创建位置可引用自身基础坐标。 |
 | `[USE OBJECT ZPOS]` | 空标签。 | 只证明创建位置可引用对象 Z 坐标。 |
 | `[FOLLOWING TARGET]` | 空标签，样本位于创建块内。 | 只证明创建对象可带跟随目标参数，不解释运行追踪、目标存在或命中。 |
-| `[CREATE PASSIVEOBJECT CIRCLE]` | 当前 `passiveobject/` SearchScript 范围未观察到。 | 不可写成主目标全局不存在；其他范围观察需单独复核。 |
+| `[CREATE PASSIVEOBJECT CIRCLE]` | 需在目标文件中确认。 | 零搜索结果不能证明目标 PVF 全局不存在。 |
 
 ## AttackInfo 引用
 
@@ -125,8 +124,9 @@
 - registry 未命中、空 `[INDEX]` 和缺失文件引用必须单独保留，不能算作已闭合。
 - 下游 `.ani` 按 hitbox/动画路由解释；下游 `.atk` 按通用 AttackInfo 路由解释。
 
-## 覆盖
+## 继续读取
 
-- 创建递归样本：见 `indexes/passiveobject-create-recursion-ledger.zh-CN.md`。
-- Hitbox 样本：见 `indexes/passiveobject-hitbox-ani-sample-ledger.zh-CN.md`。
-- 历史 Monster 创建链路由：见 `indexes/monster-created-passiveobject-act-observed-tag-router.zh-CN.md`。
+- 对象字段：`dictionaries/passiveobject-obj-fields.zh-CN.md`。
+- AttackInfo：`dictionaries/attackinfo-atk-fields.zh-CN.md`。
+- Monster 创建链：`indexes/monster-created-passiveobject-act-observed-tag-router.zh-CN.md`。
+- 完整闭环：`task-cards/passiveobject-nonmonster-readonly-audit.zh-CN.md`。

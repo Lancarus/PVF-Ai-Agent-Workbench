@@ -3,6 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 const {
+  releaseAuditSelfTest,
   runNode,
   timestamp,
   writeJson,
@@ -40,6 +41,16 @@ function main() {
   const warnings = [];
   const checks = [];
 
+  const releaseAudit = releaseAuditSelfTest();
+  checks.push({
+    id: "release.purity-negative-controls",
+    ok: releaseAudit.ok,
+    exitCode: releaseAudit.ok ? 0 : 1,
+    summary: { checks: releaseAudit.checks.length, failed: releaseAudit.checks.filter((check) => !check.ok).length },
+    stderr: releaseAudit.ok ? undefined : JSON.stringify(releaseAudit.checks.filter((check) => !check.ok)),
+  });
+  if (!releaseAudit.ok) errors.push("release.purity-negative-controls failed.");
+
   const gate2 = runNode(workbenchRoot, "core/pvf-agent-core/scripts/portable-stage-copy-dry-run.js", ["check", "--out", path.join(outRoot, "gate2")], 300000);
   addCheck(checks, errors, "gate2.stage-copy", gate2, (parsed) => parsed?.summary?.ok === true);
   const stageDir = gate2.parsed?.stageDir || null;
@@ -49,6 +60,12 @@ function main() {
     const env = runNode(stageDir, "core/pvf-agent-core/scripts/check-env.js");
     addCheck(checks, errors, "stage.check-env", env, (_parsed, stdout) => /PASS 0 error\(s\)/.test(stdout));
 
+    const runtimeHelp = runNode(stageDir, "core/pvf-agent-core/scripts/native-runtime-help.js", ["self-test"]);
+    addCheck(checks, errors, "stage.native-runtime-help-self-test", runtimeHelp, (parsed) => parsed?.summary?.ok === true);
+
+    const fallbackBackend = runNode(stageDir, "core/pvf-agent-core/scripts/fallback-backend-self-test.js", []);
+    addCheck(checks, errors, "stage.readonly-fallback-self-test", fallbackBackend, (parsed) => parsed?.summary?.ok === true);
+
     const knowledge = runNode(stageDir, "core/pvf-agent-core/scripts/check-knowledge-pack.js");
     addCheck(checks, errors, "stage.check-knowledge-pack", knowledge, (_parsed, stdout) => /PASS 0 error\(s\)/.test(stdout));
 
@@ -57,6 +74,43 @@ function main() {
 
     const evalRun = runNode(stageDir, "core/pvf-agent-core/scripts/agent-eval.js", ["self-test", "--out", path.join(stageRuntimeRoot, "agent-eval")]);
     addCheck(checks, errors, "stage.agent-eval-self-test", evalRun, (parsed) => parsed?.summary?.ok === true);
+
+    const changeSetRun = runNode(stageDir, "core/pvf-agent-core/cli/pvf-change-set.js", ["self-test"]);
+    addCheck(checks, errors, "stage.pvf-change-authorization-self-test", changeSetRun, (parsed) => parsed?.summary?.ok === true);
+
+    const researchOut = path.join(stageRuntimeRoot, "research-intake-fixture");
+    const researchRun = runNode(stageDir, "core/pvf-agent-core/cli/research-intake.js", [
+      "inventory",
+      "--source", path.join(stageDir, "core", "pvf-agent-core", "contracts", "fixtures"),
+      "--source-id", "gate3-research-fixture",
+      "--out", researchOut,
+    ]);
+    addCheck(checks, errors, "stage.research-intake", researchRun, (parsed) => parsed?.ok === true && parsed?.summary?.fileCount === 5);
+
+    const researchVerify = runNode(stageDir, "core/pvf-agent-core/cli/research-intake.js", [
+      "verify",
+      "--manifest", path.join(researchOut, "SOURCE-MANIFEST.json"),
+      "--rehash",
+    ]);
+    addCheck(checks, errors, "stage.research-verify", researchVerify, (parsed) => parsed?.ok === true && parsed?.rehashed === 5);
+
+    const nutApiRun = runNode(stageDir, "core/pvf-agent-core/cli/nut-api.js", ["self-test"]);
+    addCheck(checks, errors, "stage.nut-api-self-test", nutApiRun, (parsed) => parsed?.summary?.ok === true);
+
+    const tagKnowledgeRun = runNode(stageDir, "core/pvf-agent-core/cli/tag-knowledge.js", ["self-test"]);
+    addCheck(checks, errors, "stage.tag-knowledge-self-test", tagKnowledgeRun, (parsed) => parsed?.summary?.ok === true);
+
+    const pvfLineageRun = runNode(stageDir, "core/pvf-agent-core/cli/pvf-lineage.js", ["self-test"]);
+    addCheck(checks, errors, "stage.pvf-lineage-self-test", pvfLineageRun, (parsed) => parsed?.summary?.ok === true);
+
+    const dependencyPlannerRun = runNode(stageDir, "core/pvf-agent-core/cli/dependency-planner.js", ["self-test"]);
+    addCheck(checks, errors, "stage.dependency-planner-self-test", dependencyPlannerRun, (parsed) => parsed?.summary?.ok === true);
+
+    const clientMatrixRun = runNode(stageDir, "core/pvf-agent-core/cli/client-compat-matrix.js", ["self-test"]);
+    addCheck(checks, errors, "stage.client-matrix-self-test", clientMatrixRun, (parsed) => parsed?.summary?.ok === true);
+
+    const unifiedQueryRun = runNode(stageDir, "core/pvf-agent-core/cli/unified-knowledge-query.js", ["self-test"]);
+    addCheck(checks, errors, "stage.unified-query-self-test", unifiedQueryRun, (parsed) => parsed?.summary?.ok === true);
 
     const doctor = runNode(stageDir, "core/pvf-agent-core/scripts/workbench-doctor.js", ["check", "--skip-profiles", "--skip-release-gates", "--out", path.join(stageRuntimeRoot, "doctor")], 180000);
     addCheck(checks, errors, "stage.workbench-doctor", doctor, (parsed) => parsed?.summary?.ok === true);

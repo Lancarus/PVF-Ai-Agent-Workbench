@@ -12,7 +12,7 @@
 
 1. 确认当前任务只是知识吸收；不要写 PVF，不要部署客户端。
 2. 运行或参考 `workbench.bat absorb new --id <run-id> --title "<title>" --domain <domain> --status PASS`。
-3. 把 PASS 结论写成“当前样本已验证”，并明确没有覆盖的边界。
+3. 把 PASS 结论写成“示例已验证”，并明确没有覆盖的边界。
 4. 同步更新字段词典、边界索引、任务卡、workflow、安全护栏和完成状态中受影响的最小文件集。
 5. 如果涉及中文/StringLink 文件，只能写“需客户端 UI 文本 smoke check”或“已完成 smoke check”，不要只凭 PVF 读回下结论。
 6. 更新 `knowledge-pack/MANIFEST.json`。

@@ -1,9 +1,10 @@
 "use strict";
 
 const fs = require("fs");
+const os = require("os");
 const path = require("path");
 const crypto = require("crypto");
-const { McpStdioClient, parseMcpTextResult } = require("../lib/mcp-stdio-client");
+const { BackendStdioClient, parseBackendTextResult } = require("../lib/backend-stdio-client");
 const { resolveSourcePvf } = require("../lib/workspace-profiles");
 const {
   assertReadOnlyAdapter,
@@ -12,6 +13,7 @@ const {
   upstreamLaunchOptions,
 } = require("../lib/adapter-config");
 const { runtimePath } = require("../lib/runtime-state");
+const { sha256File } = require("../lib/release-utils");
 
 const rawArgs = process.argv.slice(2);
 const workbenchRoot = resolveWorkbenchRoot(rawArgs, path.resolve(__dirname, "../../.."));
@@ -21,8 +23,9 @@ const command = args[0];
 function usage() {
   return `Usage:
   workbench.bat pvf-change validate --file <change-set.json>
+  workbench.bat pvf-change self-test
   workbench.bat pvf-change dry-run --file <change-set.json> [--profile <name> | --pvf <override Script.pvf>] [--out <directory>]
-  workbench.bat pvf-change apply --file <change-set.json> [--profile <name> | --pvf <override Script.pvf>] (--out <directory> | --output-pvf <Script.pvf>)
+  workbench.bat pvf-change apply --file <change-set.json> [--profile <name> | --pvf <override Script.pvf>] --dry-run-manifest <DRY-RUN-MANIFEST.json> --authorize-apply <approval-code> (--out <directory> | --output-pvf <Script.pvf>)
 `;
 }
 
@@ -43,6 +46,44 @@ function sha256(value) {
   return crypto.createHash("sha256").update(value).digest("hex");
 }
 
+function pvfTokens(value) {
+  return String(value || "").match(/`[^`]*`|\[[^\]\r\n]*\]|#[^\r\n]*|[^\s]+/g) || [];
+}
+
+function normalizePvfToken(token) {
+  const lowered = token.toLowerCase();
+  if (/^[-+]?(?:\d+\.\d*|\.\d+)(?:e[-+]?\d+)?$/i.test(lowered)) {
+    return `float32:${Math.fround(Number(lowered))}`;
+  }
+  return lowered;
+}
+
+function comparePvfTextReadback(sourceText, readbackText) {
+  const source = pvfTokens(sourceText);
+  const actual = pvfTokens(readbackText);
+  const expectedNormalized = source.map(normalizePvfToken);
+  const actualNormalized = actual.map(normalizePvfToken);
+  const mismatches = [];
+  const count = Math.max(source.length, actual.length);
+  for (let index = 0; index < count; index += 1) {
+    const sourceToken = source[index];
+    const actualToken = actual[index];
+    const expectedToken = sourceToken === undefined ? undefined : normalizePvfToken(sourceToken);
+    const readbackToken = actualToken === undefined ? undefined : normalizePvfToken(actualToken);
+    if (expectedToken !== readbackToken) {
+      mismatches.push({ index, sourceToken, actualToken, reason: "token-mismatch" });
+    }
+  }
+  return {
+    ok: mismatches.length === 0,
+    expectedSha256: sha256(expectedNormalized.join("\n")),
+    actualSha256: sha256(actualNormalized.join("\n")),
+    sourceTokenCount: source.length,
+    readbackTokenCount: actual.length,
+    mismatches: mismatches.slice(0, 20),
+  };
+}
+
 function timestamp() {
   const now = new Date();
   const pad = (value) => String(value).padStart(2, "0");
@@ -57,6 +98,171 @@ function samePath(left, right) {
   return path.resolve(left).toLowerCase() === path.resolve(right).toLowerCase();
 }
 
+function dryRunBinding(results, sourcePvf, sourcePvfSha256, changeSetFile, changeSetFileSha256) {
+  const payload = {
+    schemaVersion: "1.0",
+    sourcePvf: path.resolve(sourcePvf),
+    sourcePvfSha256,
+    changeSetFile: path.resolve(changeSetFile),
+    changeSetFileSha256,
+    changes: results.map((item) => ({
+      id: item.id,
+      type: item.type,
+      pvfPath: item.pvfPath,
+      applicable: item.applicable,
+      changed: item.changed,
+      afterSha256: item.diff?.afterSha256 || item.sourceSha256 || null,
+    })),
+  };
+  const bindingSha256 = sha256(JSON.stringify(payload));
+  return {
+    ...payload,
+    bindingSha256,
+    approvalCode: `APPLY-${bindingSha256.toUpperCase()}`,
+  };
+}
+
+function verifyDryRunAuthorization(sourcePvf, changeSetFile, explicit = {}) {
+  const manifestFile = path.resolve(explicit.manifestFile || requireOption("--dry-run-manifest"));
+  const authorizationCode = explicit.authorizationCode || requireOption("--authorize-apply");
+  if (!fs.existsSync(manifestFile) || !fs.statSync(manifestFile).isFile()) {
+    throw new Error(`Dry-run manifest does not exist: ${manifestFile}`);
+  }
+  const manifest = readJson(manifestFile);
+  if (manifest.phase !== "phase-3-dry-run-change-set" || manifest.mode !== "dry-run-only") {
+    throw new Error("Apply requires a phase-3 dry-run manifest.");
+  }
+  if (manifest.writeOperationsExecuted !== false || Number(manifest.summary?.blockedCount) !== 0) {
+    throw new Error("Dry-run manifest is blocked or does not prove a read-only dry-run.");
+  }
+  const binding = manifest.binding;
+  if (!binding || binding.schemaVersion !== "1.0" || !binding.bindingSha256 || !binding.approvalCode) {
+    throw new Error("Dry-run manifest does not contain a valid apply binding.");
+  }
+  if (!samePath(binding.sourcePvf, sourcePvf)) {
+    throw new Error("Dry-run source PVF does not match the apply source PVF.");
+  }
+  const currentSourceSha256 = sha256File(sourcePvf);
+  if (String(binding.sourcePvfSha256).toLowerCase() !== currentSourceSha256.toLowerCase()) {
+    throw new Error("Source PVF changed after dry-run; run dry-run again.");
+  }
+  const currentChangeSetSha256 = sha256File(changeSetFile);
+  if (String(binding.changeSetFileSha256).toLowerCase() !== currentChangeSetSha256.toLowerCase()) {
+    throw new Error("Change-set changed after dry-run; run dry-run again.");
+  }
+  const expectedBinding = dryRunBinding(
+    manifest.results || [],
+    sourcePvf,
+    currentSourceSha256,
+    changeSetFile,
+    currentChangeSetSha256,
+  );
+  if (expectedBinding.bindingSha256 !== binding.bindingSha256 || expectedBinding.approvalCode !== binding.approvalCode) {
+    throw new Error("Dry-run binding is invalid or was edited.");
+  }
+  if (authorizationCode !== binding.approvalCode) {
+    throw new Error("Explicit apply authorization code does not match the dry-run manifest.");
+  }
+  return {
+    manifestFile,
+    binding,
+    sourcePvfSha256: currentSourceSha256,
+    changeSetFileSha256: currentChangeSetSha256,
+  };
+}
+
+function pathInside(root, candidate) {
+  const relative = path.relative(path.resolve(root), path.resolve(candidate));
+  return relative === "" || (!relative.startsWith("..") && !path.isAbsolute(relative));
+}
+
+function changeSetAuthorizationSelfTest() {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "pvf-change-binding-"));
+  const checks = [];
+  try {
+    const sourcePvf = path.join(tempRoot, "Script.pvf");
+    const changeSetFile = path.join(tempRoot, "change-set.json");
+    const manifestFile = path.join(tempRoot, "DRY-RUN-MANIFEST.json");
+    fs.writeFileSync(sourcePvf, "pvf-fixture-v1", "utf8");
+    fs.writeFileSync(changeSetFile, '{"fixture":true}\n', "utf8");
+    const results = [{
+      id: "fixture-change",
+      type: "replace-text",
+      pvfPath: "skill/fixture.skl",
+      applicable: true,
+      changed: true,
+      diff: { afterSha256: sha256("after") },
+    }];
+    const binding = dryRunBinding(results, sourcePvf, sha256File(sourcePvf), changeSetFile, sha256File(changeSetFile));
+    fs.writeFileSync(manifestFile, `${JSON.stringify({
+      schemaVersion: "1.0",
+      phase: "phase-3-dry-run-change-set",
+      mode: "dry-run-only",
+      writeOperationsExecuted: false,
+      summary: { blockedCount: 0 },
+      binding,
+      results,
+    }, null, 2)}\n`, "utf8");
+
+    const verified = verifyDryRunAuthorization(sourcePvf, changeSetFile, {
+      manifestFile,
+      authorizationCode: binding.approvalCode,
+    });
+    checks.push({ id: "matching-binding-accepted", ok: verified.binding.bindingSha256 === binding.bindingSha256 });
+
+    let wrongCodeRejected = false;
+    try {
+      verifyDryRunAuthorization(sourcePvf, changeSetFile, { manifestFile, authorizationCode: "APPLY-WRONG" });
+    } catch (error) {
+      wrongCodeRejected = /authorization code does not match/.test(String(error.message));
+    }
+    checks.push({ id: "wrong-authorization-rejected", ok: wrongCodeRejected });
+
+    fs.writeFileSync(sourcePvf, "pvf-fixture-v2", "utf8");
+    let changedSourceRejected = false;
+    try {
+      verifyDryRunAuthorization(sourcePvf, changeSetFile, { manifestFile, authorizationCode: binding.approvalCode });
+    } catch (error) {
+      changedSourceRejected = /Source PVF changed after dry-run/.test(String(error.message));
+    }
+    checks.push({ id: "changed-source-rejected", ok: changedSourceRejected });
+    fs.writeFileSync(sourcePvf, "pvf-fixture-v1", "utf8");
+
+    fs.writeFileSync(changeSetFile, '{"fixture":false}\n', "utf8");
+    let changedChangeSetRejected = false;
+    try {
+      verifyDryRunAuthorization(sourcePvf, changeSetFile, { manifestFile, authorizationCode: binding.approvalCode });
+    } catch (error) {
+      changedChangeSetRejected = /Change-set changed after dry-run/.test(String(error.message));
+    }
+    checks.push({ id: "changed-change-set-rejected", ok: changedChangeSetRejected });
+
+    const blockedManifest = JSON.parse(fs.readFileSync(manifestFile, "utf8"));
+    blockedManifest.summary.blockedCount = 1;
+    fs.writeFileSync(manifestFile, `${JSON.stringify(blockedManifest, null, 2)}\n`, "utf8");
+    let blockedRejected = false;
+    try {
+      verifyDryRunAuthorization(sourcePvf, changeSetFile, { manifestFile, authorizationCode: binding.approvalCode });
+    } catch (error) {
+      blockedRejected = /manifest is blocked/.test(String(error.message));
+    }
+    checks.push({ id: "blocked-dry-run-rejected", ok: blockedRejected });
+  } finally {
+    if (!pathInside(os.tmpdir(), tempRoot)) throw new Error(`Unsafe change-set self-test path: ${tempRoot}`);
+    fs.rmSync(tempRoot, { recursive: true, force: true });
+  }
+  return {
+    schemaVersion: "1.0",
+    phase: "pvf-change-authorization-self-test",
+    summary: {
+      ok: checks.every((check) => check.ok),
+      checkCount: checks.length,
+      failedChecks: checks.filter((check) => !check.ok).length,
+    },
+    checks,
+  };
+}
+
 function readJson(file) {
   return JSON.parse(fs.readFileSync(file, "utf8"));
 }
@@ -68,8 +274,8 @@ function loadWritePolicy() {
 function assertControlledWriteRunnerPolicy(writePolicy) {
   const permissionModel = writePolicy.permissionModel || {};
   const runner = writePolicy.controlledWriteRunner || {};
-  if (permissionModel.agentMcpWriteToolsEnabled !== false || writePolicy.mcpWriteToolsEnabled !== false) {
-    throw new Error("Agent/MCP write tools must remain disabled; only the controlled write runner may write.");
+  if (permissionModel.hostExposedWriteToolsEnabled !== false || writePolicy.publicWriteToolsEnabled !== false) {
+    throw new Error("Public write tools must remain disabled; only the controlled write runner may write.");
   }
   if (permissionModel.sourceOverwriteAllowed !== false || runner.sourceOverwriteAllowed !== false) {
     throw new Error("Controlled write runner must not allow source PVF overwrite.");
@@ -77,8 +283,11 @@ function assertControlledWriteRunnerPolicy(writePolicy) {
   if (permissionModel.clientWriteAllowed !== false || runner.clientWriteAllowed !== false) {
     throw new Error("Controlled write runner must not allow client resource writes.");
   }
+  if (runner.requiresDryRunFirst !== true || runner.requiresMatchingDryRunManifest !== true || runner.requiresExplicitAuthorizationCode !== true) {
+    throw new Error("Controlled write runner must require a matching dry-run manifest and explicit authorization code.");
+  }
   const allowedBridgeTools = new Set(runner.allowedBridgeTools || []);
-  for (const tool of ["pvf_open", "pvf_read_file", "pvf_replace_text", "pvf_backup", "pvf_save", "pvf_close"]) {
+  for (const tool of ["pvf_open", "pvf_list_files", "pvf_read_file", "pvf_replace_text", "pvf_write_file", "pvf_backup", "pvf_save", "pvf_close"]) {
     if (!allowedBridgeTools.has(tool)) {
       throw new Error(`controlledWriteRunner.allowedBridgeTools is missing required tool: ${tool}`);
     }
@@ -113,6 +322,7 @@ function validateChangeSet(changeSet) {
   }
 
   const ids = new Set();
+  const targetPaths = new Set();
   for (const [index, change] of (changeSet.changes || []).entries()) {
     const prefix = `changes[${index}]`;
     if (!change.id || !/^[A-Za-z0-9._-]+$/.test(change.id)) {
@@ -121,26 +331,96 @@ function validateChangeSet(changeSet) {
       errors.push(`Duplicate change id: ${change.id}`);
     }
     ids.add(change.id);
-    if (change.type !== "replace-text") {
-      errors.push(`${prefix}.type must be replace-text.`);
-    }
     if (!change.pvfPath) {
       errors.push(`${prefix}.pvfPath is required.`);
+    } else {
+      const normalizedTarget = normalizePvfPath(change.pvfPath).toLowerCase();
+      if (targetPaths.has(normalizedTarget)) {
+        errors.push(`Duplicate target PVF path: ${change.pvfPath}`);
+      }
+      targetPaths.add(normalizedTarget);
     }
-    if (typeof change.previousText !== "string" || change.previousText.length === 0) {
-      errors.push(`${prefix}.previousText is required.`);
-    }
-    if (typeof change.newText !== "string") {
-      errors.push(`${prefix}.newText must be a string.`);
-    }
-    if (/&#\d+;/.test(change.previousText) || /&#\d+;/.test(change.newText)) {
-      errors.push(`${prefix}.previousText/newText must not contain HTML numeric entities; read exact source text with raw/no-simplified mode before writing.`);
-    }
-    if (change.replaceAll !== undefined && typeof change.replaceAll !== "boolean") {
-      errors.push(`${prefix}.replaceAll must be boolean when present.`);
+    if (change.type === "replace-text") {
+      if (typeof change.previousText !== "string" || change.previousText.length === 0) {
+        errors.push(`${prefix}.previousText is required.`);
+      }
+      if (typeof change.newText !== "string") {
+        errors.push(`${prefix}.newText must be a string.`);
+      }
+      if (/&#\d+;/.test(change.previousText) || /&#\d+;/.test(change.newText)) {
+        errors.push(`${prefix}.previousText/newText must not contain HTML numeric entities; read exact source text with raw/no-simplified mode before writing.`);
+      }
+      if (change.replaceAll !== undefined && typeof change.replaceAll !== "boolean") {
+        errors.push(`${prefix}.replaceAll must be boolean when present.`);
+      }
+    } else if (change.type === "write-file") {
+      if (typeof change.sourceFile !== "string" || !change.sourceFile.trim()) {
+        errors.push(`${prefix}.sourceFile is required.`);
+      }
+      if (typeof change.sourceSha256 !== "string" || !/^[a-f0-9]{64}$/i.test(change.sourceSha256)) {
+        errors.push(`${prefix}.sourceSha256 must be a SHA256 hex string.`);
+      }
+      if (change.expectAbsent !== true) {
+        errors.push(`${prefix}.expectAbsent must be true; controlled write-file cannot overwrite an existing PVF path.`);
+      }
+      if (change.compileScript !== undefined && typeof change.compileScript !== "boolean") {
+        errors.push(`${prefix}.compileScript must be boolean when present.`);
+      }
+      if (change.compileBinaryAni !== undefined && typeof change.compileBinaryAni !== "boolean") {
+        errors.push(`${prefix}.compileBinaryAni must be boolean when present.`);
+      }
+    } else {
+      errors.push(`${prefix}.type must be replace-text or write-file.`);
     }
   }
   return errors;
+}
+
+function resolveChangeSourceFile(changeSetFile, sourceFile) {
+  return path.isAbsolute(sourceFile)
+    ? path.resolve(sourceFile)
+    : path.resolve(path.dirname(changeSetFile), sourceFile);
+}
+
+function readVerifiedSourceFile(changeSetFile, change) {
+  const sourceFile = resolveChangeSourceFile(changeSetFile, change.sourceFile);
+  if (!fs.existsSync(sourceFile) || !fs.statSync(sourceFile).isFile()) {
+    throw new Error(`write-file source does not exist: ${sourceFile}`);
+  }
+  const raw = fs.readFileSync(sourceFile);
+  const actualSha256 = sha256(raw);
+  if (actualSha256.toLowerCase() !== change.sourceSha256.toLowerCase()) {
+    throw new Error(`write-file source hash mismatch: ${sourceFile}`);
+  }
+  const textContent = raw.toString("utf8").replace(/^\uFEFF/, "");
+  return { sourceFile, raw, textContent, actualSha256 };
+}
+
+async function pvfPathExists(client, sessionId, pvfPath, directoryCache) {
+  const slash = pvfPath.lastIndexOf("/");
+  const directoryPrefix = slash >= 0 ? pvfPath.slice(0, slash + 1).toLowerCase() : "";
+  if (!directoryCache.has(directoryPrefix)) {
+    const listed = await callAndParse(client, "pvf_list_files", {
+      sessionId,
+      prefix: directoryPrefix,
+      limit: 2000,
+    });
+    const names = new Set((listed.items || []).map((item) => normalizePvfPath(item.fileName).toLowerCase()));
+    directoryCache.set(directoryPrefix, {
+      complete: Number(listed.matchedCount || 0) <= Number(listed.returnedCount || 0),
+      names,
+    });
+  }
+  const cached = directoryCache.get(directoryPrefix);
+  if (cached.complete) {
+    return cached.names.has(pvfPath.toLowerCase());
+  }
+  const exact = await callAndParse(client, "pvf_list_files", {
+    sessionId,
+    prefix: pvfPath,
+    limit: 2000,
+  });
+  return (exact.items || []).some((item) => normalizePvfPath(item.fileName).toLowerCase() === pvfPath.toLowerCase());
 }
 
 function countOccurrences(text, needle) {
@@ -212,18 +492,20 @@ function diffSummary(before, after) {
 async function callAndParse(client, name, toolArgs) {
   const result = await client.callTool(name, toolArgs);
   if (result && result.isError) {
-    const parsed = parseMcpTextResult(result);
-    throw new Error(parsed.error || parsed.text || JSON.stringify(parsed));
+    const parsed = parseBackendTextResult(result);
+    const error = new Error(parsed.error || parsed.text || JSON.stringify(parsed));
+    if (parsed?.data?.code) error.code = parsed.data.code;
+    throw error;
   }
-  return parseMcpTextResult(result);
+  return parseBackendTextResult(result);
 }
 
 async function runDryRun(changeSet, changeSetFile, outDirOverride) {
   const adapterConfig = loadAdapterConfig(workbenchRoot);
   assertReadOnlyAdapter(adapterConfig);
   const writePolicy = loadWritePolicy();
-  if (writePolicy.mode !== "controlled-output-only" || writePolicy.mcpWriteToolsEnabled !== false) {
-    throw new Error("write-policy.json must remain controlled-output-only with mcpWriteToolsEnabled=false.");
+  if (writePolicy.mode !== "controlled-output-only" || writePolicy.publicWriteToolsEnabled !== false) {
+    throw new Error("write-policy.json must remain controlled-output-only with publicWriteToolsEnabled=false.");
   }
   assertControlledWriteRunnerPolicy(writePolicy);
 
@@ -242,7 +524,7 @@ async function runDryRun(changeSet, changeSetFile, outDirOverride) {
     : runtimePath(workbenchRoot, "dry-runs", timestamp());
   fs.mkdirSync(outRoot, { recursive: true });
 
-  const client = new McpStdioClient(upstreamLaunchOptions(adapterConfig));
+  const client = new BackendStdioClient(upstreamLaunchOptions(adapterConfig));
   const opened = await callAndParse(client, "pvf_open", {
     path: sourcePvf,
     encoding: changeSet.target.pvfOpenEncoding || adapterConfig.defaults.pvfOpenEncoding,
@@ -251,8 +533,8 @@ async function runDryRun(changeSet, changeSetFile, outDirOverride) {
   if (!sessionId) {
     throw new Error("pvf_open did not return a sessionId.");
   }
-
   const results = [];
+  const directoryCache = new Map();
   try {
     for (const change of changeSet.changes) {
       const pvfPath = normalizePvfPath(change.pvfPath);
@@ -267,6 +549,25 @@ async function runDryRun(changeSet, changeSetFile, outDirOverride) {
         if (!resolved.found || normalizePvfPath(resolved.entry?.pvfPath) !== normalizePvfPath(required.expectedPvfPath)) {
           throw new Error(`Required ID resolution failed for ${required.lstPath}:${required.id}`);
         }
+      }
+
+      if (change.type === "write-file") {
+        const source = readVerifiedSourceFile(changeSetFile, change);
+        const targetExists = await pvfPathExists(client, sessionId, pvfPath, directoryCache);
+        results.push({
+          id: change.id,
+          type: change.type,
+          pvfPath,
+          sourceFile: source.sourceFile,
+          sourceSha256: source.actualSha256,
+          sourceLength: source.raw.length,
+          expectAbsent: true,
+          targetExists,
+          applicable: !targetExists,
+          changed: !targetExists,
+          rationale: change.rationale || "",
+        });
+        continue;
       }
 
       const read = await callAndParse(client, "pvf_read_file", {
@@ -323,6 +624,13 @@ async function runDryRun(changeSet, changeSetFile, outDirOverride) {
       changedCount: results.filter((item) => item.changed).length,
       blockedCount: results.filter((item) => !item.applicable).length,
     },
+    binding: dryRunBinding(
+      results,
+      sourcePvf,
+      sha256File(sourcePvf),
+      changeSetFile,
+      sha256File(changeSetFile),
+    ),
     results,
   };
   const manifestPath = path.join(outRoot, writePolicy.outputs?.dryRunManifestFileName || "DRY-RUN-MANIFEST.json");
@@ -371,12 +679,14 @@ async function runApply(changeSet, changeSetFile) {
     throw new Error(`PVF file does not exist: ${sourcePvf}`);
   }
 
+  const authorization = verifyDryRunAuthorization(sourcePvf, changeSetFile);
+
   const paths = resolveApplyPaths(writePolicy, sourcePvf);
   fs.mkdirSync(path.dirname(paths.outputPvf), { recursive: true });
   fs.mkdirSync(path.dirname(paths.backupPath), { recursive: true });
   fs.mkdirSync(path.dirname(paths.manifestPath), { recursive: true });
 
-  const client = new McpStdioClient(upstreamLaunchOptions(adapterConfig));
+  const client = new BackendStdioClient(upstreamLaunchOptions(adapterConfig));
   const opened = await callAndParse(client, "pvf_open", {
     path: sourcePvf,
     encoding: changeSet.target.pvfOpenEncoding || adapterConfig.defaults.pvfOpenEncoding,
@@ -386,8 +696,16 @@ async function runApply(changeSet, changeSetFile) {
     throw new Error("pvf_open did not return a sessionId.");
   }
 
+  if (opened.session?.readOnly === true) {
+    const error = new Error("Controlled PVF apply is unavailable because the active backend is the TypeScript read-only fallback. Install the Microsoft Visual C++ v14 x64 runtime and rerun workbench.bat check.");
+    error.code = "READ_ONLY_FALLBACK";
+    client.stop();
+    throw error;
+  }
+
   const results = [];
   const expectedAfterByPath = new Map();
+  const directoryCache = new Map();
   let backupResult = null;
   let saveResult = null;
   let readbackSessionId = null;
@@ -406,6 +724,41 @@ async function runApply(changeSet, changeSetFile) {
         if (!resolved.found || normalizePvfPath(resolved.entry?.pvfPath) !== normalizePvfPath(required.expectedPvfPath)) {
           throw new Error(`Required ID resolution failed for ${required.lstPath}:${required.id}`);
         }
+      }
+
+      if (change.type === "write-file") {
+        const source = readVerifiedSourceFile(changeSetFile, change);
+        const targetExists = await pvfPathExists(client, sessionId, pvfPath, directoryCache);
+        if (targetExists) {
+          throw new Error(`Controlled write-file target already exists: ${pvfPath}`);
+        }
+        const applyResult = await callAndParse(client, "pvf_write_file", {
+          sessionId,
+          pvfPath,
+          textContent: source.textContent,
+          pvfEncoding: change.pvfEncoding || changeSet.target.pvfReadEncoding || adapterConfig.defaults.pvfReadEncoding,
+          compileScript: change.compileScript !== false,
+          compileBinaryAni: change.compileBinaryAni !== false,
+          convertToTraditionalChinese: false,
+        });
+        expectedAfterByPath.set(pvfPath, {
+          kind: "write-file",
+          sourceText: source.textContent,
+          sourceRawSha256: source.actualSha256,
+        });
+        results.push({
+          id: change.id,
+          type: change.type,
+          pvfPath,
+          sourceFile: source.sourceFile,
+          sourceSha256: source.actualSha256,
+          sourceLength: source.raw.length,
+          targetExistedBeforeApply: false,
+          changed: true,
+          applyResult,
+          rationale: change.rationale || "",
+        });
+        continue;
       }
 
       const beforeRead = await callAndParse(client, "pvf_read_file", {
@@ -433,7 +786,7 @@ async function runApply(changeSet, changeSetFile) {
         dryRun: false,
         ...rawTextOptions(changeSet, change, adapterConfig),
       });
-      expectedAfterByPath.set(pvfPath, expectedAfter);
+      expectedAfterByPath.set(pvfPath, { kind: "replace-text", expectedText: expectedAfter });
       results.push({
         id: change.id,
         type: change.type,
@@ -476,7 +829,7 @@ async function runApply(changeSet, changeSetFile) {
     if (!readbackSessionId) {
       throw new Error("readback pvf_open did not return a sessionId.");
     }
-    for (const [pvfPath, expectedText] of expectedAfterByPath.entries()) {
+    for (const [pvfPath, expected] of expectedAfterByPath.entries()) {
       const rb = await callAndParse(client, "pvf_read_file", {
         sessionId: readbackSessionId,
         pvfPath,
@@ -484,16 +837,40 @@ async function runApply(changeSet, changeSetFile) {
         convertToSimplifiedChinese: false,
         maxChars: 0,
       });
-      const actualText = rb.textContent;
-      const actualSha256 = typeof actualText === "string" ? sha256(actualText) : null;
-      const expectedSha256 = sha256(expectedText);
-      readback.push({
-        pvfPath,
-        ok: actualSha256 === expectedSha256,
-        expectedSha256,
-        actualSha256,
-        metadata: rb.metadata,
-      });
+      if (expected.kind === "replace-text") {
+        const actualText = rb.textContent;
+        const actualSha256 = typeof actualText === "string" ? sha256(actualText) : null;
+        const expectedSha256 = sha256(expected.expectedText);
+        readback.push({
+          pvfPath,
+          kind: expected.kind,
+          ok: actualSha256 === expectedSha256,
+          expectedSha256,
+          actualSha256,
+          metadata: rb.metadata,
+        });
+      } else {
+        const hasText = typeof rb.textContent === "string";
+        const textComparison = hasText
+          ? comparePvfTextReadback(expected.sourceText, rb.textContent)
+          : null;
+        const expectedSha256 = hasText ? textComparison.expectedSha256 : expected.sourceRawSha256;
+        const actualSha256 = hasText
+          ? textComparison.actualSha256
+          : (rb.base64Content ? sha256(Buffer.from(rb.base64Content, "base64")) : null);
+        readback.push({
+          pvfPath,
+          kind: expected.kind,
+          comparison: hasText ? "normalized-pvf-token-sha256" : "raw-base64-sha256",
+          ok: hasText ? textComparison.ok : actualSha256 === expectedSha256,
+          expectedSha256,
+          actualSha256,
+          sourceTokenCount: textComparison?.sourceTokenCount,
+          readbackTokenCount: textComparison?.readbackTokenCount,
+          mismatches: textComparison?.mismatches,
+          metadata: rb.metadata,
+        });
+      }
     }
   } finally {
     if (readbackSessionId) {
@@ -517,11 +894,19 @@ async function runApply(changeSet, changeSetFile) {
     outputPvf: paths.outputPvf,
     backupPath: paths.backupPath,
     changeSetFile: path.resolve(changeSetFile),
+    dryRunManifest: authorization.manifestFile,
+    dryRunBindingSha256: authorization.binding.bindingSha256,
+    sourcePvfSha256: authorization.sourcePvfSha256,
+    changeSetFileSha256: authorization.changeSetFileSha256,
     sourceProfile: resolvedSource.profile?.name || null,
     safety: {
       sourceOverwriteAllowed: false,
       sourceOverwritten: false,
       backupCreated: Boolean(backupResult?.targetPath && fs.existsSync(backupResult.targetPath)),
+      matchingDryRunRequired: true,
+      matchingDryRunVerified: true,
+      explicitUserAuthorizationRequired: true,
+      explicitUserAuthorizationVerified: true,
       explicitOutputPath: true,
       readbackExecuted: true,
       readbackOk,
@@ -555,6 +940,12 @@ async function main() {
     process.stdout.write(usage());
     return;
   }
+  if (command === "self-test") {
+    const report = changeSetAuthorizationSelfTest();
+    printJson(report);
+    if (!report.summary.ok) process.exitCode = 1;
+    return;
+  }
   const file = path.resolve(requireOption("--file"));
   const changeSet = readJson(file);
   const validationErrors = validateChangeSet(changeSet);
@@ -573,6 +964,7 @@ async function main() {
       command,
       manifestPath,
       summary: manifest.summary,
+      approvalCode: manifest.binding.approvalCode,
     });
     if (manifest.summary.blockedCount > 0) {
       process.exit(2);

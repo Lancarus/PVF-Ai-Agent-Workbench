@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.pvf-agent-workbench/schemas/research-source-manifest.schema.json",
+  "title": "External research source inventory",
+  "type": "object",
+  "required": ["schemaVersion", "phase", "generatedAt", "source", "parser", "summary", "files", "warnings"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "phase": { "const": "external-research-source-inventory" },
+    "generatedAt": { "type": "string" },
+    "source": {
+      "type": "object",
+      "required": ["sourceId", "root", "provenanceStatus", "licenseStatus", "trustRole", "distributionDefault"]
+    },
+    "parser": {
+      "type": "object",
+      "required": ["id", "version", "sourceContentCopied", "embeddedInstructionsExecuted"],
+      "properties": {
+        "sourceContentCopied": { "const": false },
+        "embeddedInstructionsExecuted": { "const": false }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["fileCount", "totalBytes", "sourceFingerprint", "byExtension", "byKind", "byEncoding", "byTopic"]
+    },
+    "duplicateGroups": { "type": "array" },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["relativePath", "bytes", "sha256", "extension", "kind", "encoding", "topic"]
+      }
+    },
+    "warnings": { "type": "array", "items": { "type": "string" } }
+  }
+}

@@ -36,7 +36,6 @@
 1. 用 `dungeon/dungeon.lst` 定位目标 `dungeon/*.dgn`。
 2. 修改 `[required item]` 前先解析门票/材料 ID，确认是目标上下文可用的 `stackable`。
 3. 修改 `[minimum required level]` 只代表静态最低等级，不代表服务端最终放行规则。
-4. 当前主目标已有 `[required item]` 数量检查/扣除样本和 `[minimum required level]` 列表过滤样本；第三列、多门票、疲劳、组队和深渊仍需另验。
 5. 回读 `.dgn`，确认地图、maze、boss map 等无关块未被改动。
 
 ## 改独立掉落或清算翻牌
@@ -44,7 +43,6 @@
 1. 独立掉落先从 `etc/independentdrop.lst` 找到目标表，再改 `[list]`。
 2. 清算翻牌只改 `etc/itemdropinfo_clearreward.etc` 中明确目标块，不把它和任务奖励或 NPC 商店混写。
 3. 候选 ID 必须逐个按正确 registry 解析。
-4. 不把 `[gold card blank item]` 当确定性可见奖励入口；当前主目标已有负样本。
 5. `[basis level]` 可影响怪物强度和付费翻牌费用选行，不应作为单纯清算费用字段使用。
 6. 静态权重修改后仍需实机或服务端环境验证，不能在 Workbench 写成真实概率。
 

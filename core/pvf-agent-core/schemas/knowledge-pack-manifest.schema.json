@@ -3,56 +3,25 @@
   "$id": "https://local.pvf-agent-workbench/schemas/knowledge-pack-manifest.schema.json",
   "title": "Portable PVF Agent Workbench knowledge-pack manifest",
   "type": "object",
-  "required": [
-    "schemaVersion",
-    "phase",
-    "generatedAt",
-    "sourceVariables",
-    "entries",
-    "summary",
-    "externalSourcePolicy"
-  ],
+  "required": ["schemaVersion", "purpose", "entries", "summary"],
   "additionalProperties": false,
   "properties": {
     "schemaVersion": {
-      "const": "1.0"
+      "const": "2.0"
     },
-    "phase": {
-      "const": "phase-1.5-knowledge-bootstrap"
-    },
-    "generatedAt": {
-      "type": "string"
-    },
-    "sourceVariables": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "string"
-      }
-    },
+    "purpose": { "type": "string" },
     "entries": {
       "type": "array",
       "items": {
         "type": "object",
         "required": [
           "dest",
-          "source",
-          "sourceGroup",
-          "evidenceLevel",
           "bytes",
           "sha256"
         ],
         "additionalProperties": false,
         "properties": {
           "dest": {
-            "type": "string"
-          },
-          "source": {
-            "type": "string"
-          },
-          "sourceGroup": {
-            "type": "string"
-          },
-          "evidenceLevel": {
             "type": "string"
           },
           "bytes": {
@@ -62,28 +31,18 @@
           "sha256": {
             "type": "string",
             "pattern": "^[a-f0-9]{64}$"
-          },
-          "pathReferenceCount": {
-            "type": "integer",
-            "minimum": 0
           }
         }
       }
     },
     "summary": {
       "type": "object",
-      "additionalProperties": true
-    },
-    "pathReferences": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "additionalProperties": true
+      "required": ["entryCount", "totalBytes"],
+      "additionalProperties": false,
+      "properties": {
+        "entryCount": { "type": "integer", "minimum": 1 },
+        "totalBytes": { "type": "integer", "minimum": 0 }
       }
-    },
-    "externalSourcePolicy": {
-      "type": "object",
-      "additionalProperties": true
     }
   }
 }

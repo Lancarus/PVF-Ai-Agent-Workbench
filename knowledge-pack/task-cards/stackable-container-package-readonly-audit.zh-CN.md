@@ -20,7 +20,6 @@
 6. 如果文件含 `[equipment]`、`[stackable]`、`[avatar]`、`[creature]`、`[recommend]`、`[default select]`、`[result item]`，按块名选择 registry：装备和 avatar 候选走 `equipment/equipment.lst`，stackable 候选走 `stackable/stackable.lst`，creature 候选优先核 equipment creature 语境。
 7. 如果文件含 `[random]` / `[random list]`，只记录静态候选池和列形，不把权重写成已验证实机概率。
 8. 如果文件含 `[avatar package preview info]` 或图标/预览 IMG 路径，只写 PVF 内引用；客户端资源完整性另验。
-9. 辅助对照 PVF 只记录结构和规模差异，不提升为主目标事实。
 
 ## 验收
 

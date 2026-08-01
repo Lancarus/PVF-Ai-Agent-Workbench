@@ -2,7 +2,6 @@
 
 状态：默认可用
 
-本文只记录主目标 PVF 只读观察后可作为 Workbench 默认知识的字段边界。外部资料只作查找线索，不能绕过主目标观察。
 
 ## 装备强化/增幅字段
 
@@ -22,12 +21,12 @@
 
 | 标签 | 观察到的静态含义 | 解析边界 |
 | --- | --- | --- |
-| `[expertjob only] ... [/expertjob only]` | 副职业 token 与等级闭合块。主目标样本含 `alchemist`、`disjointer`、`doll_controller`、`enchanter`。 | 必须和同文件机制字段合读；不能把 token 当全局职业枚举。 |
-| `[prof compound rate]` | 专业制作/合成率修饰线索，主目标样本值为 `5`。 | 不证明成功率公式或实机制作成功。 |
-| `[prof result variation]` | 专业制作结果变化线索，主目标样本形态为 `5 200`。 | 两列精确含义需实机验证。 |
-| `[prof disjoint result variation]` | 分解师结果变化线索，主目标样本值为 `10`。 | 不证明分解产物实际增加。 |
-| `[prof material variation]` | 材料消耗变化线索，主目标样本值为 `-10`。 | 不证明材料扣除公式或负值语义。 |
-| `[prof additional gain exp]` | 副职业经验增加线索，主目标样本形态为 `10 1`。 | 不证明经验实际增加。 |
+| `[expertjob only] ... [/expertjob only]` | 需在当前目标 PVF 中只读确认 | 必须和同文件机制字段合读；不能把 token 当全局职业枚举。 |
+| `[prof compound rate]` | 需在当前目标 PVF 中只读确认 | 不证明成功率公式或实机制作成功。 |
+| `[prof result variation]` | 需在当前目标 PVF 中只读确认 | 两列精确含义需实机验证。 |
+| `[prof disjoint result variation]` | 需在当前目标 PVF 中只读确认 | 不证明分解产物实际增加。 |
+| `[prof material variation]` | 需在当前目标 PVF 中只读确认 | 不证明材料扣除公式或负值语义。 |
+| `[prof additional gain exp]` | 需在当前目标 PVF 中只读确认 | 不证明经验实际增加。 |
 | `[expert type]` | stackable 副职业道具的专业类型 token。 | 与装备侧 `[expertjob only]` 是不同父块，不能混用。 |
 | `[alchemist extraction]` | 炼金提取器样本字段。 | 只证明提取器道具配置存在，不证明提取成功或材料产出。 |
 
@@ -55,7 +54,7 @@
 | 标签 | 观察到的静态含义 | 解析边界 |
 | --- | --- | --- |
 | NPC `[role]` + `` `[item shop]` `` | NPC 到 itemshop ID 的入口。样本诺顿为 8，克伦特为 35。 | 只证明 NPC 静态角色入口，不证明对话 UI 或商店打开成功。 |
-| `itemshop/itemshop.lst` | itemshop registry。主目标注册 `Recipe1.shp`、`Recipe2.shp`、`Recipe3.shp`。 | 必须按 registry 解析 `.shp`，不要按文件名猜 ID。 |
+| `itemshop/itemshop.lst` | 需在当前目标 PVF 中只读确认 | 必须按 registry 解析 `.shp`，不要按文件名猜 ID。 |
 | `.shp [NPC]` | 商店文件内 NPC ID。 | 要回 `npc/npc.lst` 解析，不按数字猜 NPC。 |
 | `.shp [sell item]` | 售卖物 ID 列表，`-1`、`-2` 等为分隔/占位样值。 | 正数仍需按当前商店语境和 registry 解析；不证明购买成功。 |
 | `.shp [tab name]` | 商店页签文本。 | 不证明客户端 UI 显示正常。 |
@@ -68,4 +67,4 @@
 | 看到副职业 token | 同读 `[expertjob only]` 与同文件 `[prof ...]` 字段。 | 脱离副职业父块解释制作公式。 |
 | 看到配方数字 | 先确认是配方 `[int data]`、商店 `[sell item]`、卡片 `[int data]` 还是材料字段。 | 裸数字按大小猜 stackable/equipment/monster。 |
 | 看到 `[enchant]` | 先区分怪物卡片、徽章或其他 stackable 父类型。 | 把所有 `[enchant]` 都写成怪物卡附魔。 |
-| 看到辅助对照更大商店 | 只写版本差异提示。 | 用辅助内容补主目标商店事实。 |
+| 跨版本候选；需在当前目标 PVF 中复核 | 只写版本差异提示。 | 需在当前目标 PVF 中只读确认 |

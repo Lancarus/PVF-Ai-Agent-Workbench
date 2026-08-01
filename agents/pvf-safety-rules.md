@@ -3,7 +3,7 @@
 ## 当前硬边界
 
 - `writeMode.enabled` 必须为 `false`。
-- PVF MCP/CLI 只允许只读工具。
+- 普通 PVF CLI 只允许只读工具。
 - 不打开真实 PVF 也能完成基础环境检查。
 - 不修改任何客户端目录。
 - 不移动、不复制、不打包原始资料库。
@@ -31,7 +31,9 @@
 - `pvf_list_registries`
 - `pvf_resolve_lst_id`
 - `pvf_resolve_id`
+- `pvf_resolve_path`
 - `pvf_read_file`
+- `pvf_read_files`
 
 ## 只读 adapter 禁止工具
 
@@ -47,13 +49,14 @@
 - dry-run 不创建 PVF 备份、不调用写工具、不保存 output PVF。
 - 后续真正 apply 前仍必须重新确认目标 PVF、创建备份、保存到显式输出路径并 readback。
 
-## 写入模式未来要求
+## 受控 apply 要求
 
-写入模式必须是显式授权，不得由配置隐式开启。至少满足：
+写入必须由 `workbench.bat pvf-change apply` 执行，且不能由普通只读通道或配置隐式开启。至少满足：
 
 - 用户确认目标 PVF。
-- 工具层确认源 PVF 不允许覆盖。
-- 输出路径在 workspace profile 的 `output` 或 lab 目录下。
+- 使用目标 PVF 的 raw no-simplified 精确文本，不写回简体化显示文本或 HTML 数字实体。
+- 提供同一源 PVF、同一 change-set 的未阻塞 dry-run manifest 和 approval code。
+- 工具层确认源 PVF 不允许覆盖，输出路径必须显式指定。
 - 备份路径带时间戳。
 - 保存后读回同一文件。
 - 生成机器可读 manifest。

@@ -22,7 +22,6 @@
 9. 如果核查副本门票或入场条件，先通过 `dungeon/dungeon.lst` 定位 `dungeon/*.dgn`，再读 `[required item]` 和 `[minimum required level]`。
 10. 如果核查独立掉落，先读 `etc/independentdrop.lst`，再读对应 `etc/independentdrop/*.etc` 的 `[list]`。
 11. 如果核查清算翻牌，读取 `etc/itemdropinfo_clearreward.etc`；不要和任务奖励或独立掉落混写。
-12. 辅助对照 PVF 只记录“是否存在同类结构”和规模差异，不提升为主目标事实。
 
 ## 验收
 

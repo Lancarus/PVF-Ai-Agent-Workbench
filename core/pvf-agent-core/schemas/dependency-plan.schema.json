@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.pvf-agent-workbench/schemas/dependency-plan.schema.json",
+  "type": "object",
+  "required": ["schemaVersion", "phase", "planner", "input", "safety", "summary", "nodes", "edges", "unresolved", "risks", "controlledWriteHandoff"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "phase": { "const": "clean-room-dependency-plan" },
+    "planner": {
+      "type": "object",
+      "required": ["id", "version", "domain", "commercialSourceMethodsCopied"],
+      "properties": {
+        "commercialSourceMethodsCopied": { "const": false }
+      }
+    },
+    "safety": {
+      "type": "object",
+      "required": ["readOnly", "sourcePvfModified", "pvfWritten", "clientWritten", "npkWritten", "generatedApplyPatch", "outputExternalOnly", "rawNoSimplifiedReadback"],
+      "properties": {
+        "readOnly": { "const": true },
+        "sourcePvfModified": { "const": false },
+        "pvfWritten": { "const": false },
+        "clientWritten": { "const": false },
+        "npkWritten": { "const": false },
+        "generatedApplyPatch": { "const": false },
+        "outputExternalOnly": { "const": true },
+        "rawNoSimplifiedReadback": { "const": true }
+      }
+    },
+    "nodes": { "type": "array" },
+    "edges": { "type": "array" },
+    "unresolved": { "type": "array" },
+    "risks": { "type": "array" },
+    "controlledWriteHandoff": {
+      "type": "object",
+      "required": ["allowedDirectly", "requiredLane", "requirements"],
+      "properties": { "allowedDirectly": { "const": false } }
+    }
+  }
+}

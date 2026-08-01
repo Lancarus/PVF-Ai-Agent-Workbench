@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "1.0",
+  "contractId": "pvf-clean-room-dependency-planner-v1",
+  "domains": ["dungeon", "town", "monster", "passiveobject", "apc", "ani", "equipment", "stackable", "package", "orb", "quest", "set"],
+  "inputs": {
+    "required": ["target Script.pvf", "domain", "exactly one ID/path/query/supported-sample selector"],
+    "optional": ["depth", "limit", "encoding", "external output directory", "SHA-bound private batch profile"]
+  },
+  "outputs": ["root and dependency nodes", "registry-resolved edges", "unresolved references", "client asset candidates", "risk levels", "controlled-write handoff requirements"],
+  "safety": {
+    "readOnly": true,
+    "sourcePvfOverwriteAllowed": false,
+    "clientWritesAllowed": false,
+    "npkImgWritesAllowed": false,
+    "directApplyPatchAllowed": false,
+    "outputExternalOnly": true,
+    "commercialSourceMethodsCopied": false
+  },
+  "evidence": {
+    "implementationBasis": ["Workbench clean knowledge", "target PVF raw readback", "public PVF structure", "independent fixtures"],
+    "commercialToolRole": "capability categories only",
+    "cacheReuseBinding": ["full PVF SHA256", "canonical request fingerprint", "underlying planner lane"]
+  }
+}

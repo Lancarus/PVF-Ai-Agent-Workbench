@@ -44,7 +44,7 @@ PassiveObject 常用于飞行物、召唤物、地图对象、角色公共对象
 - `[CREATE PASSIVEOBJECT] ... [/CREATE PASSIVEOBJECT]` 可出现在 `.act` 的 `[BEHAVIOR]` 等上下文中。
 - 闭合块内的 `[INDEX]` 必须回 `passiveobject/passiveobject.lst` 解析。
 - `[PARTICLE FILENAME]`、`[LEVEL]`、`[POS]` 等只记录列形，不解释运行公式。
-- `[CREATE PASSIVEOBJECT CIRCLE]` 在当前 `passiveobject/` 脚本文本搜索范围未观察到；不要写成主目标全局不存在，也不要把其他范围观察直接提升为本范围结论。
+- `[CREATE PASSIVEOBJECT CIRCLE]` 等低频入口必须在目标 PVF 中确认；零搜索结果不能证明全局不存在。
 
 ## `.atk` 边界
 
@@ -52,7 +52,7 @@ PassiveObject 常用于飞行物、召唤物、地图对象、角色公共对象
 - 字段名不能直接推出伤害公式、元素、异常概率、击退、浮空、hit stop、命中或 PVP 结果。
 - `[active status]` 只证明状态入口存在；状态 token 后可见三数值列、四数值列或七数值列，列含义需专项验证。
 - `[ACTIVE STATUS]` 大写样本可属于 `.act` 上下文，不要和 `.atk [active status]` 合并。
-- `[active status apply weapon]` 在主目标 `passiveobject/` 范围未观察到；辅助对照样本不能提升为主目标结论。
+- `[active status apply weapon]` 是否存在及如何生效必须在目标 PVF 中确认。
 - `[pvp] ... [/pvp]` 只证明 PVP 覆盖块存在，块内字段集合可变，不证明竞技场最终规则。
 - PVP `.atk` 要证明静态攻击链，需要继续连回 owner `.obj`、`.act` 和 `.ani`；`.atk` 自身不能独立证明命中。
 - 历史拼写和大小写变体应按原样保留。
@@ -67,20 +67,6 @@ PassiveObject 常用于飞行物、召唤物、地图对象、角色公共对象
 
 ## 入口
 
-- `indexes/passiveobject-coverage-ledger.zh-CN.md`
-- `indexes/attackinfo-status-pvp-ledger.zh-CN.md`
-- `indexes/attackinfo-pvp-block-inventory.zh-CN.md`
-- `indexes/attackinfo-pvp-chain-pilot-ledger.zh-CN.md`
-- `indexes/attackinfo-pvp-gunner-chain-ledger.zh-CN.md`
-- `indexes/attackinfo-pvp-fighter-chain-ledger.zh-CN.md`
-- `indexes/attackinfo-pvp-mage-chain-ledger.zh-CN.md`
-- `indexes/attackinfo-pvp-priest-swordman-thief-chain-ledger.zh-CN.md`
-- `indexes/attackinfo-pvp-common-equipment-chain-ledger.zh-CN.md`
-- `indexes/attackinfo-pvp-zrr-skill-chain-ledger.zh-CN.md`
-- `indexes/passiveobject-lifecycle-homing-ledger.zh-CN.md`
-- `indexes/passiveobject-hitbox-ani-sample-ledger.zh-CN.md`
-- `indexes/passiveobject-create-recursion-ledger.zh-CN.md`
-- `indexes/passiveobject-nonmonster-sample-chain.zh-CN.md`
 - `dictionaries/passiveobject-obj-fields.zh-CN.md`
 - `dictionaries/passiveobject-action-fields.zh-CN.md`
 - `dictionaries/attackinfo-atk-fields.zh-CN.md`

@@ -2,23 +2,19 @@
 
 状态：默认可用
 
-用途：记录当前主目标 PVF 中 `IceRoad / 冰霜之径` 的 skill registry、state、appendage、`24243` passiveobject 注册和未闭合创建入口。本文只写主目标只读可见事实，不把静态文本推断成实机效果。
 
 ## 一句话结论
 
-当前主目标只读可确认：`skill 7 -> ATMage/IceRoad.skl -> STATE_ICEROAD = 26`，释放流程会进入 CASTING，再转到 `SUB_STATE_ICEROAD_0`，随后追加 `ap_ATMage_IceRoad.nut` 和通用视觉 appendage，并关闭技能 on/off 封印函数。`24243 -> ATIceRoad.obj` 虽已在 load_state 和 `passiveobject.lst` 注册，但当前可读 NUT 中未闭合到实际创建入口；地面攻击 PO、减速/冰冻命中链不能写成已静态闭合。
 
-## 主目标只读闭合链
-
-| 层级 | 主目标观察 | 边界 |
+| 层级 | 目标核验 | 边界 |
 | --- | --- | --- |
-| skill registry | `skill/atmageskill.lst` 中 `7 -> ATMage/IceRoad.skl`，`217 -> ATMage/IceRoadEx.skl`。 | 只证明技能 ID 到 `.skl` 路由。 |
-| header 常量 | `SKILL_ICEROAD = 7`，`STATE_ICEROAD = 26`，`CUSTOM_ANI_ICEROAD = 13`，`CUSTOM_ANI_ICEROAD_CASTING = 76`。 | 常量只在当前男法脚本上下文内解释。 |
-| load_state | `atmage_load_state.nut` 注册 `IceRoad.nut`，并注册 `po_ATIceRoad.nut` 到 `24243`。 | 注册不等于运行时一定创建 PO。 |
-| passiveobject registry | `24243 -> passiveobject/Character/Mage/ATIceRoad.obj`。 | 必须按 `passiveobject/passiveobject.lst` 解析；不能用 skill/monster/APC registry。 |
-| `.skl` 主技能 | `IceRoad.skl` 为 active，命令 `→→ + Space`，需求等级 `25`，冷却 `8000`，施放时间 `500`，`[executable states] = 0 8 14`。 | 可释放状态、冷却、MP 和 on/off 行为仍需实机确认。 |
-| `.skl level info` | 4 列：每 0.5 秒 MP 消减量、减速持续时间、移动速度减少率、减速几率。 | 当前脚本中 MP 消耗和 PO 创建代码为注释，不能只按 level info 写成运行事实。 |
-| 强化技能 | `IceRoadEx.skl` 为 passive，`[pre required skill] 7 10`，level info 扩展到 7 列并描述冰冻几率、冰冻 Lv、冰冻持续时间。 | 强化数据只作为被动意图；当前 PO 创建入口未闭合时，冰冻运行效果不能静态证明。 |
+| skill registry | 需在当前目标 PVF 中只读确认 | 只证明技能 ID 到 `.skl` 路由。 |
+| header 常量 | 需在当前目标 PVF 中只读确认 | 常量只在当前男法脚本上下文内解释。 |
+| load_state | 需在当前目标 PVF 中只读确认 | 注册不等于运行时一定创建 PO。 |
+| passiveobject registry | 需在当前目标 PVF 中只读确认 | 必须按 `passiveobject/passiveobject.lst` 解析；不能用 skill/monster/APC registry。 |
+| `.skl` 主技能 | 需在当前目标 PVF 中只读确认 | 可释放状态、冷却、MP 和 on/off 行为仍需实机确认。 |
+| `.skl level info` | 需在当前目标 PVF 中只读确认 | 当前脚本中 MP 消耗和 PO 创建代码为注释，不能只按 level info 写成运行事实。 |
+| 强化技能 | 需在当前目标 PVF 中只读确认 | 强化数据只作为被动意图；当前 PO 创建入口未闭合时，冰冻运行效果不能静态证明。 |
 
 ## state 流程
 
@@ -37,31 +33,31 @@
 
 ### `ap_ATMage_IceRoad.nut`
 
-| 回调 | 主目标观察 | 边界 |
+| 回调 | 目标核验 | 边界 |
 | --- | --- | --- |
-| `sq_AddEffect` | 添加前景动画 `Character/Mage/Effect/Animation/ATIceRoad/loop/00_icebottom_dodge.ani`。 | 当前读到的是视觉动画，不是 `24243` PO。 |
-| `onStart` | 建两个 timer：第一个 `400/-1`，第二个 `500/-1`；播放循环声音 `ICEROAD_LOOP`。 | timer 只是准备；当前文本里实际事件触发创建 PO 的代码为注释。 |
-| `proc` | 根据角色状态调整第一个 timer：dash 为 `400`，stand 且非 stay 为 `800`，其他为 `-1`。 | `t.isOnEvent`、扣 MP、创建 `24243`、`sendSetMpPacket` 均在注释块内。 |
-| `onEnd` | 停止声音。 | 声音残留与同步需实机。 |
+| `sq_AddEffect` | 需在当前目标 PVF 中只读确认 | 当前读到的是视觉动画，不是 `24243` PO。 |
+| `onStart` | 需在当前目标 PVF 中只读确认 | timer 只是准备；当前文本里实际事件触发创建 PO 的代码为注释。 |
+| `proc` | 需在当前目标 PVF 中只读确认 | `t.isOnEvent`、扣 MP、创建 `24243`、`sendSetMpPacket` 均在注释块内。 |
+| `onEnd` | 需在当前目标 PVF 中只读确认 | 声音残留与同步需实机。 |
 
 ### `ap_ATMage_IceRoadCS.nut`
 
-| 回调 | 主目标观察 | 边界 |
+| 回调 | 目标核验 | 边界 |
 | --- | --- | --- |
-| `onStart` | 清理前景效果并添加 `loop/01_iceup_dodge.ani`，初始化两个 vector。 | 该 appendage 在当前脚本中由 `po_ATIceRoad.nut` 的 skill effect 接收端追加；若 PO 未创建，则入口不闭合。 |
-| `proc` | 若父对象不存在或 vector 未初始化则失效；若计时达到 `maxT`，切到 `end/00_icebottom_dodge.ani`；结束动画播完后失效。 | `sq_IsValidActiveStatus(ACTIVESTATUS_SLOW)` 判断存在但相关分支被注释；异常状态真实持续和视觉切换需实机。 |
-| `onEnd` | 删除前景效果。 | 只证明清理调用，不证明资源显示。 |
+| `onStart` | 需在当前目标 PVF 中只读确认 | 该 appendage 在当前脚本中由 `po_ATIceRoad.nut` 的 skill effect 接收端追加；若 PO 未创建，则入口不闭合。 |
+| `proc` | 需在当前目标 PVF 中只读确认 | `sq_IsValidActiveStatus(ACTIVESTATUS_SLOW)` 判断存在但相关分支被注释；异常状态真实持续和视觉切换需实机。 |
+| `onEnd` | 需在当前目标 PVF 中只读确认 | 只证明清理调用，不证明资源显示。 |
 
 ## `24243` PO 与攻击链边界
 
-| 项 | 主目标观察 | 边界 |
+| 项 | 目标核验 | 边界 |
 | --- | --- | --- |
-| `ATIceRoad.obj` | `[pass all]`，basic motion `Animation/ATIceRoad/00_icebottom_dodge.ani`，attack info `AttackInfo/ATIceRoad.atk`。 | 对象静态可读，但当前 NUT 未闭合到创建。 |
-| `ATIceRoad.atk` | magic、no element、damage reaction none、push/lift 为 0。 | 攻击包静态存在不证明会被创建或命中。 |
-| PO 动画 | `passiveobject/.../ATIceRoad/00_icebottom_dodge.ani` 有攻击盒。 | 攻击盒只在 PO 被实际创建并运行时才可能参与判定；当前创建入口未闭合。 |
-| `po_ATIceRoad.nut` receiveData | 读取 `changeTime/rate/movSpd` 三个 dword；再读 `exSkillLevel`，大于 0 时读 freeze 概率、等级、持续时间并写 AttackInfo freeze。 | 读取端存在，但写入端/创建端未闭合。 |
-| `po_ATIceRoad.nut` onAttack | 按 `SKL_LV_3` 随机判定后，把目标 group/id 写入 skill effect packet。 | 只有 PO 被创建并命中时才可能触发；当前不能写成已生效减速。 |
-| `po_ATIceRoad.nut` onChangeSkillEffect | 读回目标 group/id，给目标追加 `ap_ATMage_IceRoadCS.nut`，设置有效期和移动速度 change status。 | 这是 PO 内部链；当前主目标静态未证明 PO 创建，因此只能记录为未闭合读取端。 |
+| `ATIceRoad.obj` | 需在当前目标 PVF 中只读确认 | 对象静态可读，但当前 NUT 未闭合到创建。 |
+| `ATIceRoad.atk` | 需在当前目标 PVF 中只读确认 | 攻击包静态存在不证明会被创建或命中。 |
+| PO 动画 | 需在当前目标 PVF 中只读确认 | 攻击盒只在 PO 被实际创建并运行时才可能参与判定；当前创建入口未闭合。 |
+| `po_ATIceRoad.nut` receiveData | 需在当前目标 PVF 中只读确认 | 读取端存在，但写入端/创建端未闭合。 |
+| `po_ATIceRoad.nut` onAttack | 需在当前目标 PVF 中只读确认 | 只有 PO 被创建并命中时才可能触发；当前不能写成已生效减速。 |
+| `po_ATIceRoad.nut` onChangeSkillEffect | 需在当前目标 PVF 中只读确认 | 需在当前目标 PVF 中只读确认 |
 
 ## 动画与资源引用
 
@@ -74,7 +70,7 @@
 | `Character/Mage/Effect/Animation/ATIceRoad/end/00_icebottom_dodge.ani` | 目标 CS appendage 收尾视觉，未见攻击盒。 | 视觉结束不证明异常结束规则。 |
 | `Character/Mage/Effect/Animation/ATIceRoad/03_icecloud_dodge.ani` | 前几帧 image 为空，后续引用 `03_icecloud_dodge.img`，未见攻击盒。 | 当前核验未发现它是攻击来源；资源完整性仍需客户端链检查。 |
 
-## TypeSquirrel API 边界
+## 内置 NUT API 事实目录 API 边界
 
 | API | 本桶用途 | 边界 |
 | --- | --- | --- |
@@ -87,11 +83,9 @@
 
 ## 禁止外推
 
-- 不要把 `24243` 注册写成“冰雾 PO 已运行”。当前主目标只读没有闭合到可执行创建入口。
 - 不要把 `ATIceRoad.obj` 的攻击盒写成已命中来源。攻击盒必须以 PO 实际创建为前提。
 - 不要把 `.skl` 的 MP 消耗描述写成已扣 MP。当前主 appendage 中扣 MP 逻辑为注释。
 - 不要把 `IceRoadEx` 的冰冻描述写成已生效。当前只能确认强化 `.skl` 和 PO 读取端意图。
-- 不要用辅助对照或教程补齐本桶缺失入口；若要恢复运行效果，需另走受控写入实验生命周期。
 
 ## 下一步验收
 

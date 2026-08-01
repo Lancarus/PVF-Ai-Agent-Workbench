@@ -6,7 +6,6 @@
 
 ## 是什么
 
-本主线不是一个独立“强化系统文件”。主目标观察到的静态配置分散在多个文件家族中：
 
 - `equipment/**/*.equ`：装备本体，承载强化/增幅条件、禁止增幅、可强化等级限制、强化概率/费用修饰和副职业装备修饰。
 - `stackable/**/*.stk`：消耗品、配方、怪物卡片、徽章、专业道具和增幅/净化相关道具。
@@ -40,14 +39,12 @@
 
 ## 常见误区
 
-- 不要把 `Recipe1.shp` 文件名猜成 itemshop ID 1；主目标 `itemshop/itemshop.lst` 中它是 ID 8。
 - 不要把 `Recipe3.shp [sell item]` 的数字直接写成装备或 stackable；必须按商店语境解析。
 - 不要把 `[enchant]` 一律写成怪物卡片附魔；徽章也可出现该块。
 - 不要把配方 `[int data]` 的第一列、最后几列硬套成全局公式。
 - 不要把 `upgrade prob increase` 的数值直接写成百分比。
 - 不要把 `upgrade cost discount` 的数值直接写成最终金币扣费。
 - 不要把 `[possible kiri protect]` 写成保护券实机生效。
-- 不要把辅助 PVF 的大商店、大 registry 或更多配方文件写成主目标内容。
 
 ## 必须验证的地方
 

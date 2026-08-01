@@ -2,20 +2,18 @@
 
 状态：默认可用
 
-用途：记录当前主目标中 `PieceOfIce` 的 skill registry、state、load_state、`24224` 核心 PO、`24223` 冰碎片 PO、随机碎片数量、写包/读包、动画 keyframe 和 NUT API 边界。本文只覆盖这一个技能创建的双 PO 窄链，不重开 PassiveObject / AttackInfo / Hitbox 广域主线。
 
 ## 一句话结论
 
 `PieceOfIce` 是男法 `skill 10` 的主动技能，运行入口注册到 `STATE_PIECE_OF_ICE = 29`。角色进入 state 后播放 `CUSTOM_ANI_PIECE_OF_ICE = 12`；角色动画 `PieceOfIce.ani` 的 flag 1 创建大冰球核心 `24224`，后续多个 flag 让核心切到 DAMAGE 帧，同时按 `.skl [static data]` 的随机范围批量创建冰碎片 `24223`。`24224` 本身是 pass all 的视觉/震动核心，不带攻击包；`24223` 是带攻击盒和水属性魔法攻击包的碎片 PO，读取角度、生命周期和攻击倍率后用移动粒子飞出，超时或撞到不可移动位置后进入爆开/销毁。
 
-## 主目标只读闭合链
 
 | 层级 | 当前确认 | 边界 |
 | --- | --- | --- |
 | skill registry | `skill/atmageskill.lst` 中 `10 -> ATMage/PieceOfIce.skl`；`220 -> ATMage/PieceOfIceEx.skl` 是强化被动。 | 只证明技能 ID 到 `.skl` 路由；强化被动不单独注册运行 state。 |
 | `.skl` 基础字段 | `PieceOfIce.skl` 为 active，命令 `←↓→ + Z`，冷却 `8000`，需求等级 `30`，`[feature skill index] = 220`。 | 可释放条件仍受当前状态、冷却、MP、技能等级和引擎判断影响。 |
 | `.skl executable states` | `[executable states]` 为 `8 0 14`。 | 只说明静态可执行状态线索，不证明强制释放、取消窗口或实机可用范围。 |
-| header 常量 | `SKILL_PIECE_OF_ICE = 10`，`STATE_PIECE_OF_ICE = 29`，`CUSTOM_ANI_PIECE_OF_ICE = 12`；角色自定义攻击信息 index `3` 为 `CUSTOM_ATTACK_INFO_PIECE_OF_ICE`。 | 当前观察到的 state 脚本没有主动设置角色自定义攻击信息；不要把该槽位直接写成攻击来源。 |
+| header 常量 | `SKILL_PIECE_OF_ICE = 10`，`STATE_PIECE_OF_ICE = 29`，`CUSTOM_ANI_PIECE_OF_ICE = 12`；角色自定义攻击信息 index `3` 为 `CUSTOM_ATTACK_INFO_PIECE_OF_ICE`。 | 目标 PVF 中需确认的 state 脚本没有主动设置角色自定义攻击信息；不要把该槽位直接写成攻击来源。 |
 | load_state | `atmage_load_state.nut` 注册 `PieceOfIce` state，并注册 `24223 -> po_ATPieceOfIce.nut`、`24224 -> po_ATPieceOfIceCore.nut`。 | `24223/24224` 必须走 `passiveobject/passiveobject.lst`，不能按数字外形套 skill/monster/APC registry。 |
 | passiveobject registry | `24223 -> Character/Mage/ATPieceOfIce.obj`；`24224 -> Character/Mage/ATPieceOfIceCore.obj`。 | registry 只证明对象路由；不证明命中、伤害或资源完整。 |
 | `24223` object / atk | `ATPieceOfIce.obj` 是 `[do not pass]`，piercing power `1000`，basic motion `05_piece_normal.ani`，attack info `ATPieceOfIce.atk`；攻击包为 magic、水属性、weapon damage apply。 | object/atk 只能证明静态载体存在，不证明命中、伤害、穿刺表现或 PVP。 |
@@ -67,7 +65,7 @@
 
 边界：
 
-- TypeSquirrel 可查到 `sq_WriteBool`、`sq_WriteWord`、`sq_WriteFloat`；读取端 `receiveData.readWord/readFloat` 当前只按目标脚本实见记录。
+- 内置 NUT API 事实目录 可查到 `sq_WriteBool`、`sq_WriteWord`、`sq_WriteFloat`；读取端 `receiveData.readWord/readFloat` 当前只按目标脚本实见记录。
 - 写包顺序必须和 PO 读取顺序一致；字段含义只在 `PieceOfIce` 当前链内闭合。
 
 ## `24224` 核心 PO 流程

@@ -3,6 +3,7 @@
 const childProcess = require("child_process");
 const crypto = require("crypto");
 const fs = require("fs");
+const os = require("os");
 const path = require("path");
 
 function timestamp() {
@@ -77,13 +78,180 @@ function releaseReadmeException(relPath) {
 function hardForbiddenReason(relPath) {
   const value = normalizeRel(relPath);
   if (releaseReadmeException(value)) return null;
+  if (/(^|\/)(?:node_modules|__pycache__|\.pytest_cache|\.mypy_cache|\.ruff_cache|\.idea|\.vscode|\.vs|\.cache)(?:\/|$)/i.test(value)) {
+    return "dependency, IDE, or cache directory";
+  }
   if (/^config\/(providers\.local\.json|workspace-profiles\.local\.json)$/i.test(value)) return "local private config";
   if (/^config\/.*\.secret\.json$/i.test(value)) return "local secret config";
   if (/^workspaces\/(dry-runs|apply-runs|backend-contract-runs|backend-fixture-runs|first-run-reports|real-task-runs|real-task-checks|absorption-checklists|agent-eval-runs|agent-workspace-stages|runtime-overlay-dry-runs|runtime-overlay-stages|stage-copy-dry-runs|cold-start-dry-runs|doctor-runs|planner-runs|package-dry-runs|release-runs|indexes)\//i.test(value)) {
     return "generated workspace output";
   }
-  if (/\.(pvf|bak|npk|img|zip|7z|rar)$/i.test(value)) return "heavy or source artifact";
+  if (/(^|\/)(?:\.env(?:\..*)?|\.DS_Store|Thumbs\.db|desktop\.ini)$/i.test(value)) return "secret or OS metadata file";
+  if (/\.(pvf|bak|npk|img|map|zip|7z|rar|db|sqlite|sqlite3|log|tmp|pem|key|pfx|p12)$/i.test(value)) return "private, generated, or source artifact";
+  if (/\.(exe|dll|node)$/i.test(value) && !/^(?:runtime\/node\/node\.exe|tools\/pvf-bridge\/native\/pvf_rust_core\.node)$/i.test(value)) {
+    return "unexpected executable binary";
+  }
   return null;
+}
+
+function listTreeEntries(root) {
+  const entries = [];
+  const stack = [root];
+  while (stack.length > 0) {
+    const dir = stack.pop();
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (dir === root && entry.name === ".git") continue;
+      const full = path.join(dir, entry.name);
+      const relPath = normalizeRel(path.relative(root, full));
+      const stat = fs.lstatSync(full);
+      if (stat.isSymbolicLink()) {
+        entries.push({ path: relPath, file: full, type: "symbolic-link", bytes: stat.size });
+      } else if (stat.isDirectory()) {
+        entries.push({ path: relPath, file: full, type: "directory", bytes: 0 });
+        stack.push(full);
+      } else if (stat.isFile()) {
+        entries.push({ path: relPath, file: full, type: "file", bytes: stat.size });
+      } else {
+        entries.push({ path: relPath, file: full, type: "special", bytes: stat.size });
+      }
+    }
+  }
+  return entries.sort((a, b) => a.path.localeCompare(b.path));
+}
+
+function windowsPathIssue(relPath) {
+  const parts = normalizeRel(relPath).split("/");
+  const reserved = /^(?:CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\..*)?$/i;
+  for (const part of parts) {
+    if (!part || /[. ]$/.test(part)) return "empty segment or trailing dot/space";
+    if (reserved.test(part)) return `Windows reserved name: ${part}`;
+  }
+  return null;
+}
+
+function scanTextForReleaseRisks(file, relPath) {
+  const findings = [];
+  const buffer = fs.readFileSync(file);
+  if (buffer.includes(0)) {
+    findings.push({ path: relPath, kind: "unexpected-binary-content" });
+    return findings;
+  }
+  let text;
+  try {
+    text = new TextDecoder("utf-8", { fatal: true }).decode(buffer);
+  } catch {
+    findings.push({ path: relPath, kind: "invalid-utf8" });
+    return findings;
+  }
+
+  const rules = [
+    ["private-key", /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/],
+    ["github-token", /\bgh(?:p|o|u|s|r)_[A-Za-z0-9]{20,}\b/],
+    ["aws-access-key", /\bAKIA[0-9A-Z]{16}\b/],
+    ["api-secret", /\b(?:sk|rk|pk)-[A-Za-z0-9_-]{20,}\b/],
+    ["research-output-path", /[A-Za-z]:[\\/]+[^\r\n"'<>]*[\\/]+(?:workbench-research|release-validation|runtime-runs)(?:[\\/]|$)/i],
+    ["user-profile-path", /[A-Za-z]:[\\/]+Users[\\/]+(?!Public(?:[\\/]|$))[^\\/\r\n"'<>%{}]+[\\/]/i],
+  ];
+  for (const [kind, regex] of rules) {
+    if (regex.test(text)) findings.push({ path: relPath, kind });
+  }
+  return findings;
+}
+
+function auditReleaseTree(workbenchRoot, includedFiles) {
+  const errors = [];
+  const warnings = [];
+  const forbiddenFiles = [];
+  const unlistedFiles = [];
+  const specialEntries = [];
+  const textFindings = [];
+  const windowsPathIssues = [];
+  const caseCollisions = [];
+  const included = new Set((includedFiles || []).map((item) => normalizeRel(item.path).toLowerCase()));
+  const caseMap = new Map();
+  let fileCount = 0;
+  let totalBytes = 0;
+  let maxRelativePathLength = 0;
+
+  for (const entry of listTreeEntries(workbenchRoot)) {
+    maxRelativePathLength = Math.max(maxRelativePathLength, entry.path.length);
+    const pathIssue = windowsPathIssue(entry.path);
+    if (pathIssue) windowsPathIssues.push({ path: entry.path, reason: pathIssue });
+    const folded = entry.path.toLowerCase();
+    const existingCase = caseMap.get(folded);
+    if (existingCase && existingCase !== entry.path) caseCollisions.push([existingCase, entry.path]);
+    caseMap.set(folded, entry.path);
+
+    if (entry.type !== "file") {
+      if (entry.type !== "directory") specialEntries.push({ path: entry.path, type: entry.type });
+      continue;
+    }
+    fileCount += 1;
+    totalBytes += entry.bytes;
+    const reason = hardForbiddenReason(entry.path);
+    if (reason) forbiddenFiles.push({ path: entry.path, reason });
+    if (!included.has(folded)) unlistedFiles.push(entry.path);
+
+    const isAllowedBinary = /^(?:runtime\/node\/node\.exe|tools\/pvf-bridge\/native\/pvf_rust_core\.node)$/i.test(entry.path);
+    if (!isAllowedBinary) textFindings.push(...scanTextForReleaseRisks(entry.file, entry.path));
+    if (entry.bytes > 100 * 1024 * 1024) errors.push(`GitHub rejects files larger than 100 MiB: ${entry.path}`);
+    else if (entry.bytes > 50 * 1024 * 1024) warnings.push(`GitHub will warn for a file larger than 50 MiB: ${entry.path}`);
+  }
+
+  if (forbiddenFiles.length > 0) errors.push(`Release tree contains ${forbiddenFiles.length} forbidden file(s).`);
+  if (unlistedFiles.length > 0) errors.push(`Release tree contains ${unlistedFiles.length} file(s) outside the portable manifest.`);
+  if (specialEntries.length > 0) errors.push(`Release tree contains ${specialEntries.length} symbolic link or special file(s).`);
+  if (textFindings.length > 0) errors.push(`Release tree contains ${textFindings.length} text purity finding(s).`);
+  if (windowsPathIssues.length > 0) errors.push(`Release tree contains ${windowsPathIssues.length} Windows-incompatible path(s).`);
+  if (caseCollisions.length > 0) errors.push(`Release tree contains ${caseCollisions.length} case-insensitive path collision(s).`);
+  if (maxRelativePathLength > 180) warnings.push(`Longest relative path is ${maxRelativePathLength} characters; extract near a drive root on legacy Windows.`);
+
+  return {
+    errors,
+    warnings,
+    summary: {
+      fileCount,
+      totalBytes,
+      maxRelativePathLength,
+      forbiddenFileCount: forbiddenFiles.length,
+      unlistedFileCount: unlistedFiles.length,
+      specialEntryCount: specialEntries.length,
+      textFindingCount: textFindings.length,
+      windowsPathIssueCount: windowsPathIssues.length,
+      caseCollisionCount: caseCollisions.length,
+    },
+    forbiddenFiles,
+    unlistedFiles,
+    specialEntries,
+    textFindings,
+    windowsPathIssues,
+    caseCollisions,
+  };
+}
+
+function releaseAuditSelfTest() {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "pvf-release-audit-"));
+  const checks = [];
+  try {
+    fs.writeFileSync(path.join(tempRoot, "README.md"), "clean fixture\n", "utf8");
+    const clean = auditReleaseTree(tempRoot, [{ path: "README.md" }]);
+    checks.push({ id: "clean-tree-accepted", ok: clean.errors.length === 0 });
+
+    fs.mkdirSync(path.join(tempRoot, "config"), { recursive: true });
+    fs.writeFileSync(path.join(tempRoot, "config", "workspace-profiles.local.json"), "{}\n", "utf8");
+    const fakeToken = ["sk", "releaseAuditFixtureOnly1234567890"].join("-");
+    const fakePrivatePath = ["C:", "Users", "release-audit-user", "private", "Script.pvf"].join("\\");
+    fs.writeFileSync(path.join(tempRoot, ".env"), `TOKEN=${fakeToken}\n`, "utf8");
+    fs.writeFileSync(path.join(tempRoot, "leaked-path.md"), `${fakePrivatePath}\n`, "utf8");
+    const dirty = auditReleaseTree(tempRoot, [{ path: "README.md" }]);
+    checks.push({ id: "private-files-rejected", ok: dirty.summary.forbiddenFileCount === 2 });
+    checks.push({ id: "unlisted-files-rejected", ok: dirty.summary.unlistedFileCount === 3 });
+    checks.push({ id: "secrets-and-machine-paths-rejected", ok: dirty.summary.textFindingCount >= 2 });
+  } finally {
+    if (!pathInside(os.tmpdir(), tempRoot)) throw new Error(`Unsafe release audit temp path: ${tempRoot}`);
+    fs.rmSync(tempRoot, { recursive: true, force: true });
+  }
+  return { ok: checks.every((check) => check.ok), checks };
 }
 
 function makeExcludeRules(manifest) {
@@ -179,6 +347,7 @@ function runNode(root, scriptRelativePath, scriptArgs = [], timeoutMs = 120000) 
 }
 
 module.exports = {
+  auditReleaseTree,
   collectReleaseFiles,
   hardForbiddenReason,
   listFilesRecursive,
@@ -186,6 +355,7 @@ module.exports = {
   parseJsonOutput,
   pathInside,
   readJson,
+  releaseAuditSelfTest,
   runNode,
   sha256File,
   timestamp,

@@ -8,6 +8,8 @@
 
 本流程只生成依赖候选、registry 线索、未闭合引用和客户端资源风险提示；不写 PVF，不生成可直接 apply 的 patch，不改客户端。
 
+普通任务优先使用统一入口 `workbench.bat dependency-plan`；本文件继续说明道具类专项审阅边界。
+
 ## 输入
 
 - 目标 PVF。

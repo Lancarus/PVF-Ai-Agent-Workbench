@@ -8,6 +8,8 @@
 
 本流程只描述提取和预览，不写 PVF，不部署客户端，不证明目标客户端可进图、可通关或资源完整。真实导入必须另走生产 PVF 生命周期。
 
+普通依赖预览优先使用 `workbench.bat dependency-plan --domain dungeon`；需要生成传统提取目录时才使用本专项 workflow。
+
 ## 输入
 
 - 源 PVF。

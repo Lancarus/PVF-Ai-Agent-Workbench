@@ -16,7 +16,9 @@ NUT 脚本用于技能、appendage、passiveobject、状态、攻击包和运行
 
 ## 规则
 
-- 不猜函数名。需要 API 时必须用 TypeSquirrel 或目标工程符号索引查询。
+- 不猜函数名。需要 API 时先用随包 `nut-api` 紧凑事实目录，再查目标 PVF 和 clean knowledge。
+- 内置目录声明和历史 PVF observation 都是索引，不是目标运行时最终证据；保留声明版本、来源分组与完整 PVF SHA，并读回相关目标脚本。
+- `frontend`（Attract-Mode）与 DNF runtime 必须隔离；0 命中不能证明 API 不存在。
 - 另一个客户端或职业的 NUT 写法只能当参考。
 - `ForceUse_Character`、`sq_IsUseSkill`、`pushPassiveObj`、`receiveData`、`AttackInfoPacket` 等调用必须按目标 PVF 和目标脚本链验证。
 - 自定义 passiveobject、动态攻击包、appendage 效果都需要实机验证。
