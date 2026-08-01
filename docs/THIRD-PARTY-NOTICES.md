@@ -44,7 +44,7 @@ diagnostic and is not a substitute for a recovered lockfile:
 The native component imports `VCRUNTIME140.dll` and Windows system libraries.
 The Workbench does not bundle Microsoft DLLs or an installer. A machine without
 a compatible Microsoft Visual C++ v14 runtime will make `workbench.bat check`
-report a degraded read-only state and select the bundled JavaScript fallback.
+report a degraded read-only state and select the bundled TypeScript fallback.
 No external plugin is used, and all PVF writes remain unavailable. Use Microsoft's
 [latest supported Visual C++ Redistributable page](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist)
 and select the official x64 package; the Workbench never downloads or installs
@@ -53,12 +53,13 @@ instructions, and non-automated interactive `workbench.bat check` also opens
 that page after an integrity-verified native load failure. Automated and Agent
 runs print the official page and x64 permalink without opening a browser.
 
-## JavaScript read-only fallback
+## TypeScript read-only fallback
 
-The fallback under `tools/pvf-bridge/fallback/` is a dependency-free adaptation
+The fallback under `tools/pvf-bridge/fallback/` is a dependency-free TypeScript adaptation
 of PVF parsing concepts from a privately supplied TypeScript PVF parser. The
 user represented that the original author explicitly authorized unrestricted
 use for this Workbench. The VSCode extension, its UI, save workflow, and bundled
 dependencies are not redistributed here. The fallback implementation is part
-of the Workbench code under the root MIT license and intentionally exposes no
-PVF save path.
+of the Workbench code under the root MIT license. The pinned Node.js runtime
+executes the `.ts` sources directly without npm or a build step. The backend
+intentionally exposes no PVF save path.

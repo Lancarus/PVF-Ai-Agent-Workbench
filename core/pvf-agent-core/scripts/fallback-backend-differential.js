@@ -3,7 +3,7 @@
 const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
-const fallback = require("../../../tools/pvf-bridge/fallback/pvf-readonly-backend");
+const fallback = require("../../../tools/pvf-bridge/fallback/pvf-readonly-backend.ts");
 const { loadPvfBackend } = require("../../../tools/pvf-bridge/native-backend");
 
 const rawArgs = process.argv.slice(2);

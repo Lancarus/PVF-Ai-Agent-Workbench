@@ -25,7 +25,7 @@
 
 ## 已内置
 
-- Node.js、native PVF 后端和只读备用后端；
+- Node.js、首选 native PVF 后端和无需 npm/构建的 TypeScript 只读备用后端；
 - PVF 字段知识、NUT 接口、标签说明和常用任务路径；
 - 商店、物品、技能、任务、掉落、副本、APC、内容提取和依赖分析等工作流；
 - 项目级 `dnf-pvf-xpilot` Agent Skill。

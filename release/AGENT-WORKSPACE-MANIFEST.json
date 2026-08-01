@@ -1,8 +1,8 @@
 {
   "schemaVersion": "1.0",
   "packageName": "PVF-Agent-Workbench",
-  "packageVersion": "2.0.0",
-  "purpose": "Self-contained clean workspace with a preferred native PVF backend, a bundled JavaScript read-only fallback, NUT/tag/bookmark facts, portable dungeon/world models, and seven cross-cutting productized PVF workflows for safe inspection and controlled output.",
+  "packageVersion": "2.1.0",
+  "purpose": "Self-contained clean workspace with a preferred native PVF backend, a bundled dependency-free TypeScript read-only fallback, NUT/tag/bookmark facts, portable dungeon/world models, and seven cross-cutting productized PVF workflows for safe inspection and controlled output.",
   "includes": [
     ".gitattributes",
     ".gitignore",

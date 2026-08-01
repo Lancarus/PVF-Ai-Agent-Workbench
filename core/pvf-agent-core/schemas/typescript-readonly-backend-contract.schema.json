@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "typescript-readonly-backend-contract.schema.json",
+  "title": "TypeScript Read-only PVF Backend Contract",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "contractId",
+    "backendSource",
+    "sourceLanguage",
+    "sourceFiles",
+    "runtime",
+    "advertisedTools",
+    "internalDryRunTools",
+    "blockedTools",
+    "blockedApiMethods",
+    "resourceLimits",
+    "safetyInvariants"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schemaVersion": { "const": "1.0" },
+    "contractId": { "const": "typescript-readonly-backend-contract.v1" },
+    "backendSource": { "const": "typescript-readonly-fallback" },
+    "sourceLanguage": { "const": "typescript" },
+    "sourceFiles": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[A-Za-z0-9._/-]+\\.ts$" }
+    },
+    "runtime": {
+      "type": "object",
+      "required": ["nodeMajor", "typescriptFeature", "npmRequired", "networkRequired", "buildStepRequired", "externalRuntimeDependencies"],
+      "properties": {
+        "nodeMajor": { "type": "integer", "minimum": 24 },
+        "typescriptFeature": { "const": "strip" },
+        "npmRequired": { "const": false },
+        "networkRequired": { "const": false },
+        "buildStepRequired": { "const": false },
+        "externalRuntimeDependencies": { "type": "array", "maxItems": 0 }
+      },
+      "additionalProperties": false
+    },
+    "advertisedTools": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^pvf_" }
+    },
+    "internalDryRunTools": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^pvf_" }
+    },
+    "blockedTools": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^pvf_" }
+    },
+    "blockedApiMethods": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "resourceLimits": {
+      "type": "object",
+      "required": [
+        "maxSessions",
+        "maxTreeBytes",
+        "maxFileCount",
+        "maxSingleReadBytes",
+        "cacheBytes",
+        "maxSearchKeywordChars",
+        "maxSearchResults",
+        "maxReportedSearchErrors",
+        "maxStringTableEntries",
+        "maxDecodedStringCacheEntries",
+        "maxScriptTokens",
+        "maxStringViewFiles"
+      ],
+      "properties": {
+        "maxSessions": { "type": "integer", "minimum": 1 },
+        "maxTreeBytes": { "type": "integer", "minimum": 4 },
+        "maxFileCount": { "type": "integer", "minimum": 1 },
+        "maxSingleReadBytes": { "type": "integer", "minimum": 4 },
+        "cacheBytes": { "type": "integer", "minimum": 0 },
+        "maxSearchKeywordChars": { "type": "integer", "minimum": 1 },
+        "maxSearchResults": { "type": "integer", "minimum": 1 },
+        "maxReportedSearchErrors": { "type": "integer", "minimum": 1 },
+        "maxStringTableEntries": { "type": "integer", "minimum": 1 },
+        "maxDecodedStringCacheEntries": { "type": "integer", "minimum": 1 },
+        "maxScriptTokens": { "type": "integer", "minimum": 1 },
+        "maxStringViewFiles": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "safetyInvariants": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    }
+  },
+  "additionalProperties": false
+}

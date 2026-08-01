@@ -5,8 +5,13 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 const { BackendStdioClient, parseBackendTextResult } = require("../lib/backend-stdio-client");
-const { createChecksum, encrypt } = require("../../../tools/pvf-bridge/fallback/codec");
-const fallback = require("../../../tools/pvf-bridge/fallback/pvf-readonly-backend");
+const workbenchRoot = path.resolve(__dirname, "../../..");
+const readonlyContractFile = path.join(workbenchRoot, "core", "pvf-agent-core", "contracts", "typescript-readonly-backend-contract.v1.json");
+const readonlyContract = JSON.parse(fs.readFileSync(readonlyContractFile, "utf8"));
+const typescriptEntry = require.resolve("../../../tools/pvf-bridge/fallback/pvf-readonly-backend.ts");
+const { createChecksum, encrypt } = require("../../../tools/pvf-bridge/fallback/codec.ts");
+const { StringTable, StringView, parseTokens } = require("../../../tools/pvf-bridge/fallback/script.ts");
+const fallback = require(typescriptEntry);
 const { loadPvfBackend } = require("../../../tools/pvf-bridge/native-backend");
 
 function pathInside(root, candidate) {
@@ -16,6 +21,10 @@ function pathInside(root, candidate) {
 
 function sha256File(file) {
   return crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex");
+}
+
+function sameStringSet(left, right) {
+  return JSON.stringify([...new Set(left)].sort()) === JSON.stringify([...new Set(right)].sort());
 }
 
 function fileNameHash(bytes) {
@@ -68,17 +77,17 @@ function createBinaryAni() {
   return output;
 }
 
-function createFixturePvf(targetPath) {
+function createFixturePvf(targetPath, options = {}) {
   const strings = [
     "stringview/fixture.str",
-    "itemshop/test.shp",
+    "test.shp",
     "[name]",
     "fallback-fixture",
     "[message]",
     "message_1",
     "[/message]",
   ];
-  const files = [
+  const sourceFiles = [
     { fileName: "stringtable.bin", data: createStringTable(strings) },
     { fileName: "n_string.lst", data: createScript([[2, 0], [7, 0]]) },
     { fileName: "stringview/fixture.str", data: Buffer.from("message_1>只读备用后端\r\n", "utf8") },
@@ -90,7 +99,22 @@ function createFixturePvf(targetPath) {
     { fileName: "script/fallback_fixture.nut", data: Buffer.from('function fallback_fixture() { return "needle"; }\r\n', "utf8") },
     { fileName: "sprite/fallback_fixture.ani", data: createBinaryAni() },
     { fileName: "raw/fixture.bin", data: Buffer.from([0, 1, 2, 3, 254, 255]) },
-  ].map((item) => {
+    { fileName: "raw/corrupt.txt", data: Buffer.from("corrupt encrypted fixture\r\n", "utf8"), corruptEncrypted: true },
+  ];
+  for (let index = 1; index < readonlyContract.resourceLimits.maxReportedSearchErrors + 2; index += 1) {
+    sourceFiles.push({
+      fileName: `raw/corrupt-${String(index).padStart(2, "0")}.txt`,
+      data: Buffer.from(`corrupt encrypted fixture ${index}\r\n`, "utf8"),
+      corruptEncrypted: true,
+    });
+  }
+  for (let index = 0; index < 3; index += 1) {
+    sourceFiles.push({ fileName: `bulk/match-${index}.txt`, data: Buffer.from("bulk match fixture\r\n", "utf8") });
+  }
+  if (options.duplicatePath) {
+    sourceFiles.push({ fileName: "RAW/fixture.bin", data: Buffer.from("duplicate normalized path", "utf8") });
+  }
+  const files = sourceFiles.map((item) => {
     const fileNameBytes = Buffer.from(item.fileName, "ascii");
     const fileNameChecksum = fileNameHash(fileNameBytes);
     const padded = Buffer.alloc((item.data.length + 3) & ~3);
@@ -126,7 +150,11 @@ function createFixturePvf(targetPath) {
   fs.writeFileSync(targetPath, Buffer.concat([
     header,
     encryptedTree,
-    ...files.map((item) => encrypt(item.padded, item.checksum)),
+    ...files.map((item) => {
+      const encrypted = encrypt(item.padded, item.checksum);
+      if (item.corruptEncrypted && encrypted.length > 0) encrypted[0] ^= 0xff;
+      return encrypted;
+    }),
     Buffer.from("\0PVF fallback self-test fixture", "ascii"),
   ]));
   return new Map(files.map((item) => [item.fileName, item.data]));
@@ -141,18 +169,115 @@ async function rejectsReadonly(operation) {
   }
 }
 
+async function rejectsCode(operation, code) {
+  try {
+    await operation();
+    return false;
+  } catch (error) {
+    return error && error.code === code;
+  }
+}
+
 async function main() {
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "pvf-readonly-fallback-"));
   const fixturePath = path.join(tempRoot, "Script.pvf");
   const checks = [];
   const add = (id, ok, details) => checks.push({ id, ok: Boolean(ok), ...(details ? { details } : {}) });
   let fallbackSessionId;
+  const extraFallbackSessionIds = [];
   let nativeSessionId;
   let serverClient;
   try {
     const expectedFiles = createFixturePvf(fixturePath);
     const sourceSha = sha256File(fixturePath);
-    add("fallback-health", fallback.health().readOnly === true && fallback.health().backend === "typescript-readonly-fallback");
+    const fallbackHealth = fallback.health();
+    const contractSourceFiles = readonlyContract.sourceFiles.map((file) => path.join(workbenchRoot, file));
+    const fallbackDirectoryFiles = fs.readdirSync(path.dirname(typescriptEntry)).sort();
+    const sourceText = contractSourceFiles.map((file) => fs.readFileSync(file, "utf8")).join("\n");
+    add(
+      "readonly-contract-identity",
+      readonlyContract.schemaVersion === "1.0" &&
+        readonlyContract.contractId === "typescript-readonly-backend-contract.v1" &&
+        readonlyContract.backendSource === fallbackHealth.backend &&
+        readonlyContract.sourceLanguage === fallbackHealth.sourceLanguage,
+    );
+    add(
+      "readonly-contract-source-closure",
+      contractSourceFiles.every((file) => file.endsWith(".ts") && fs.existsSync(file) && fs.statSync(file).isFile()) &&
+        fallbackDirectoryFiles.every((file) => file.endsWith(".ts")) &&
+        sameStringSet(fallbackDirectoryFiles.map((file) => `tools/pvf-bridge/fallback/${file}`), readonlyContract.sourceFiles),
+    );
+    add(
+      "readonly-contract-no-runtime-dependencies",
+      readonlyContract.runtime.npmRequired === false &&
+        readonlyContract.runtime.networkRequired === false &&
+        readonlyContract.runtime.buildStepRequired === false &&
+        readonlyContract.runtime.externalRuntimeDependencies.length === 0 &&
+        !/(?:child_process|node:child_process|\brequire\(["'](?:https?|net|tls|dgram|worker_threads)["']\)|\bfetch\s*\(|\beval\s*\()/i.test(sourceText),
+    );
+    add(
+      "readonly-contract-no-filesystem-mutators",
+      !/(?:\bfs(?:\.promises)?\.(?:write|writeFile|appendFile|copyFile|rename|rm|unlink|mkdir|truncate|createWriteStream|openSync)\s*\(|\bcreateWriteStream\s*\()/i.test(sourceText) &&
+        sourceText.includes('fs.promises.open(this.sourcePath, "r")'),
+    );
+    add(
+      "readonly-contract-resource-limits",
+      JSON.stringify(fallbackHealth.resourceLimits) === JSON.stringify(readonlyContract.resourceLimits),
+    );
+    const oversizedStringTable = Buffer.alloc(8);
+    oversizedStringTable.writeInt32LE(readonlyContract.resourceLimits.maxStringTableEntries + 1, 0);
+    add(
+      "fallback-stringtable-entry-limit",
+      await rejectsCode(() => StringTable.parse(oversizedStringTable, "Utf8"), "READ_ONLY_RESOURCE_LIMIT"),
+    );
+    const oversizedScript = Buffer.alloc(2 + (readonlyContract.resourceLimits.maxScriptTokens + 1) * 5);
+    oversizedScript[0] = 0xb0;
+    oversizedScript[1] = 0xd0;
+    add(
+      "fallback-script-token-limit",
+      await rejectsCode(() => parseTokens(oversizedScript), "READ_ONLY_RESOURCE_LIMIT"),
+    );
+    const oversizedStringView = Buffer.alloc(2 + (readonlyContract.resourceLimits.maxStringViewFiles + 1) * 10);
+    oversizedStringView[0] = 0xb0;
+    oversizedStringView[1] = 0xd0;
+    add(
+      "fallback-stringview-file-limit",
+      await rejectsCode(
+        () => StringView.load({ entry: () => ({}), readDecrypted: async () => oversizedStringView }, { get: () => "" }, "Utf8"),
+        "READ_ONLY_RESOURCE_LIMIT",
+      ),
+    );
+    let lazyStringViewReads = 0;
+    const lazyStringView = await StringView.load({
+      entry: (fileName) => ({ fileName }),
+      readDecrypted: async (entry) => {
+        lazyStringViewReads += 1;
+        return entry.fileName === "n_string.lst"
+          ? createScript([[2, 0], [7, 0]])
+          : Buffer.from("message_1>lazy string view\r\n", "utf8");
+      },
+    }, { get: () => "stringview/lazy.str" }, "Utf8");
+    const stringViewStayedLazy = lazyStringViewReads === 1;
+    await lazyStringView.ensure([0]);
+    add(
+      "fallback-stringview-loads-referenced-id-only",
+      stringViewStayedLazy && lazyStringViewReads === 2 && lazyStringView.get(0, "message_1") === "lazy string view",
+    );
+    add(
+      "fallback-typescript-runtime",
+      typescriptEntry.endsWith(".ts") &&
+        process.features?.typescript === "strip" &&
+        fallbackHealth.sourceLanguage === "typescript" &&
+        fallbackHealth.runtimeTypeStripping === "strip",
+    );
+    add(
+      "fallback-health",
+      fallbackHealth.readOnly === true &&
+        fallbackHealth.backend === "typescript-readonly-fallback" &&
+        fallback.__workbenchBackend?.readOnly === true &&
+        fallback.__workbenchBackend?.sourceLanguage === "typescript" &&
+        Object.isFrozen(fallback),
+    );
 
     const opened = await fallback.openSession(fixturePath, "Utf8");
     fallbackSessionId = opened.sessionId;
@@ -160,14 +285,57 @@ async function main() {
     const listed = await fallback.listFiles(fallbackSessionId);
     add("fallback-list", listed.length === expectedFiles.size && expectedFiles.size === new Set(listed.map((item) => item.fileName)).size);
 
+    for (let index = 1; index < readonlyContract.resourceLimits.maxSessions; index += 1) {
+      const extra = await fallback.openSession(fixturePath, "Utf8");
+      extraFallbackSessionIds.push(extra.sessionId);
+    }
+    add(
+      "fallback-session-limit",
+      await rejectsCode(() => fallback.openSession(fixturePath, "Utf8"), "READ_ONLY_SESSION_LIMIT"),
+    );
+    while (extraFallbackSessionIds.length > 0) await fallback.closeSession(extraFallbackSessionIds.pop());
+
+    const duplicatePath = path.join(tempRoot, "duplicate-path.pvf");
+    createFixturePvf(duplicatePath, { duplicatePath: true });
+    let duplicateRejected = false;
+    try {
+      await fallback.openSession(duplicatePath, "Utf8");
+    } catch (error) {
+      duplicateRejected = /duplicate normalized path/i.test(error.message || "");
+    }
+    add("fallback-rejects-duplicate-normalized-path", duplicateRejected);
+
+    const corruptTreePath = path.join(tempRoot, "corrupt-tree.pvf");
+    const corruptTree = Buffer.from(fs.readFileSync(fixturePath));
+    const guidLength = corruptTree.readInt32LE(0);
+    corruptTree[4 + guidLength + 16] ^= 0xff;
+    fs.writeFileSync(corruptTreePath, corruptTree);
+    let corruptTreeRejected = false;
+    try {
+      await fallback.openSession(corruptTreePath, "Utf8");
+    } catch (error) {
+      corruptTreeRejected = /file-tree checksum validation failed/i.test(error.message || "");
+    }
+    add("fallback-rejects-corrupt-file-tree", corruptTreeRejected);
+
     const lst = await fallback.readFile(fallbackSessionId, "itemshop/itemshop.lst", { pvfEncoding: "Utf8" });
-    add("fallback-lst", /1\s+`itemshop\/test\.shp`/.test(lst.textContent || ""));
+    add(
+      "fallback-lst-preserves-relative-display-path",
+      /1\s+`test\.shp`/.test(lst.textContent || "") && !(lst.textContent || "").includes("`itemshop/test.shp`"),
+    );
     const scriptRaw = await fallback.readFile(fallbackSessionId, "itemshop/test.shp", { pvfEncoding: "Utf8", autoConvertStringLink: false });
     add("fallback-script-stringlink-raw", (scriptRaw.textContent || "").includes("<0::message_1`只读备用后端`>"));
     const scriptFriendly = await fallback.readFile(fallbackSessionId, "itemshop/test.shp", { pvfEncoding: "Utf8", autoConvertStringLink: true });
     add("fallback-script-stringlink-friendly", (scriptFriendly.textContent || "").includes("`只读备用后端`"));
     const raw = await fallback.readFile(fallbackSessionId, "itemshop/test.shp", { decompileScript: false });
     add("fallback-raw-bytes", Buffer.from(raw.base64Content || "", "base64").equals(expectedFiles.get("itemshop/test.shp")));
+    let corruptFileRejected = false;
+    try {
+      await fallback.readFile(fallbackSessionId, "raw/corrupt.txt", { pvfEncoding: "Utf8" });
+    } catch (error) {
+      corruptFileRejected = /file checksum validation failed/i.test(error.message || "");
+    }
+    add("fallback-rejects-corrupt-file-data", corruptFileRejected);
     const nut = await fallback.readFile(fallbackSessionId, "script/fallback_fixture.nut", { pvfEncoding: "Utf8" });
     add("fallback-nut", (nut.textContent || "").includes("needle"));
     const ani = await fallback.readFile(fallbackSessionId, "sprite/fallback_fixture.ani", {});
@@ -179,19 +347,36 @@ async function main() {
     add("fallback-search-script", scriptSearch.items.some((item) => item.fileName === "itemshop/test.shp"));
     const stringSearch = await fallback.searchFiles(fallbackSessionId, { keyword: "fallback-fixture", searchType: "SearchStrings", matchMode: "Like" });
     add("fallback-search-strings", stringSearch.items.some((item) => item.fileName === "itemshop/test.shp"));
+    const errorSearch = await fallback.searchFiles(fallbackSessionId, { keyword: "not-present", searchType: "SearchScript", matchMode: "Like", pvfEncoding: "Utf8" });
+    add(
+      "fallback-search-read-errors-visible",
+      errorSearch.errorCount === readonlyContract.resourceLimits.maxReportedSearchErrors + 2 &&
+        errorSearch.errors.length === readonlyContract.resourceLimits.maxReportedSearchErrors &&
+        errorSearch.errorsTruncated === true &&
+        errorSearch.errors.some((item) => item.fileName === "raw/corrupt-01.txt" && /checksum/i.test(item.error || "")),
+    );
+    add(
+      "fallback-search-keyword-limit",
+      await rejectsCode(
+        () => fallback.searchFiles(fallbackSessionId, { keyword: "x".repeat(readonlyContract.resourceLimits.maxSearchKeywordChars + 1), searchType: "SearchFileName" }),
+        "READ_ONLY_RESOURCE_LIMIT",
+      ),
+    );
     const metadata = await fallback.getFileMetadata(fallbackSessionId, "raw/fixture.bin");
     add("fallback-metadata", metadata.dataLength === expectedFiles.get("raw/fixture.bin").length);
     await fallback.releaseMemory(fallbackSessionId);
 
-    const writeOperations = [
-      ["saveSession", () => fallback.saveSession(fallbackSessionId, path.join(tempRoot, "blocked.pvf"))],
-      ["upsertFile", () => fallback.upsertFile(fallbackSessionId, "blocked.bin", Buffer.alloc(0))],
-      ["upsertTextFileRaw", () => fallback.upsertTextFileRaw(fallbackSessionId, "blocked.etc", Buffer.alloc(0))],
-      ["deleteEntries", () => fallback.deleteEntries(fallbackSessionId, ["raw/fixture.bin"])],
-      ["renameEntries", () => fallback.renameEntries(fallbackSessionId, [])],
-      ["importDirectory", () => fallback.importDirectory(fallbackSessionId, tempRoot)],
-    ];
-    for (const [name, operation] of writeOperations) add(`fallback-blocks-${name}`, await rejectsReadonly(operation));
+    const writeOperations = {
+      saveSession: () => fallback.saveSession(fallbackSessionId, path.join(tempRoot, "blocked.pvf")),
+      upsertFile: () => fallback.upsertFile(fallbackSessionId, "blocked.bin", Buffer.alloc(0)),
+      upsertTextFileRaw: () => fallback.upsertTextFileRaw(fallbackSessionId, "blocked.etc", Buffer.alloc(0)),
+      deleteEntries: () => fallback.deleteEntries(fallbackSessionId, ["raw/fixture.bin"]),
+      renameEntries: () => fallback.renameEntries(fallbackSessionId, []),
+      importDirectory: () => fallback.importDirectory(fallbackSessionId, tempRoot),
+      extractEntries: () => fallback.extractEntries(fallbackSessionId, ["raw/fixture.bin"], tempRoot),
+    };
+    add("readonly-contract-blocked-api-closure", sameStringSet(Object.keys(writeOperations), readonlyContract.blockedApiMethods));
+    for (const name of readonlyContract.blockedApiMethods) add(`fallback-blocks-${name}`, await rejectsReadonly(writeOperations[name]));
     add("fixture-unchanged", sha256File(fixturePath) === sourceSha && !fs.existsSync(path.join(tempRoot, "blocked.pvf")));
 
     serverClient = new BackendStdioClient({
@@ -201,6 +386,13 @@ async function main() {
       env: { PVF_WORKBENCH_BACKEND: "typescript-readonly" },
     });
     await serverClient.start();
+    const advertisedTools = await serverClient.listTools();
+    const advertisedNames = new Set(advertisedTools.map((tool) => tool.name));
+    add(
+      "server-advertises-readonly-tools-only",
+      sameStringSet([...advertisedNames], readonlyContract.advertisedTools) &&
+        readonlyContract.blockedTools.every((name) => !advertisedNames.has(name)),
+    );
     const initialized = await serverClient.request("initialize", {
       protocolVersion: "2025-06-18",
       capabilities: {},
@@ -218,17 +410,91 @@ async function main() {
       convertToSimplifiedChinese: false,
     }));
     add("server-reads-with-fallback", (serverRead?.textContent || "").includes("<0::message_1`只读备用后端`>"));
-    const serverWrite = parseBackendTextResult(await serverClient.callTool("pvf_save", {
+    const serverResolvedLst = parseBackendTextResult(await serverClient.callTool("pvf_resolve_lst_id", {
       sessionId: serverSessionId,
-      targetPath: path.join(tempRoot, "server-blocked.pvf"),
+      lstPath: "itemshop/itemshop.lst",
+      id: 1,
+      includeFileSummary: false,
+      pvfEncoding: "Utf8",
     }));
-    add("server-exposes-readonly-error-code", serverWrite?.data?.code === "READ_ONLY_FALLBACK" && /read-only/i.test(serverWrite?.error || ""));
-    const serverBackup = parseBackendTextResult(await serverClient.callTool("pvf_backup", {
-      path: fixturePath,
-      targetPath: path.join(tempRoot, "server-blocked.bak"),
+    add(
+      "server-resolves-relative-lst-path",
+      serverResolvedLst?.ok === true &&
+        serverResolvedLst?.found === true &&
+        serverResolvedLst?.entry?.pvfPath === "itemshop/test.shp",
+    );
+    const serverResolvedRootLst = parseBackendTextResult(await serverClient.callTool("pvf_resolve_lst_id", {
+      sessionId: serverSessionId,
+      lstPath: "n_string.lst",
+      id: 0,
+      includeFileSummary: false,
+      pvfEncoding: "Utf8",
     }));
-    add("server-blocks-backup-in-fallback", serverBackup?.data?.code === "READ_ONLY_FALLBACK");
-    add("server-write-created-no-output", !fs.existsSync(path.join(tempRoot, "server-blocked.pvf")) && !fs.existsSync(path.join(tempRoot, "server-blocked.bak")) && sha256File(fixturePath) === sourceSha);
+    add(
+      "server-resolves-root-lst-path-without-dot-prefix",
+      serverResolvedRootLst?.ok === true &&
+        serverResolvedRootLst?.found === true &&
+        serverResolvedRootLst?.entry?.pvfPath === "stringview/fixture.str",
+    );
+    const serverSearch = parseBackendTextResult(await serverClient.callTool("pvf_search", {
+      sessionId: serverSessionId,
+      keyword: "not-present",
+      searchType: "SearchScript",
+      matchMode: "Like",
+      pvfEncoding: "Utf8",
+      limit: 10,
+    }));
+    add(
+      "server-search-read-errors-visible",
+      serverSearch?.ok === true &&
+        serverSearch?.truncated === false &&
+        serverSearch?.errorCount === readonlyContract.resourceLimits.maxReportedSearchErrors + 2 &&
+        serverSearch?.errors?.length === readonlyContract.resourceLimits.maxReportedSearchErrors &&
+        serverSearch?.errorsTruncated === true &&
+        serverSearch?.errors?.some((item) => item.fileName === "raw/corrupt-01.txt" && /checksum/i.test(item.error || "")),
+    );
+    const serverTruncatedSearch = parseBackendTextResult(await serverClient.callTool("pvf_search", {
+      sessionId: serverSessionId,
+      keyword: "bulk/",
+      searchType: "SearchFileName",
+      matchMode: "Like",
+      limit: 1,
+    }));
+    add(
+      "server-search-truncation-visible",
+      serverTruncatedSearch?.ok === true &&
+        serverTruncatedSearch?.matchedCount === 3 &&
+        serverTruncatedSearch?.returnedCount === 1 &&
+        serverTruncatedSearch?.truncated === true,
+    );
+    const serverDryRun = parseBackendTextResult(await serverClient.callTool("pvf_replace_text", {
+      sessionId: serverSessionId,
+      pvfPath: "itemshop/test.shp",
+      previousText: "fallback-fixture",
+      newText: "fallback-preview",
+      dryRun: true,
+      pvfEncoding: "Utf8",
+    }));
+    add("server-allows-readonly-replace-preview", serverDryRun?.ok === true && serverDryRun?.dryRun === true && sha256File(fixturePath) === sourceSha);
+
+    const blockedServerCalls = {
+      pvf_backup: { path: fixturePath, targetPath: path.join(tempRoot, "server-blocked.bak") },
+      pvf_replace_text: { sessionId: serverSessionId, pvfPath: "itemshop/test.shp", previousText: "fallback-fixture", newText: "blocked" },
+      pvf_write_file: { sessionId: serverSessionId, pvfPath: "blocked.etc", textContent: "blocked" },
+      pvf_save: { sessionId: serverSessionId, targetPath: path.join(tempRoot, "server-blocked.pvf") },
+    };
+    add("readonly-contract-blocked-tool-closure", sameStringSet(Object.keys(blockedServerCalls), readonlyContract.blockedTools));
+    for (const name of readonlyContract.blockedTools) {
+      const args = blockedServerCalls[name];
+      const blocked = parseBackendTextResult(await serverClient.callTool(name, args));
+      add(`server-blocks-${name}`, blocked?.data?.code === "READ_ONLY_FALLBACK" && /read-only/i.test(blocked?.error || ""));
+    }
+    add(
+      "server-write-created-no-output",
+      !fs.existsSync(path.join(tempRoot, "server-blocked.pvf")) &&
+        !fs.existsSync(path.join(tempRoot, "server-blocked.bak")) &&
+        sha256File(fixturePath) === sourceSha,
+    );
 
     try {
       const native = loadPvfBackend({ mode: "native" }).api;
@@ -248,6 +514,9 @@ async function main() {
     }
   } finally {
     if (serverClient) serverClient.stop();
+    while (extraFallbackSessionIds.length > 0) {
+      try { await fallback.closeSession(extraFallbackSessionIds.pop()); } catch { /* best effort */ }
+    }
     if (nativeSessionId) {
       try { await loadPvfBackend({ mode: "native" }).api.closeSession(nativeSessionId); } catch { /* best effort */ }
     }

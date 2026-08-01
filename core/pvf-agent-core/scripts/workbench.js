@@ -49,7 +49,7 @@ Everyday:
   version               Print the Workbench version
   check                 Validate the local Workbench environment
   runtime-help          Show VC++ runtime recovery links (--open opens Microsoft instructions)
-  fallback-self-test    Verify the bundled JavaScript read-only fallback backend
+  fallback-self-test    Verify the bundled TypeScript read-only fallback backend
   fallback-diff         Compare native and fallback reads on external PVFs (maintenance)
   profile               Manage machine-local PVF paths
   pvf-read              Inspect PVF content through the read-only lane

@@ -23,7 +23,7 @@ Use this file as a thin adapter. Keep domain knowledge, detailed workflows, tool
 
 ## Select The Execution Lane
 
-1. Use `workbench.bat pvf-read`, `workbench.bat pvf-index`, and `workbench.bat pvf-change` from the Workbench root. This self-contained lane prefers the Workbench-bundled native backend and automatically falls back to the bundled JavaScript read-only backend when native loading fails. Fallback permits inspection and dry-run only; backup, apply, and every PVF write are blocked with `READ_ONLY_FALLBACK`.
+1. Use `workbench.bat pvf-read`, `workbench.bat pvf-index`, and `workbench.bat pvf-change` from the Workbench root. This self-contained lane prefers the Workbench-bundled native backend and automatically falls back to the bundled TypeScript read-only backend when native loading fails. The bundled Node.js runtime executes the `.ts` sources directly without npm or a build step. Fallback permits inspection and dry-run only; backup, apply, and every PVF write are blocked with `READ_ONLY_FALLBACK`.
 2. Use `workbench.bat nut-api query` or `workbench.bat knowledge-query nut` for NUT/API/symbol questions. The compact interface facts are bundled; corroborate them against target PVF scripts. Never invent API names or treat a zero result as proof of runtime unavailability.
 3. Use `workbench.bat tag-knowledge query`, `workbench.bat knowledge-query tag`, and `workbench.bat knowledge-query bookmark` for tag meaning and task-path navigation. These facts are bundled; target PVF readback remains mandatory.
 4. `PVF_XPILOT_NATIVE` is only an explicit, auditable development override; ordinary tasks use the bundled backend.

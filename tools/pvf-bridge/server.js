@@ -9,15 +9,36 @@ const native = selectedBackend.api;
 
 const sessions = new Map();
 let currentSessionId;
+const READ_ONLY_TOOL_NAMES = new Set([
+  "pvf_open",
+  "pvf_session_info",
+  "pvf_close",
+  "pvf_list_files",
+  "pvf_list_files_page",
+  "pvf_search",
+  "pvf_list_registries",
+  "pvf_resolve_lst_id",
+  "pvf_resolve_id",
+  "pvf_resolve_path",
+  "pvf_summarize_npc_shop",
+  "pvf_read_file",
+  "pvf_read_files",
+]);
 
 function assertWritableBackend(operation) {
   if (!selectedBackend.readOnly) return;
   const error = new Error(
-    `The active PVF backend is the JavaScript read-only fallback; ${operation} is blocked. ` +
+    `The active PVF backend is the TypeScript read-only fallback; ${operation} is blocked. ` +
     "Install the Microsoft Visual C++ v14 x64 runtime and rerun workbench.bat check before preparing or applying PVF writes.",
   );
   error.code = "READ_ONLY_FALLBACK";
   throw error;
+}
+
+function assertToolAllowedForSelectedBackend(name, args) {
+  if (!selectedBackend.readOnly || READ_ONLY_TOOL_NAMES.has(name)) return;
+  if (name === "pvf_replace_text" && args?.dryRun === true) return;
+  assertWritableBackend(`tool ${name}`);
 }
 
 const REGISTRY_CATALOG = [
@@ -148,6 +169,7 @@ function makeSearchQuery(args) {
     isUseLikeSearchPath: Boolean(args.isUseLikeSearchPath),
     searchType: args.searchType || "SearchName",
     matchMode: args.matchMode || "Like",
+    pvfEncoding: args.pvfEncoding ? normalizeEncoding(args.pvfEncoding) : undefined,
     convertToSimplifiedChinese: args.convertToSimplifiedChinese !== false,
     sourceFiles: Array.isArray(args.sourceFiles) ? args.sourceFiles : undefined,
   };
@@ -213,6 +235,7 @@ function extractFirstNumberAfterTag(content, tag) {
 function parseLstEntries(content, lstPath) {
   const entries = [];
   const baseDir = path.posix.dirname(normalizePvfPath(lstPath));
+  const basePrefix = baseDir === "." ? "" : `${baseDir}/`;
   const lines = String(content || "").split(/\r?\n/);
   for (let index = 0; index < lines.length; index += 1) {
     const line = lines[index];
@@ -222,7 +245,9 @@ function parseLstEntries(content, lstPath) {
     }
     const id = Number(match[1]);
     const rawPath = match[2].replace(/\\/g, "/").replace(/^\/+/, "");
-    const resolvedPath = normalizePvfPath(rawPath.toLowerCase().startsWith(`${baseDir.toLowerCase()}/`) ? rawPath : `${baseDir}/${rawPath}`);
+    const resolvedPath = normalizePvfPath(
+      !basePrefix || rawPath.toLowerCase().startsWith(basePrefix.toLowerCase()) ? rawPath : `${basePrefix}${rawPath}`,
+    );
     entries.push({
       id,
       rawPath,
@@ -501,14 +526,20 @@ async function toolSearch(args) {
   }
   const result = await native.searchFiles(sessionId, makeSearchQuery(args));
   const items = Array.isArray(result.items) ? result.items : [];
+  const errors = Array.isArray(result.errors) ? result.errors : [];
   const limit = Math.max(1, Math.min(Number(args.limit || 50), 500));
+  const returnedCount = Math.min(limit, items.length);
   return text({
     ok: true,
     sessionId,
     matchedCount: result.matchedCount,
     searchedCount: result.searchedCount,
-    returnedCount: Math.min(limit, items.length),
-    items: items.slice(0, limit),
+    returnedCount,
+    truncated: Boolean(result.truncated) || items.length > returnedCount,
+    errorCount: Number(result.errorCount || 0),
+    errorsTruncated: Boolean(result.errorsTruncated),
+    errors,
+    items: items.slice(0, returnedCount),
   });
 }
 
@@ -1021,6 +1052,7 @@ const tools = [
           enum: ["SearchNum", "SearchStrings", "SearchFileName", "SearchScript", "SearchName", "SearchCode", "SearchNutText"],
         },
         matchMode: { type: "string", enum: ["None", "Like", "Regex"] },
+        pvfEncoding: { type: "string" },
         convertToSimplifiedChinese: { type: "boolean" },
         sourceFiles: { type: "array", items: { type: "string" } },
         limit: { type: "integer", minimum: 1, maximum: 500 },
@@ -1258,20 +1290,23 @@ async function handle(message) {
           capabilities: { tools: { listChanged: false } },
           serverInfo: {
             name: "pvf-workbench-bundled-backend",
-            version: "2.0.0",
+            version: "2.1.0",
             backend: selectedBackend.source,
             readOnly: selectedBackend.readOnly,
           },
           instructions:
             selectedBackend.readOnly
-              ? "The native backend could not be loaded, so this process is using the read-only JavaScript fallback. Inspection is available; every PVF write is blocked with READ_ONLY_FALLBACK."
+              ? "The native backend could not be loaded, so this process is using the read-only TypeScript fallback. Inspection is available; every PVF write is blocked with READ_ONLY_FALLBACK."
               : "Use pvf_open first to create a PVF session. Use pvf_list_registries, pvf_resolve_lst_id, pvf_resolve_id, and pvf_summarize_npc_shop for registered PVF data. Use pvf_backup before edits. Use pvf_replace_text with dryRun=true before writing. Use pvf_save with targetPath to avoid overwriting the original PVF.",
         },
       });
       return;
     }
     if (message.method === "tools/list") {
-      send({ jsonrpc: "2.0", id, result: { tools } });
+      const advertisedTools = selectedBackend.readOnly
+        ? tools.filter((tool) => READ_ONLY_TOOL_NAMES.has(tool.name))
+        : tools;
+      send({ jsonrpc: "2.0", id, result: { tools: advertisedTools } });
       return;
     }
     if (message.method === "tools/call") {
@@ -1283,6 +1318,7 @@ async function handle(message) {
         return;
       }
       try {
+        assertToolAllowedForSelectedBackend(name, args);
         const result = await fn(args);
         send({ jsonrpc: "2.0", id, result });
       } catch (err) {

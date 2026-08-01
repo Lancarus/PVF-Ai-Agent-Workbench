@@ -1,10 +1,12 @@
 "use strict";
 
-function rotl32(value, shift) {
+type DecodeTextOptions = Readonly<{ trimNull?: boolean }>;
+
+function rotl32(value: number, shift: number): number {
   return ((value << shift) | (value >>> (32 - shift))) >>> 0;
 }
 
-function rotr32(value, shift) {
+function rotr32(value: number, shift: number): number {
   return ((value >>> shift) | (value << (32 - shift))) >>> 0;
 }
 
@@ -20,7 +22,7 @@ const checksumTable = (() => {
   return table;
 })();
 
-function createChecksum(source, trueLength, seed) {
+function createChecksum(source: Buffer, trueLength: number, seed: number): number {
   if (trueLength % 4 !== 0 || trueLength > source.length) throw new Error("PVF checksum input must be four-byte aligned.");
   let value = (~seed) >>> 0;
   for (let offset = 0; offset < trueLength; offset += 4) {
@@ -32,7 +34,7 @@ function createChecksum(source, trueLength, seed) {
   return (~value) >>> 0;
 }
 
-function decrypt(source, checksum) {
+function decrypt(source: Buffer, checksum: number): Buffer {
   if (source.length % 4 !== 0) throw new Error("Encrypted PVF blocks must be four-byte aligned.");
   const output = Buffer.allocUnsafe(source.length);
   for (let offset = 0; offset < source.length; offset += 4) {
@@ -42,7 +44,7 @@ function decrypt(source, checksum) {
   return output;
 }
 
-function encrypt(source, checksum) {
+function encrypt(source: Buffer, checksum: number): Buffer {
   const length = (source.length + 3) & ~3;
   const input = Buffer.alloc(length);
   source.copy(input);
@@ -54,7 +56,7 @@ function encrypt(source, checksum) {
   return output;
 }
 
-function normalizeEncoding(value, fallback = "Tw") {
+function normalizeEncoding(value: unknown, fallback = "Tw"): string {
   const raw = String(value || fallback).trim().toLowerCase();
   const aliases = new Map([
     ["tw", "Tw"], ["big5", "Tw"], ["cp950", "Tw"],
@@ -67,7 +69,7 @@ function normalizeEncoding(value, fallback = "Tw") {
   return aliases.get(raw) || fallback;
 }
 
-function decoderLabel(value) {
+function decoderLabel(value: unknown): string {
   const encoding = normalizeEncoding(value);
   return {
     Tw: "big5",
@@ -79,12 +81,12 @@ function decoderLabel(value) {
   }[encoding];
 }
 
-function decodeText(source, encoding, options = {}) {
+function decodeText(source: Uint8Array, encoding: unknown, options: DecodeTextOptions = {}): string {
   const text = new TextDecoder(decoderLabel(encoding), { fatal: false }).decode(source);
   return options.trimNull === false ? text : text.replace(/\0+$/g, "");
 }
 
-function decodeFileName(source) {
+function decodeFileName(source: Uint8Array): string {
   return decodeText(source, "Kr").replace(/\\/g, "/").replace(/^\/+/, "").toLowerCase();
 }
 

@@ -697,7 +697,7 @@ async function runApply(changeSet, changeSetFile) {
   }
 
   if (opened.session?.readOnly === true) {
-    const error = new Error("Controlled PVF apply is unavailable because the active backend is the JavaScript read-only fallback. Install the Microsoft Visual C++ v14 x64 runtime and rerun workbench.bat check.");
+    const error = new Error("Controlled PVF apply is unavailable because the active backend is the TypeScript read-only fallback. Install the Microsoft Visual C++ v14 x64 runtime and rerun workbench.bat check.");
     error.code = "READ_ONLY_FALLBACK";
     client.stop();
     throw error;

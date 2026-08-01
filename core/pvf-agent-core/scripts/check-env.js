@@ -221,10 +221,10 @@ function checkRequiredPaths(errors) {
       "tools/pvf-bridge/server.js",
       "tools/pvf-bridge/native-backend.js",
       "tools/pvf-bridge/native/pvf_rust_core.node",
-      "tools/pvf-bridge/fallback/codec.js",
-      "tools/pvf-bridge/fallback/script.js",
-      "tools/pvf-bridge/fallback/ani.js",
-      "tools/pvf-bridge/fallback/pvf-readonly-backend.js",
+      "tools/pvf-bridge/fallback/codec.ts",
+      "tools/pvf-bridge/fallback/script.ts",
+      "tools/pvf-bridge/fallback/ani.ts",
+      "tools/pvf-bridge/fallback/pvf-readonly-backend.ts",
       "tools/pvf-bridge/dungeon-workflow.js",
       "tools/pvf-bridge/extract-dungeon.js",
       "tools/pvf-bridge/import-dungeon-extract.js",
@@ -285,6 +285,7 @@ function checkRequiredPaths(errors) {
       "core/pvf-agent-core/lib/research-store.js",
       "core/pvf-agent-core/contracts/pvf-backend-contract.zh-CN.md",
       "core/pvf-agent-core/contracts/pvf-backend-contract.v1.json",
+      "core/pvf-agent-core/contracts/typescript-readonly-backend-contract.v1.json",
       "core/pvf-agent-core/contracts/dependency-planner.v1.json",
       "core/pvf-agent-core/contracts/client-compatibility-matrix.v1.json",
       "core/pvf-agent-core/contracts/unified-knowledge-query.v1.json",
@@ -299,6 +300,7 @@ function checkRequiredPaths(errors) {
       "core/pvf-agent-core/schemas/pvf-index-manifest.schema.json",
       "core/pvf-agent-core/schemas/pvf-index-catalog.schema.json",
       "core/pvf-agent-core/schemas/pvf-backend-contract.schema.json",
+      "core/pvf-agent-core/schemas/typescript-readonly-backend-contract.schema.json",
       "core/pvf-agent-core/schemas/pvf-backend-contract-report.schema.json",
       "core/pvf-agent-core/schemas/workbench-doctor-report.schema.json",
       "core/pvf-agent-core/schemas/real-task-runs-check-report.schema.json",
@@ -454,6 +456,7 @@ function checkRequiredPaths(errors) {
     "core/pvf-agent-core/lib/runtime-state.js",
     "core/pvf-agent-core/contracts/pvf-backend-contract.zh-CN.md",
     "core/pvf-agent-core/contracts/pvf-backend-contract.v1.json",
+    "core/pvf-agent-core/contracts/typescript-readonly-backend-contract.v1.json",
     "core/pvf-agent-core/contracts/fixtures/README.zh-CN.md",
     "core/pvf-agent-core/contracts/fixtures/apc-swordman-gsd.fixture.json",
     "core/pvf-agent-core/contracts/fixtures/itemshop-birken.fixture.json",
@@ -465,6 +468,7 @@ function checkRequiredPaths(errors) {
     "core/pvf-agent-core/schemas/pvf-index-manifest.schema.json",
     "core/pvf-agent-core/schemas/pvf-index-catalog.schema.json",
     "core/pvf-agent-core/schemas/pvf-backend-contract.schema.json",
+    "core/pvf-agent-core/schemas/typescript-readonly-backend-contract.schema.json",
     "core/pvf-agent-core/schemas/pvf-backend-contract-report.schema.json",
     "core/pvf-agent-core/schemas/workbench-doctor-report.schema.json",
     "core/pvf-agent-core/schemas/portable-release-manifest.schema.json",
@@ -567,7 +571,7 @@ function checkNativeBackendResolver(errors, warnings, info) {
     if (selected.readOnly) {
       const health = selected.api.health();
       if (health?.readOnly !== true || health?.backend !== "typescript-readonly-fallback") {
-        errors.push("The JavaScript fallback backend did not report a healthy read-only state.");
+        errors.push("The TypeScript fallback backend did not report a healthy read-only state.");
       } else {
         warnings.push("PVF backend is in degraded read-only mode: inspection is available, but every PVF write is blocked.");
       }
@@ -620,6 +624,11 @@ function checkBundledRuntimeIntegrity(errors, warnings, info, runtimeRecovery) {
   if (!nodeArtifact || nodeArtifact.version !== process.version) {
     errors.push(`Bundled Node version mismatch: running ${process.version}, manifest ${nodeArtifact?.version || "missing"}.`);
   }
+  if (process.features?.typescript !== "strip") {
+    errors.push(`Bundled Node must support direct TypeScript type stripping; reported ${process.features?.typescript || "unavailable"}.`);
+  } else {
+    info.push("TypeScript runtime: direct type stripping available");
+  }
   const nativeArtifact = artifacts.find((item) => item.id === "pvf-native-backend");
   if (nativeArtifact?.loadTestRequired === true) {
     try {
@@ -629,7 +638,7 @@ function checkBundledRuntimeIntegrity(errors, warnings, info, runtimeRecovery) {
     } catch (error) {
       let fallbackHealthy = false;
       try {
-        const fallback = require(join("tools/pvf-bridge/fallback/pvf-readonly-backend.js"));
+        const fallback = require(join("tools/pvf-bridge/fallback/pvf-readonly-backend.ts"));
         const health = fallback.health();
         fallbackHealthy = health?.readOnly === true && health?.backend === "typescript-readonly-fallback";
       } catch {
@@ -639,7 +648,7 @@ function checkBundledRuntimeIntegrity(errors, warnings, info, runtimeRecovery) {
         `Bundled native backend load test failed: ${error.message}. ` +
         "On 64-bit Windows, verify that the supported Microsoft Visual C++ v14 x64 Redistributable is installed.";
       if (nativeIntegrityOk && fallbackHealthy) {
-        warnings.push(`${message} The JavaScript fallback remains available for read-only inspection; controlled PVF writes are unavailable.`);
+        warnings.push(`${message} The TypeScript fallback remains available for read-only inspection; controlled PVF writes are unavailable.`);
       } else {
         errors.push(message);
       }

@@ -1,4 +1,4 @@
-# GitHub 2.0.0 发布清单
+# GitHub 2.1.0 发布清单
 
 本清单用于把当前干净目录同步到 GitHub。Gate 报告、真实 PVF、客户端、
 本机 profile 和研究目录都不进入仓库。
@@ -29,7 +29,7 @@
    secret、数据库、压缩包、缓存目录或 Gate 输出。
 7. 提交并推送后，在远端 tag 对应的 Source code zip 中再次运行
    `workbench.bat check`、`workbench.bat fallback-self-test` 和
-   `workbench.bat release gate3`，再创建 `2.0.0`
+   `workbench.bat release gate3`，再创建 `v2.1.0`
    Release。
 
 ## 发布措辞边界
@@ -40,7 +40,7 @@
 - 在找回 native Rust 源码与锁文件并重编译前，不要声明整个 native
   后端可由本仓库源码复现。
 - 在全新 Windows 没有兼容 VC++ v14 runtime 时，可以声明只读查询仍由
-  随包 JavaScript 备用后端工作，但不能声明 PVF 写入可用。
+  随包 TypeScript 备用后端工作，但不能声明 PVF 写入可用。
   `workbench.bat check` 会明确显示 degraded read-only 并给出微软官方 x64
   运行库链接。人工交互终端会打开官方说明页；Agent/CI 不弹窗，也不会
   自动下载或安装。

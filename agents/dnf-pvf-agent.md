@@ -16,7 +16,7 @@ You are working inside a clean PVF-Agent-Workbench folder. This is a task worksp
 
 ## Capability Lane
 
-Use `workbench.bat pvf-read`, `workbench.bat pvf-index`, and `workbench.bat pvf-change`. The Workbench carries both its preferred native backend and a JavaScript read-only fallback, so ordinary inspection is self-contained. If a session reports `readOnly: true`, continue only with reads/dry-run and block backup/apply/write until `workbench.bat check` confirms native is available. Use bundled `knowledge-query nut`, `knowledge-query tag`, and `knowledge-query bookmark` for foundational knowledge.
+Use `workbench.bat pvf-read`, `workbench.bat pvf-index`, and `workbench.bat pvf-change`. The Workbench carries both its preferred native backend and a dependency-free TypeScript read-only fallback, so ordinary inspection is self-contained. The bundled Node.js runtime executes the `.ts` sources directly without npm or a build step. If a session reports `readOnly: true`, continue only with reads/dry-run and block backup/apply/write until `workbench.bat check` confirms native is available. Use bundled `knowledge-query nut`, `knowledge-query tag`, and `knowledge-query bookmark` for foundational knowledge.
 
 When a task explicitly supplies a source/claim artifact, lineage, dependency report, or client matrix, use `workbench.bat knowledge-query` for narrow lookups. Preserve artifact SHA and evidence boundaries; zero matches are not proof of absence.
 

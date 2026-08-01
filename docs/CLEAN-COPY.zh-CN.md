@@ -2,7 +2,7 @@
 
 这个 Workbench 可以直接拷到另一台电脑给 AI Agent 使用，但干净包只应该包含规则、工具、知识包和示例。不要把本机私有配置、真实 PVF、客户端、索引缓存或运行产物一起当成工作台内容迁移。
 
-当前干净包支持 64 位 Windows。它自带 Node.js，不依赖 npm、联网下载、外部 `pvf_bridge` MCP、TypeSquirrel 或已下架的 VSCode 插件。native backend 会在首次 `workbench.bat check` 中真实加载；目标电脑若缺少兼容的 Microsoft Visual C++ v14 runtime，工作台会自动使用纯 JavaScript 只读备用后端，并显示[微软官方说明页](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist)和[官方 x64 直达下载](https://aka.ms/vc14/vc_redist.x64.exe)。读取任务仍能工作，但 PVF 备份、apply 和保存全部阻断。人工交互终端会打开说明页，Agent/自动化不弹窗；也可随时运行 `workbench.bat runtime-help --open`。Workbench 不私自附带、下载或安装 Microsoft DLL。
+当前干净包支持 64 位 Windows。它自带 Node.js，不依赖 npm、联网下载、外部 `pvf_bridge` MCP、TypeSquirrel 或已下架的 VSCode 插件。native backend 会在首次 `workbench.bat check` 中真实加载；目标电脑若缺少兼容的 Microsoft Visual C++ v14 runtime，工作台会自动使用随包 TypeScript 只读备用后端。`.ts` 源码由固定 Node.js runtime 直接执行，不需要安装或编译；检查命令会显示[微软官方说明页](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist)和[官方 x64 直达下载](https://aka.ms/vc14/vc_redist.x64.exe)。读取任务仍能工作，但 PVF 备份、apply 和保存全部阻断。人工交互终端会打开说明页，Agent/自动化不弹窗；也可随时运行 `workbench.bat runtime-help --open`。Workbench 不私自附带、下载或安装 Microsoft DLL。
 
 ## 不要复制
 

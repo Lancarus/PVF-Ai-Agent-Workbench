@@ -46,7 +46,7 @@ Do not require the user to know PVF internals. After the user provides the targe
 
 The ordinary task lane is always self-contained:
 
-1. Use `workbench.bat pvf-read`, `workbench.bat pvf-index`, and `workbench.bat pvf-change`. They prefer the Workbench-bundled native backend and automatically fall back to the bundled JavaScript read-only backend when native loading fails. Read-only inspection and dry-run remain available in fallback mode; every backup, apply, and PVF write is blocked with `READ_ONLY_FALLBACK`.
+1. Use `workbench.bat pvf-read`, `workbench.bat pvf-index`, and `workbench.bat pvf-change`. They prefer the Workbench-bundled native backend and automatically fall back to the bundled TypeScript read-only backend when native loading fails. Read-only inspection and dry-run remain available in fallback mode; every backup, apply, and PVF write is blocked with `READ_ONLY_FALLBACK`.
 2. Use `workbench.bat nut-api query` or `workbench.bat knowledge-query nut` for NUT/API/symbol questions. The compact facts are bundled; corroborate declarations against target PVF scripts, never guess API names, and never treat a zero result as proof that a runtime symbol is unavailable.
 3. Use `workbench.bat tag-knowledge query` or `workbench.bat knowledge-query tag` for Section/tag questions. The compact community, official-original, and tool-extension layers are bundled; read back target PVF samples, resolve registries, and never silently correct source spellings.
 4. Use `workbench.bat knowledge-query bookmark` for task navigation such as shops, drops, registries, jobs, maps, APC, and UI paths. A bookmark is a candidate path, so confirm it exists in the target PVF and read it before concluding.
@@ -150,7 +150,7 @@ workbench.bat absorb new --id <run-id> --title "<title>" --domain <domain> --sta
 - Node runtime under `runtime/node/node.exe`.
 - Bundled PVF backend process under `tools/pvf-bridge/server.js`; the directory name is retained for internal compatibility and is not an external dependency.
 - Native PVF backend under `tools/pvf-bridge/native/pvf_rust_core.node`.
-- Dependency-free JavaScript read-only fallback under `tools/pvf-bridge/fallback/`.
+- Dependency-free TypeScript read-only fallback under `tools/pvf-bridge/fallback/`, executed directly by the bundled Node.js runtime without npm or a build step.
 - Versioned release gates and deterministic Agent evals.
 - Advanced compatibility wrappers under `commands/`; do not use them as the default documented entry.
 

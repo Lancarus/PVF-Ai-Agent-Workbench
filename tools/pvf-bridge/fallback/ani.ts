@@ -11,18 +11,20 @@ const EFFECT = ["NONE", "DODGE", "LINEARDODGE", "DARK", "XOR", "MONOCHROME", "SP
 const DAMAGE = ["NORMAL", "SUPERARMOR", "UNBREAKABLE"];
 const FLIP = [undefined, "HORIZON", "VERTICAL", "ALL"];
 
-function decompileBinaryAni(buffer) {
+function decompileBinaryAni(buffer: Buffer): string | null {
   try {
     let position = 0;
-    const requireBytes = (count) => {
-      if (position + count > buffer.length) throw new Error("Unexpected end of binary ANI.");
+    const requireBytes = (count: number): void => {
+      if (!Number.isSafeInteger(count) || count < 0 || !Number.isSafeInteger(position + count) || position + count > buffer.length) {
+        throw new Error("Unexpected or unsafe binary ANI length.");
+      }
     };
     const u8 = () => { requireBytes(1); return buffer[position++]; };
     const u16 = () => { requireBytes(2); const value = buffer.readUInt16LE(position); position += 2; return value; };
     const i16 = () => { requireBytes(2); const value = buffer.readInt16LE(position); position += 2; return value; };
     const i32 = () => { requireBytes(4); const value = buffer.readInt32LE(position); position += 4; return value; };
     const f32 = () => { requireBytes(4); const value = buffer.readFloatLE(position); position += 4; return value.toFixed(2); };
-    const ascii = (length) => { requireBytes(length); const value = buffer.subarray(position, position + length).toString("ascii"); position += length; return value; };
+    const ascii = (length: number): string => { requireBytes(length); const value = buffer.subarray(position, position + length).toString("ascii"); position += length; return value; };
     const color = () => (256 + u8()) % 256;
 
     const frameCount = u16();
@@ -31,7 +33,7 @@ function decompileBinaryAni(buffer) {
     for (let index = 0; index < imageCount; index += 1) images.push(ascii(i32()));
 
     const output = ["#PVF_File\r\n"];
-    const append = (value) => output.push(value);
+    const append = (value: string): number => output.push(value);
     const overallCount = u16();
     for (let index = 0; index < overallCount; index += 1) {
       const type = u16();

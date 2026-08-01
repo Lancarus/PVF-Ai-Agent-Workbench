@@ -22,6 +22,7 @@ const command = args[0];
 function usage() {
   return `Usage:
   workbench.bat backend-contract show
+  workbench.bat backend-contract show-readonly
   workbench.bat backend-contract fixture [--fixture <fixture.json>]
   workbench.bat backend-contract check [--profile <name> | --pvf <Script.pvf>] [--fixture <fixture.json>] [--scope itemshop] [--out <dir>] [--skip-index] [--include-write-smoke]
 `;
@@ -85,6 +86,28 @@ function loadContract() {
   }
   if (!Array.isArray(contract.requiredCapabilities) || contract.requiredCapabilities.length === 0) {
     throw new Error("Backend contract must define requiredCapabilities.");
+  }
+  return { file, contract };
+}
+
+function readonlyContractPath() {
+  return path.join(workbenchRoot, "core", "pvf-agent-core", "contracts", "typescript-readonly-backend-contract.v1.json");
+}
+
+function loadReadonlyContract() {
+  const file = readonlyContractPath();
+  const contract = readJson(file);
+  if (contract.schemaVersion !== "1.0" || contract.contractId !== "typescript-readonly-backend-contract.v1") {
+    throw new Error("TypeScript read-only backend contract identity is invalid.");
+  }
+  for (const name of ["sourceFiles", "advertisedTools", "blockedTools", "blockedApiMethods", "safetyInvariants"]) {
+    if (!Array.isArray(contract[name]) || contract[name].length === 0) {
+      throw new Error(`TypeScript read-only backend contract requires ${name}.`);
+    }
+  }
+  const advertised = new Set(contract.advertisedTools);
+  for (const name of contract.blockedTools) {
+    if (advertised.has(name)) throw new Error(`Read-only contract tool cannot be both advertised and blocked: ${name}`);
   }
   return { file, contract };
 }
@@ -631,6 +654,15 @@ async function main() {
       ok: true,
       contractFile: loadedContract.file,
       contract: loadedContract.contract,
+    });
+    return;
+  }
+  if (command === "show-readonly") {
+    const loadedReadonlyContract = loadReadonlyContract();
+    output({
+      ok: true,
+      contractFile: loadedReadonlyContract.file,
+      contract: loadedReadonlyContract.contract,
     });
     return;
   }

@@ -2,7 +2,7 @@
   "$schema": "../../core/pvf-agent-core/schemas/agent-eval-suite.schema.json",
   "schemaVersion": "1.0",
   "suiteId": "pvf-agent-safety-routing-v1",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "minimumAverageScore": 1,
   "cases": [
     {

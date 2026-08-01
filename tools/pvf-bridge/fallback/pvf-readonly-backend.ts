@@ -3,21 +3,58 @@
 const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
-const { decompileBinaryAni } = require("./ani");
-const { createChecksum, decodeFileName, decodeText, decrypt, normalizeEncoding } = require("./codec");
+const { decompileBinaryAni } = require("./ani.ts");
+const { createChecksum, decodeFileName, decodeText, decrypt, normalizeEncoding } = require("./codec.ts");
 const {
+  SCRIPT_RESOURCE_LIMITS,
   StringTable,
   StringView,
   decompileLst,
   decompileScript,
   looksLikeScript,
   parseTokens,
-} = require("./script");
+  stringViewIds,
+} = require("./script.ts");
 
-const sessions = new Map();
-const CACHE_LIMIT = 64 * 1024 * 1024;
-const MAX_TREE_BYTES = 512 * 1024 * 1024;
-const MAX_FILE_COUNT = 5_000_000;
+type PvfEntry = {
+  fileName: string;
+  fileNameChecksum: number;
+  dataLength: number;
+  checksum: number;
+  dataOffset: number;
+  blockLength: number;
+  isScriptFile: boolean;
+  isBinaryAniFile: boolean;
+  kindConfirmed: boolean;
+};
+
+type ReadFileOptions = Readonly<{
+  pvfEncoding?: string;
+  decompileScript?: boolean;
+  decompileBinaryAni?: boolean;
+  autoConvertStringLink?: boolean;
+}>;
+
+type SearchQuery = Readonly<Record<string, any>>;
+
+const sessions: Map<string, ReadonlyPvfSession> = new Map();
+const RESOURCE_LIMITS = Object.freeze({
+  maxSessions: 4,
+  maxTreeBytes: 512 * 1024 * 1024,
+  maxFileCount: 5_000_000,
+  maxSingleReadBytes: 512 * 1024 * 1024,
+  cacheBytes: 64 * 1024 * 1024,
+  maxSearchKeywordChars: 4096,
+  maxSearchResults: 5000,
+  maxReportedSearchErrors: 50,
+  maxStringTableEntries: SCRIPT_RESOURCE_LIMITS.maxStringTableEntries,
+  maxDecodedStringCacheEntries: SCRIPT_RESOURCE_LIMITS.maxDecodedStringCacheEntries,
+  maxScriptTokens: SCRIPT_RESOURCE_LIMITS.maxScriptTokens,
+  maxStringViewFiles: SCRIPT_RESOURCE_LIMITS.maxStringViewFiles,
+});
+const CACHE_LIMIT = RESOURCE_LIMITS.cacheBytes;
+const MAX_TREE_BYTES = RESOURCE_LIMITS.maxTreeBytes;
+const MAX_FILE_COUNT = RESOURCE_LIMITS.maxFileCount;
 const INFERRED_SCRIPT_EXTENSIONS = new Set([
   ".act", ".ai", ".aic", ".atk", ".chr", ".co", ".dgn", ".equ", ".etc",
   ".exp", ".job", ".key", ".lst", ".map", ".mob", ".obj", ".ptl", ".qst",
@@ -28,37 +65,58 @@ const PLAIN_TEXT_EXTENSIONS = new Set([
   ".txt", ".xml", ".yaml", ".yml",
 ]);
 
-function normalizePvfPath(value) {
+function normalizePvfPath(value: unknown): string {
   return String(value || "").replace(/\\/g, "/").replace(/^\/+/, "").replace(/\/+/g, "/").toLowerCase();
 }
 
-function blockLength(length) {
+function blockLength(length: number): number {
   return (length + 3) & ~3;
 }
 
-function shortName(fileName) {
+function shortName(fileName: string): string {
   const index = fileName.lastIndexOf("/");
   return index >= 0 ? fileName.slice(index + 1) : fileName;
 }
 
-function inferScript(fileName) {
+function inferScript(fileName: string): boolean {
   return INFERRED_SCRIPT_EXTENSIONS.has(path.posix.extname(fileName).toLowerCase());
 }
 
-function likelyText(fileName) {
+function likelyText(fileName: string): boolean {
   const lower = fileName.toLowerCase();
   if (lower.endsWith(".ani.als")) return true;
   return PLAIN_TEXT_EXTENSIONS.has(path.posix.extname(lower));
 }
 
-function readonlyError(operation) {
-  const error = new Error(`The TypeScript fallback backend is read-only; ${operation} is unavailable. Install the Microsoft Visual C++ v14 x64 runtime and rerun workbench.bat check before preparing or applying PVF writes.`);
+function readonlyError(operation: string): Error & { code: string } {
+  const error = new Error(`The TypeScript fallback backend is read-only; ${operation} is unavailable. Install the Microsoft Visual C++ v14 x64 runtime and rerun workbench.bat check before preparing or applying PVF writes.`) as Error & { code: string };
   error.code = "READ_ONLY_FALLBACK";
   return error;
 }
 
+function codedError(code: string, message: string): Error & { code: string } {
+  const error = new Error(message) as Error & { code: string };
+  error.code = code;
+  return error;
+}
+
 class ReadonlyPvfSession {
-  constructor(sourcePath, encoding) {
+  sessionId: string;
+  sourcePath: string;
+  encoding: string;
+  handle: any;
+  fileSize: number;
+  baseOffset: number;
+  fileVersion: number;
+  guid: string;
+  entries: PvfEntry[];
+  entriesByName: Map<string, PvfEntry>;
+  cache: Map<string, Buffer>;
+  cacheBytes: number;
+  stringTable: any;
+  stringViews: Map<string, any>;
+
+  constructor(sourcePath: string, encoding: string) {
     this.sessionId = crypto.randomUUID().replace(/-/g, "");
     this.sourcePath = sourcePath;
     this.encoding = normalizeEncoding(encoding, "Tw");
@@ -75,9 +133,16 @@ class ReadonlyPvfSession {
     this.stringViews = new Map();
   }
 
-  async readAt(position, length) {
-    if (!Number.isSafeInteger(position) || !Number.isSafeInteger(length) || position < 0 || length < 0 || position + length > this.fileSize) {
+  async readAt(position: number, length: number): Promise<Buffer> {
+    const end = position + length;
+    if (!Number.isSafeInteger(position) || !Number.isSafeInteger(length) || !Number.isSafeInteger(end) || position < 0 || length < 0 || end > this.fileSize) {
       throw new Error(`Unsafe or out-of-range PVF read: position=${position} length=${length} fileSize=${this.fileSize}`);
+    }
+    if (length > RESOURCE_LIMITS.maxSingleReadBytes) {
+      throw codedError(
+        "READ_ONLY_RESOURCE_LIMIT",
+        `PVF read exceeds the TypeScript fallback limit: ${length} > ${RESOURCE_LIMITS.maxSingleReadBytes}.`,
+      );
     }
     const buffer = Buffer.allocUnsafe(length);
     let offset = 0;
@@ -89,7 +154,7 @@ class ReadonlyPvfSession {
     return buffer;
   }
 
-  async open() {
+  async open(): Promise<ReadonlyPvfSession> {
     this.handle = await fs.promises.open(this.sourcePath, "r");
     try {
       this.fileSize = (await this.handle.stat()).size;
@@ -136,22 +201,25 @@ class ReadonlyPvfSession {
           isBinaryAniFile: fileName.endsWith(".ani") && !inferScript(fileName),
           kindConfirmed: false,
         };
+        if (this.entriesByName.has(fileName)) {
+          throw new Error(`PVF file tree contains a duplicate normalized path: ${fileName}`);
+        }
         this.entries.push(entry);
         this.entriesByName.set(fileName, entry);
       }
       this.entries.sort((left, right) => left.fileName.localeCompare(right.fileName, "en"));
       return this;
-    } catch (error) {
+    } catch (error: any) {
       await this.close();
       throw error;
     }
   }
 
-  entry(fileName) {
+  entry(fileName: string): PvfEntry | undefined {
     return this.entriesByName.get(normalizePvfPath(fileName));
   }
 
-  remember(fileName, bytes) {
+  remember(fileName: string, bytes: Buffer): void {
     if (bytes.length > CACHE_LIMIT / 2) return;
     if (this.cache.has(fileName)) {
       const previous = this.cache.get(fileName);
@@ -168,7 +236,7 @@ class ReadonlyPvfSession {
     }
   }
 
-  async readDecrypted(entry) {
+  async readDecrypted(entry: PvfEntry): Promise<Buffer> {
     const cached = this.cache.get(entry.fileName);
     if (cached) {
       this.cache.delete(entry.fileName);
@@ -189,7 +257,7 @@ class ReadonlyPvfSession {
     return decrypted;
   }
 
-  async ensureStringTable() {
+  async ensureStringTable(): Promise<any> {
     if (this.stringTable) return this.stringTable;
     const entry = this.entry("stringtable.bin");
     if (!entry) throw new Error("PVF has no stringtable.bin; script text cannot be decompiled.");
@@ -197,7 +265,7 @@ class ReadonlyPvfSession {
     return this.stringTable;
   }
 
-  async ensureStringView(encoding) {
+  async ensureStringView(encoding: string): Promise<any> {
     const normalized = normalizeEncoding(encoding, this.encoding);
     if (this.stringViews.has(normalized)) return this.stringViews.get(normalized);
     const view = await StringView.load(this, await this.ensureStringTable(), normalized);
@@ -205,7 +273,7 @@ class ReadonlyPvfSession {
     return view;
   }
 
-  async close() {
+  async close(): Promise<void> {
     if (this.handle) await this.handle.close().catch(() => {});
     this.handle = null;
     this.cache.clear();
@@ -215,13 +283,19 @@ class ReadonlyPvfSession {
   }
 }
 
-function sessionById(sessionId) {
+function sessionById(sessionId: unknown): ReadonlyPvfSession {
   const session = sessions.get(String(sessionId || ""));
   if (!session) throw new Error(`Unknown PVF session: ${sessionId}`);
   return session;
 }
 
-async function openSession(sourcePath, encoding = "Tw") {
+async function openSession(sourcePath: string, encoding = "Tw"): Promise<Record<string, unknown>> {
+  if (sessions.size >= RESOURCE_LIMITS.maxSessions) {
+    throw codedError(
+      "READ_ONLY_SESSION_LIMIT",
+      `TypeScript fallback session limit reached: ${RESOURCE_LIMITS.maxSessions}. Close an existing session before opening another PVF.`,
+    );
+  }
   const resolved = path.resolve(String(sourcePath || ""));
   if (!fs.existsSync(resolved) || !fs.statSync(resolved).isFile()) throw new Error(`PVF file does not exist: ${resolved}`);
   const session = await new ReadonlyPvfSession(resolved, encoding).open();
@@ -236,7 +310,7 @@ async function openSession(sourcePath, encoding = "Tw") {
   };
 }
 
-async function getSession(sessionId) {
+async function getSession(sessionId: string): Promise<Record<string, unknown>> {
   const session = sessionById(sessionId);
   return {
     sessionId: session.sessionId,
@@ -249,14 +323,14 @@ async function getSession(sessionId) {
   };
 }
 
-async function closeSession(sessionId) {
+async function closeSession(sessionId: string): Promise<Record<string, never>> {
   const session = sessionById(sessionId);
   sessions.delete(session.sessionId);
   await session.close();
   return {};
 }
 
-async function listFiles(sessionId) {
+async function listFiles(sessionId: string): Promise<Array<Record<string, unknown>>> {
   return sessionById(sessionId).entries.map((entry) => ({
     fileName: entry.fileName,
     dataLength: entry.dataLength,
@@ -265,7 +339,7 @@ async function listFiles(sessionId) {
   }));
 }
 
-async function readFile(sessionId, fileName, options = {}) {
+async function readFile(sessionId: string, fileName: string, options: ReadFileOptions = {}): Promise<Record<string, any>> {
   const session = sessionById(sessionId);
   const entry = session.entry(fileName);
   if (!entry) throw new Error(`PVF file does not exist in session: ${fileName}`);
@@ -283,6 +357,7 @@ async function readFile(sessionId, fileName, options = {}) {
     let text = entry.fileName.endsWith(".lst") ? decompileLst(bytes, table) : null;
     if (text === null) {
       const view = await session.ensureStringView(options.pvfEncoding || session.encoding);
+      await view.ensure(stringViewIds(bytes));
       text = decompileScript(bytes, table, view, { autoConvertStringLink: Boolean(options.autoConvertStringLink) });
     }
     result.textContent = text;
@@ -298,7 +373,7 @@ async function readFile(sessionId, fileName, options = {}) {
   return result;
 }
 
-function makeMatcher(keyword, mode) {
+function makeMatcher(keyword: string, mode: string): { test: (value: unknown) => boolean; preview: (value: unknown) => string } {
   if (mode === "Regex") {
     const regex = new RegExp(keyword, "i");
     return { test: (value) => regex.test(value), preview: (value) => value.match(regex)?.[0] || keyword };
@@ -314,10 +389,16 @@ function makeMatcher(keyword, mode) {
   };
 }
 
-async function searchFiles(sessionId, query = {}) {
+async function searchFiles(sessionId: string, query: SearchQuery = {}): Promise<Record<string, any>> {
   const session = sessionById(sessionId);
   const keyword = String(query.keyword || "");
   if (!keyword) throw new Error("Search keyword is required.");
+  if (keyword.length > RESOURCE_LIMITS.maxSearchKeywordChars) {
+    throw codedError(
+      "READ_ONLY_RESOURCE_LIMIT",
+      `Search keyword exceeds the TypeScript fallback limit: ${keyword.length} > ${RESOURCE_LIMITS.maxSearchKeywordChars}.`,
+    );
+  }
   const matcher = makeMatcher(keyword, query.matchMode || "Like");
   const searchPath = normalizePvfPath(query.searchPath || "");
   const allowed = Array.isArray(query.sourceFiles) && query.sourceFiles.length > 0
@@ -331,6 +412,8 @@ async function searchFiles(sessionId, query = {}) {
   const searchType = String(query.searchType || "SearchName");
   const items = [];
   let matchedCount = 0;
+  let errorCount = 0;
+  const errors = [];
 
   if (searchType === "SearchFileName") {
     for (const entry of candidates) {
@@ -338,16 +421,16 @@ async function searchFiles(sessionId, query = {}) {
       const ok = query.isStartMatch ? value.toLowerCase().startsWith(keyword.toLowerCase()) : matcher.test(value);
       if (!ok) continue;
       matchedCount += 1;
-      if (items.length < 5000) items.push({ fileName: entry.fileName, shortName: shortName(entry.fileName), preview: entry.fileName });
+      if (items.length < RESOURCE_LIMITS.maxSearchResults) items.push({ fileName: entry.fileName, shortName: shortName(entry.fileName), preview: entry.fileName });
     }
-    return { matchedCount, searchedCount: candidates.length, items, truncated: matchedCount > items.length };
+    return { matchedCount, searchedCount: candidates.length, items, truncated: matchedCount > items.length, errorCount, errors };
   }
 
   let stringIndices = null;
   if (searchType === "SearchStrings") {
     const table = await session.ensureStringTable();
     stringIndices = new Set();
-    for (let index = 0; index < table.values.length; index += 1) if (matcher.test(table.values[index])) stringIndices.add(index);
+    for (let index = 0; index < table.count; index += 1) if (matcher.test(table.get(index, false))) stringIndices.add(index);
   }
 
   for (const entry of candidates) {
@@ -384,15 +467,30 @@ async function searchFiles(sessionId, query = {}) {
       }
       if (!matched) continue;
       matchedCount += 1;
-      if (items.length < 5000) items.push({ fileName: entry.fileName, shortName: shortName(entry.fileName), preview });
-    } catch {
-      // A malformed individual file remains a non-match; callers still receive searchedCount.
+      if (items.length < RESOURCE_LIMITS.maxSearchResults) items.push({ fileName: entry.fileName, shortName: shortName(entry.fileName), preview });
+    } catch (error: any) {
+      errorCount += 1;
+      if (errors.length < RESOURCE_LIMITS.maxReportedSearchErrors) {
+        errors.push({
+          fileName: entry.fileName,
+          error: error && error.message ? error.message : String(error),
+          code: error && error.code ? error.code : undefined,
+        });
+      }
     }
   }
-  return { matchedCount, searchedCount: candidates.length, items, truncated: matchedCount > items.length };
+  return {
+    matchedCount,
+    searchedCount: candidates.length,
+    items,
+    truncated: matchedCount > items.length,
+    errorCount,
+    errors,
+    errorsTruncated: errorCount > errors.length,
+  };
 }
 
-async function releaseMemory(sessionId) {
+async function releaseMemory(sessionId?: string): Promise<Record<string, never>> {
   if (sessionId) {
     const session = sessionById(sessionId);
     session.cache.clear();
@@ -408,35 +506,54 @@ async function releaseMemory(sessionId) {
   return {};
 }
 
-function health() {
-  return { backend: "typescript-readonly-fallback", readOnly: true, sourceAvailable: true };
+function health(): Readonly<Record<string, unknown>> {
+  return Object.freeze({
+    backend: "typescript-readonly-fallback",
+    readOnly: true,
+    sourceAvailable: true,
+    sourceLanguage: "typescript",
+    runtimeTypeStripping: process.features?.typescript || null,
+    resourceLimits: RESOURCE_LIMITS,
+  });
 }
 
-function unsupported() {
-  throw readonlyError("PVF write operation");
+function unsupported(operation = "PVF write operation"): never {
+  throw readonlyError(operation);
 }
 
-module.exports = {
-  __workbenchBackend: { source: "typescript-readonly-fallback", readOnly: true, sourceAvailable: true },
+const backendMetadata = Object.freeze({
+  source: "typescript-readonly-fallback",
+  readOnly: true,
+  sourceAvailable: true,
+  sourceLanguage: "typescript",
+  resourceLimits: RESOURCE_LIMITS,
+});
+
+module.exports = Object.freeze({
+  __workbenchBackend: backendMetadata,
   closeSession,
-  deleteEntries: unsupported,
-  extractEntries: unsupported,
-  getFileMetadata: async (sessionId, fileName) => {
+  deleteEntries: () => unsupported("PVF entry deletion"),
+  extractEntries: () => unsupported("PVF entry extraction"),
+  getFileMetadata: async (sessionId: string, fileName: string) => {
     const entry = sessionById(sessionId).entry(fileName);
     if (!entry) throw new Error(`PVF file does not exist in session: ${fileName}`);
     return { fileName: entry.fileName, dataLength: entry.dataLength, isScriptFile: entry.isScriptFile, isBinaryAniFile: entry.isBinaryAniFile };
   },
   getSession,
   health,
-  importDirectory: unsupported,
+  importDirectory: () => unsupported("PVF directory import"),
   listFiles,
   openSession,
   readFile,
   releaseMemory,
-  renameEntries: unsupported,
-  resolveStringLink: async (sessionId, id, name, encoding) => (await sessionById(sessionId).ensureStringView(encoding)).get(Number(id), String(name)),
-  saveSession: unsupported,
+  renameEntries: () => unsupported("PVF entry rename"),
+  resolveStringLink: async (sessionId: string, id: number, name: string, encoding: string) => {
+    const view = await sessionById(sessionId).ensureStringView(encoding);
+    await view.ensure([Number(id)]);
+    return view.get(Number(id), String(name));
+  },
+  saveSession: () => unsupported("PVF save"),
   searchFiles,
-  upsertFile: unsupported,
-  upsertTextFileRaw: unsupported,
-};
+  upsertFile: () => unsupported("PVF binary upsert"),
+  upsertTextFileRaw: () => unsupported("PVF text upsert"),
+});

@@ -1,5 +1,17 @@
 # 更新日志
 
+## 未发布
+
+## 2.1.0
+
+- 将只读备用后端的运行源码从 JavaScript 迁移为由固定 Node.js 24 runtime 直接执行的 TypeScript；不增加 npm、联网或构建步骤。
+- 只读模式的 stdio 工具枚举改为仅公开读取工具，并在分发层与 TypeScript API 层继续以 `READ_ONLY_FALLBACK` 阻断所有写入口。
+- 扩展合成 fixture 自检，覆盖 TypeScript runtime 身份、native 优先选择、写工具隐藏、direct API/stdio 写负控和源文件 SHA 不变。
+- 增加 TypeScript 只读后端机器契约，固定源码闭包、公开/阻断工具、直接 API 阻断和会话、读取、搜索资源上限。
+- 畸形文件树、重复规范化路径和数据 checksum 失败改为失败关闭；搜索结果显式报告截断、读取错误数和有限错误样本。
+- 为 StringTable、脚本 token 和 StringView 增加解析前资源上限，并补齐 `.lst` 相对登记路径按注册表目录解析的闭环。
+- 真实多版本 PVF 差分修正 `.lst` 显示文本与登记解析的分层、根目录登记路径的 `./` 前缀，并将 StringTable/StringView 改为有界按需解码以降低大型 PVF 常驻内存。
+
 ## 2.0.0
 
 - 普通任务改为完全自包含：随包提供固定 Node.js runtime 与 native PVF backend，不依赖外部 MCP、编辑器插件或已下架工具。

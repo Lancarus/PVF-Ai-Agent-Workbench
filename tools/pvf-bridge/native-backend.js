@@ -9,6 +9,7 @@ const NATIVE_FILE_NAME = "pvf_rust_core.node";
 const OVERRIDE_ENV = "PVF_XPILOT_NATIVE";
 const BACKEND_MODE_ENV = "PVF_WORKBENCH_BACKEND";
 const FALLBACK_MODE = "typescript-readonly";
+const TYPESCRIPT_READONLY_ENTRY = path.join(__dirname, "fallback", "pvf-readonly-backend.ts");
 
 function sha256File(file) {
   const hash = crypto.createHash("sha256");
@@ -69,10 +70,26 @@ function findBundledNativeBackend() {
   return resolveNativeBackend().path;
 }
 
+function loadTypescriptReadonlyBackend(options = {}) {
+  const api = options.fallbackApi || require(TYPESCRIPT_READONLY_ENTRY);
+  const metadata = api && api.__workbenchBackend;
+  const status = api && typeof api.health === "function" ? api.health() : null;
+  if (
+    !api ||
+    metadata?.readOnly !== true ||
+    metadata?.sourceLanguage !== "typescript" ||
+    status?.readOnly !== true ||
+    status?.backend !== "typescript-readonly-fallback"
+  ) {
+    throw new Error("The bundled TypeScript fallback failed its read-only identity check.");
+  }
+  return api;
+}
+
 function loadPvfBackend(options = {}) {
   const env = options.env || process.env;
   const mode = String(options.mode || env[BACKEND_MODE_ENV] || "auto").trim().toLowerCase();
-  const fallbackApi = () => options.fallbackApi || require("./fallback/pvf-readonly-backend");
+  const fallbackApi = () => loadTypescriptReadonlyBackend(options);
   if (mode === FALLBACK_MODE || mode === "fallback") {
     return {
       api: fallbackApi(),
@@ -149,7 +166,13 @@ function nativeBackendSelfTest() {
     checks.push({ id: "load-native-api", ok: selectedNative.api === fakeNativeApi && selectedNative.readOnly === false });
 
     const forcedFallback = loadPvfBackend({ env: { [BACKEND_MODE_ENV]: FALLBACK_MODE } });
-    checks.push({ id: "force-readonly-fallback", ok: forcedFallback.readOnly === true && forcedFallback.api.health().readOnly === true });
+    checks.push({
+      id: "force-readonly-fallback",
+      ok:
+        forcedFallback.readOnly === true &&
+        forcedFallback.api.health().readOnly === true &&
+        forcedFallback.api.health().sourceLanguage === "typescript",
+    });
 
     const automaticFallback = loadPvfBackend({
       env: {},
@@ -180,8 +203,10 @@ module.exports = {
   FALLBACK_MODE,
   NATIVE_FILE_NAME,
   OVERRIDE_ENV,
+  TYPESCRIPT_READONLY_ENTRY,
   findBundledNativeBackend,
   loadPvfBackend,
+  loadTypescriptReadonlyBackend,
   nativeBackendSelfTest,
   resolveNativeBackend,
   sha256File,

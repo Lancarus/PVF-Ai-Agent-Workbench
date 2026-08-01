@@ -2,7 +2,13 @@
 
 本文件定义 Portable PVF Agent Workbench 对 PVF 后端的最低要求。
 
-这里的“后端”不是 OpenCode、Codex 等宿主本身，而是 `pvf-agent-core` 随包携带、负责打开、读取、解析、索引和受控写出 PVF 的能力层。当前完整实现使用 Workbench-bundled native backend；另有只实现读取子集且硬阻断写入的 JavaScript 备用后端。未来替换完整实现仍必须通过同一组契约测试，备用后端则必须通过独立只读契约和写入负控。
+这里的“后端”不是 OpenCode、Codex 等宿主本身，而是 `pvf-agent-core` 随包携带、负责打开、读取、解析、索引和受控写出 PVF 的能力层。当前完整实现使用 Workbench-bundled native backend；另有只实现读取子集且硬阻断写入的 TypeScript 备用后端，由随包 Node.js 直接执行，不需要 npm 或构建。未来替换完整实现仍必须通过同一组契约测试，备用后端则必须通过独立只读契约和写入负控。
+
+TypeScript 备用后端的机器可读子契约位于 `typescript-readonly-backend-contract.v1.json`。它固定 `.ts` 源文件闭包、Node 类型擦除运行条件、公开/内部 dry-run/阻断工具集合、阻断 API、资源上限和失败关闭规则。可用以下命令查看：
+
+```bat
+workbench.bat backend-contract show-readonly
+```
 
 ## 设计目标
 
@@ -26,6 +32,8 @@
 | reverse registry resolve | 能按精确 PVF 路径反查登记它的 `.lst` 与数字 ID。 |
 | local index | 能建立或读取 path / registry / `.lst` 索引，并能判断索引是否和源 PVF 匹配。 |
 | controlled write | 写入必须经过 change-set、备份、显式 output、重新打开 output readback。 |
+
+TypeScript 备用模式中的搜索还必须显式返回 `truncated`、`errorCount`、有限错误样本与 `errorsTruncated`；损坏文件不能被静默计作普通未命中。
 
 ## 不变安全规则
 
