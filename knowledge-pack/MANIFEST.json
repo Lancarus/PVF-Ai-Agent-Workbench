@@ -639,8 +639,8 @@
     },
     {
       "dest": "indexes/knowledge-index.json",
-      "bytes": 27095,
-      "sha256": "6303cdcb0e5b22bedd3c55e6f2c5d836d0ca49d5111c845740a9bed733a6118f"
+      "bytes": 28239,
+      "sha256": "3c33ea711c305af85cbf0feb03bf18856e47a8223fda74f67ae481d8f44086da"
     },
     {
       "dest": "indexes/knowledge-topic-routes.full.json",
@@ -1178,6 +1178,11 @@
       "sha256": "a079bd96e76d8d11bcbfa63d55f21f3bd3b6cea76aa4e172ab53e0a22399e6ee"
     },
     {
+      "dest": "task-cards/nut-community-source-position-triage.zh-CN.md",
+      "bytes": 1685,
+      "sha256": "ed513b22bdd5a9e8df402736aea0457ef60cb5b6c3f1a4863748f66457696e25"
+    },
+    {
       "dest": "task-cards/passiveobject-nonmonster-readonly-audit.zh-CN.md",
       "bytes": 2400,
       "sha256": "e1782912d5bbd1c88687ba2529bdc77f282a1ebca6dd02a97ab5ad3a5b70e691"
@@ -1214,8 +1219,8 @@
     },
     {
       "dest": "task-cards/README.zh-CN.md",
-      "bytes": 1000,
-      "sha256": "bb337d8dbd07fc11d4fdef1a257fc2019477f8ac6450869f73689d2f9e54a2b6"
+      "bytes": 1050,
+      "sha256": "4e74d9935fba55a07a2a709e73beba5a51c28ba0857994e1a10da370b76c41d9"
     },
     {
       "dest": "task-cards/runtime-pass-absorption-checklist.zh-CN.md",
@@ -1363,6 +1368,11 @@
       "sha256": "cb799881acf551eac826e67d3b9d23b88341cf56cb2ef8f336952fb79d84a7c1"
     },
     {
+      "dest": "workflows/nut-skill-buff-po-controlled-planner.zh-CN.md",
+      "bytes": 2863,
+      "sha256": "6b5b19a40751ce4f50c18618ef7dbf1533cbccb928e60735925fc5ac8f33ea3c"
+    },
+    {
       "dest": "workflows/pvf-package-quality-audit.zh-CN.md",
       "bytes": 3051,
       "sha256": "96c89c64a1b6889a041b3747a4e8a7baed6764bcdf17659d08292e2c3d17a71c"
@@ -1389,8 +1399,8 @@
     },
     {
       "dest": "workflows/README.zh-CN.md",
-      "bytes": 1425,
-      "sha256": "a7019f2ead9392fb07c71cb646c7c407e4bfce899311676e3a2484778af5b576"
+      "bytes": 1572,
+      "sha256": "641440ac7c28e166ff1eff4dedf9d12ca916f79eaa1019402c4452fa98dbbb46"
     },
     {
       "dest": "workflows/runtime-validation-absorption.zh-CN.md",
@@ -1434,7 +1444,7 @@
     }
   ],
   "summary": {
-    "entryCount": 286,
-    "totalBytes": 6934029
+    "entryCount": 288,
+    "totalBytes": 6939918
   }
 }

@@ -23,6 +23,7 @@ const commands = {
   "fixture-check": "core/pvf-agent-core/scripts/check-backend-fixtures.js",
   profile: "core/pvf-agent-core/scripts/workbench-profile.js",
   absorb: "core/pvf-agent-core/scripts/runtime-absorb-checklist.js",
+  "nut-source": "core/pvf-agent-core/scripts/nut-source.js",
   "pvf-read": "core/pvf-agent-core/cli/pvf-readonly.js",
   "pvf-index": "core/pvf-agent-core/cli/pvf-index.js",
   "pvf-change": "core/pvf-agent-core/cli/pvf-change-set.js",
@@ -69,6 +70,7 @@ Maintenance:
   knowledge-check       Validate the clean knowledge pack (--rebuild-manifest refreshes integrity metadata)
   eval                  Run deterministic Agent evaluations
   absorb                Create a runtime absorption checklist
+  nut-source            Scan local NUT tutorials/stubs into a source-position report
   backend-contract      Run the PVF backend contract
   fixture-check         Check backend fixtures
   real-task-check       Check recorded real-task runs

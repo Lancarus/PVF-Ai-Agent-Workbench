@@ -17,6 +17,7 @@
 - `monster-mob-readonly-audit.zh-CN.md`
 - `monster-attackinfo-atk-readonly-audit.zh-CN.md`
 - `passiveobject-nonmonster-readonly-audit.zh-CN.md`
+- `nut-community-source-position-triage.zh-CN.md`
 
 - `monster-action-animation-readonly-audit.zh-CN.md`
 

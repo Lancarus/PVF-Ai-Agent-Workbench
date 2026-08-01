@@ -72,7 +72,7 @@ function globToRegex(pattern) {
 }
 
 function releaseReadmeException(relPath) {
-  return /^workspaces\/(absorption-checklists|agent-eval-runs|doctor-runs|indexes|package-dry-runs|planner-runs|release-runs)\/README\.zh-CN\.md$/i.test(normalizeRel(relPath));
+  return /^workspaces\/(absorption-checklists|agent-eval-runs|nut-source-runs|doctor-runs|indexes|package-dry-runs|planner-runs|release-runs)\/README\.zh-CN\.md$/i.test(normalizeRel(relPath));
 }
 
 function hardForbiddenReason(relPath) {
@@ -83,7 +83,7 @@ function hardForbiddenReason(relPath) {
   }
   if (/^config\/(providers\.local\.json|workspace-profiles\.local\.json)$/i.test(value)) return "local private config";
   if (/^config\/.*\.secret\.json$/i.test(value)) return "local secret config";
-  if (/^workspaces\/(dry-runs|apply-runs|backend-contract-runs|backend-fixture-runs|first-run-reports|real-task-runs|real-task-checks|absorption-checklists|agent-eval-runs|agent-workspace-stages|runtime-overlay-dry-runs|runtime-overlay-stages|stage-copy-dry-runs|cold-start-dry-runs|doctor-runs|planner-runs|package-dry-runs|release-runs|indexes)\//i.test(value)) {
+  if (/^workspaces\/(dry-runs|apply-runs|backend-contract-runs|backend-fixture-runs|first-run-reports|real-task-runs|real-task-checks|absorption-checklists|agent-eval-runs|nut-source-runs|agent-workspace-stages|runtime-overlay-dry-runs|runtime-overlay-stages|stage-copy-dry-runs|cold-start-dry-runs|doctor-runs|planner-runs|package-dry-runs|release-runs|indexes)\//i.test(value)) {
     return "generated workspace output";
   }
   if (/(^|\/)(?:\.env(?:\..*)?|\.DS_Store|Thumbs\.db|desktop\.ini)$/i.test(value)) return "secret or OS metadata file";

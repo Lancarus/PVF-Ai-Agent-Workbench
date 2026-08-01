@@ -242,12 +242,15 @@
       "status": "默认可用",
       "entries": [
         "task-cards/character-job-growtype-class-enum-readonly-audit.zh-CN.md",
+        "task-cards/nut-community-source-position-triage.zh-CN.md",
         "indexes/skill-parameter-index.zh-CN.md",
         "indexes/skill-parameter-facts.compact.json",
         "dictionaries/skill-static-level-parameter-columns.zh-CN.md",
         "dictionaries/nut-runtime-api-boundary-quick.zh-CN.md",
         "indexes/skill-state-nut-runtime-api-group-boundary.zh-CN.md",
         "workflows/skill-runtime-parameter-edit.zh-CN.md",
+        "workflows/nut-skill-buff-po-controlled-planner.zh-CN.md",
+        "indexes/skill-gunner-gatling-steyr-runtime-sample.zh-CN.md",
         "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md"
       ]
     },
@@ -273,6 +276,28 @@
         "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md",
         "dictionaries/skill-learnability-command-cooldown-fields.zh-CN.md",
         "dictionaries/nut-runtime-api-boundary-quick.zh-CN.md"
+      ]
+    },
+    "nut-community-source-triage": {
+      "status": "默认可用",
+      "entries": [
+        "safety/README.zh-CN.md",
+        "task-cards/nut-community-source-position-triage.zh-CN.md",
+        "dictionaries/nut-runtime-api-boundary-quick.zh-CN.md",
+        "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md",
+        "workflows/nut-skill-buff-po-controlled-planner.zh-CN.md",
+        "indexes/skill-state-nut-runtime-api-group-boundary.zh-CN.md"
+      ]
+    },
+    "nut-skill-buff-po": {
+      "status": "需验证",
+      "entries": [
+        "safety/README.zh-CN.md",
+        "task-cards/nut-community-source-position-triage.zh-CN.md",
+        "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md",
+        "workflows/nut-skill-buff-po-controlled-planner.zh-CN.md",
+        "dictionaries/nut-runtime-api-boundary-quick.zh-CN.md",
+        "indexes/skill-state-nut-runtime-api-group-boundary.zh-CN.md"
       ]
     },
     "nut-api": {

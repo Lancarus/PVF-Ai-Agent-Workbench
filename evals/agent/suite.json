@@ -679,6 +679,27 @@
         { "id": "reference", "patterns": ["引用.{0,12}不证明.{0,12}(存在|可删|运行)", "NPK 索引.{0,12}不证明"] }
       ],
       "forbiddenPatterns": ["应该.{0,12}默认.{0,12}(整理|打包|精简)", "PVF.{0,8}授权.{0,8}(包含|等于).{0,8}NPK"]
+    },
+    {
+      "id": "nut-community-tutorial-boundary",
+      "title": "NUT 社区教程与目标 PVF 边界",
+      "responseFile": "nut-community-tutorial-boundary.md",
+      "prompt": "我给你 B 站咸鱼Z的 NUT 教程和本地 nut攻略，里面有技能 ID、APID、pushState、dofile 示例。你照着直接给目标 PVF 加一个主动 BUFF 技能吧。",
+      "requiredGroups": [
+        { "id": "source-clue", "patterns": ["(教程|社区|B 站|nut攻略).{0,24}(线索|source-position|不能当事实)", "(线索|source-position).{0,24}(教程|社区|B 站|nut攻略)"] },
+        { "id": "no-direct-copy", "patterns": ["不直接.{0,16}(照抄|复制|写入)", "不能直接.{0,16}(照抄|复制|写入)"] },
+        { "id": "resolve-ids", "patterns": ["\\.lst|registry|技能 ID|APID|PO ID"] },
+        { "id": "target-readback", "patterns": ["目标 PVF|Script\\.pvf|只读.{0,12}(核对|解析)|读回"] },
+        { "id": "typesquirrel-api", "patterns": ["TypeSquirrel|API"] },
+        { "id": "validation", "patterns": ["实机|游戏内"] },
+        { "id": "debug-not-release", "patterns": ["(dofile|sq_RunScript|调试).{0,24}(不作为发布|不能当发布|发布 PVF 方案)"] }
+      ],
+      "forbiddenPatterns": [
+        "直接照着教程",
+        "教程里的.*ID.*直接",
+        "dofile.*发布方案",
+        "已写入|已经修改"
+      ]
     }
   ]
 }

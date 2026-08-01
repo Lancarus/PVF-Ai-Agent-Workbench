@@ -302,8 +302,8 @@ function validateReleaseManifest() {
   if (!Array.isArray(include) || include.length === 0) {
     errors.push("portableCore.include must not be empty.");
   }
-  const forbiddenIncludePattern = /(^|\/)(config\/providers\.local\.json|config\/workspace-profiles\.local\.json|workspaces\/(dry-runs|apply-runs|backend-contract-runs|backend-fixture-runs|first-run-reports|real-task-runs|real-task-checks|absorption-checklists|agent-eval-runs|agent-workspace-stages|runtime-overlay-dry-runs|runtime-overlay-stages|stage-copy-dry-runs|cold-start-dry-runs|doctor-runs|planner-runs|package-dry-runs|release-runs|indexes)\/)|\.(pvf|bak|npk|img|zip|7z|rar)$/i;
-  const generatedReadmeExceptionPattern = /^workspaces\/(absorption-checklists|agent-eval-runs|doctor-runs|planner-runs|package-dry-runs|release-runs|indexes)\/README\.zh-CN\.md$/i;
+  const forbiddenIncludePattern = /(^|\/)(config\/providers\.local\.json|config\/workspace-profiles\.local\.json|workspaces\/(dry-runs|apply-runs|backend-contract-runs|backend-fixture-runs|first-run-reports|real-task-runs|real-task-checks|absorption-checklists|agent-eval-runs|nut-source-runs|agent-workspace-stages|runtime-overlay-dry-runs|runtime-overlay-stages|stage-copy-dry-runs|cold-start-dry-runs|doctor-runs|planner-runs|package-dry-runs|release-runs|indexes)\/)|\.(pvf|bak|npk|img|zip|7z|rar)$/i;
+  const generatedReadmeExceptionPattern = /^workspaces\/(absorption-checklists|agent-eval-runs|nut-source-runs|doctor-runs|planner-runs|package-dry-runs|release-runs|indexes)\/README\.zh-CN\.md$/i;
   for (const item of include) {
     if (path.isAbsolute(item) || String(item).includes("..")) {
       errors.push(`portableCore.include must be relative and safe: ${item}`);
@@ -322,7 +322,7 @@ function validateReleaseManifest() {
     ...(manifest.exclude?.mountedUserData || []),
     ...(manifest.exclude?.heavyArtifacts || []),
   ];
-  for (const required of ["config/providers.local.json", "config/workspace-profiles.local.json", "workspaces/backend-contract-runs/", "workspaces/backend-fixture-runs/", "workspaces/first-run-reports/", "workspaces/real-task-runs/", "workspaces/real-task-checks/", "workspaces/agent-eval-runs/", "workspaces/agent-workspace-stages/", "workspaces/runtime-overlay-dry-runs/", "workspaces/runtime-overlay-stages/", "workspaces/stage-copy-dry-runs/", "workspaces/cold-start-dry-runs/", "workspaces/planner-runs/", "workspaces/package-dry-runs/", "workspaces/release-runs/", "*.pvf"]) {
+  for (const required of ["config/providers.local.json", "config/workspace-profiles.local.json", "workspaces/backend-contract-runs/", "workspaces/backend-fixture-runs/", "workspaces/first-run-reports/", "workspaces/real-task-runs/", "workspaces/real-task-checks/", "workspaces/agent-eval-runs/", "workspaces/nut-source-runs/", "workspaces/agent-workspace-stages/", "workspaces/runtime-overlay-dry-runs/", "workspaces/runtime-overlay-stages/", "workspaces/stage-copy-dry-runs/", "workspaces/cold-start-dry-runs/", "workspaces/planner-runs/", "workspaces/package-dry-runs/", "workspaces/release-runs/", "*.pvf"]) {
     if (!excluded.includes(required)) {
       warnings.push(`release manifest does not explicitly exclude ${required}`);
     }
@@ -523,6 +523,7 @@ async function runCheck() {
           "core/pvf-agent-core/scripts/workbench.js",
           "core/pvf-agent-core/scripts/workbench-profile.js",
           "core/pvf-agent-core/scripts/runtime-absorb-checklist.js",
+          "core/pvf-agent-core/scripts/nut-source.js",
           "core/pvf-agent-core/scripts/resolve-node.bat",
           "core/pvf-agent-core/scripts/check-real-task-runs.js",
           "core/pvf-agent-core/scripts/check-backend-fixtures.js",
@@ -554,6 +555,7 @@ async function runCheck() {
           "core/pvf-agent-core/contracts/fixtures/dungeon-draconiantower.fixture.json",
           "workspaces/planner-runs/README.zh-CN.md",
           "workspaces/agent-eval-runs/README.zh-CN.md",
+          "workspaces/nut-source-runs/README.zh-CN.md",
           "workspaces/release-runs/README.zh-CN.md",
           "evals/agent/README.zh-CN.md",
           "evals/agent/suite.json",

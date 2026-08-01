@@ -22,3 +22,4 @@
 - `client-asset-path-preview.zh-CN.md`：ANI/ALS/IMG/NPK/ImagePacks2 资源路径只读预览。
 - `dungeon-extraction-planner.zh-CN.md`：副本、地图、怪物、地图对象、APC、UI/资源线索的只读提取预览。
 - `apc-extraction-planner.zh-CN.md`：APC / AICharacter / AI / key stream 的只读提取与分析。
+- `nut-skill-buff-po-controlled-planner.zh-CN.md`：NUT 技能、BUFF、Appendage、PassiveObject 链路的只读闭合和受控写入前规划。

@@ -163,6 +163,7 @@ function checkRequiredPaths(errors) {
       "workspaces/examples",
       "workspaces/planner-runs",
       "workspaces/agent-eval-runs",
+      "workspaces/nut-source-runs",
       "workspaces/release-runs",
     ];
 
@@ -253,6 +254,7 @@ function checkRequiredPaths(errors) {
       "core/pvf-agent-core/scripts/workbench.js",
       "core/pvf-agent-core/scripts/workbench-profile.js",
       "core/pvf-agent-core/scripts/runtime-absorb-checklist.js",
+      "core/pvf-agent-core/scripts/nut-source.js",
       "core/pvf-agent-core/scripts/resolve-node.bat",
       "core/pvf-agent-core/scripts/check-knowledge-pack.js",
       "core/pvf-agent-core/scripts/workbench-doctor.js",
@@ -335,6 +337,7 @@ function checkRequiredPaths(errors) {
       "workspaces/absorption-checklists/README.zh-CN.md",
       "workspaces/planner-runs/README.zh-CN.md",
       "workspaces/agent-eval-runs/README.zh-CN.md",
+      "workspaces/nut-source-runs/README.zh-CN.md",
       "workspaces/release-runs/README.zh-CN.md",
       "evals/agent/README.zh-CN.md",
       "evals/agent/suite.json",
@@ -432,6 +435,7 @@ function checkRequiredPaths(errors) {
     "core/pvf-agent-core/scripts/check-env.js",
     "core/pvf-agent-core/scripts/workbench-profile.js",
     "core/pvf-agent-core/scripts/runtime-absorb-checklist.js",
+    "core/pvf-agent-core/scripts/nut-source.js",
     "core/pvf-agent-core/scripts/first-run.js",
     "core/pvf-agent-core/scripts/setup-deepseek-key.js",
     "core/pvf-agent-core/scripts/resolve-node.bat",
