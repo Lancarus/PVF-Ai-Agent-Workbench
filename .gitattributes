@@ -1,4 +1,5 @@
 knowledge-pack/** text eol=lf
+docs/licenses/PVF-X-PILOT-MIT.txt text eol=lf
 runtime/node/LICENSE -text
 *.exe binary
 *.node binary
