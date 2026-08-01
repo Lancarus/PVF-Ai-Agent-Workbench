@@ -7,7 +7,7 @@
 ## 入口
 
 1. 确认目标 PVF、目标职业/角色分支、意图、是否允许输出 PVF、是否有实机验证。
-2. 若需求来自教程/截图/网盘/本地攻略，先走 `task-cards/nut-community-source-position-triage.zh-CN.md`。
+2. 若需求来自教程/截图/网盘/本地攻略，先走 `task-cards/nut-community-source-clue-triage.zh-CN.md`。
 3. 先读取 `dictionaries/nut-runtime-api-boundary-quick.zh-CN.md` 和 `task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md`。
 4. API 名先查 TypeSquirrel；无工具时只把 API 名当候选。
 

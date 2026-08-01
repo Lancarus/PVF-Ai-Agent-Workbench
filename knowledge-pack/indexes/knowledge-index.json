@@ -242,7 +242,7 @@
       "status": "默认可用",
       "entries": [
         "task-cards/character-job-growtype-class-enum-readonly-audit.zh-CN.md",
-        "task-cards/nut-community-source-position-triage.zh-CN.md",
+        "task-cards/nut-community-source-clue-triage.zh-CN.md",
         "indexes/skill-parameter-index.zh-CN.md",
         "indexes/skill-parameter-facts.compact.json",
         "dictionaries/skill-static-level-parameter-columns.zh-CN.md",
@@ -282,7 +282,7 @@
       "status": "默认可用",
       "entries": [
         "safety/README.zh-CN.md",
-        "task-cards/nut-community-source-position-triage.zh-CN.md",
+        "task-cards/nut-community-source-clue-triage.zh-CN.md",
         "dictionaries/nut-runtime-api-boundary-quick.zh-CN.md",
         "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md",
         "workflows/nut-skill-buff-po-controlled-planner.zh-CN.md",
@@ -293,7 +293,7 @@
       "status": "需验证",
       "entries": [
         "safety/README.zh-CN.md",
-        "task-cards/nut-community-source-position-triage.zh-CN.md",
+        "task-cards/nut-community-source-clue-triage.zh-CN.md",
         "task-cards/skill-state-nut-runtime-readonly-audit.zh-CN.md",
         "workflows/nut-skill-buff-po-controlled-planner.zh-CN.md",
         "dictionaries/nut-runtime-api-boundary-quick.zh-CN.md",

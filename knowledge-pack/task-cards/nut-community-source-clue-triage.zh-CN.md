@@ -17,8 +17,8 @@
 
 1. 记录资料类型和可访问范围，只提炼主题、入口、API 名、风险点。
 2. 不复制教程全文、截图、网盘文件、源码转储或本地证据路径进 clean knowledge-pack。
-3. 将教程中的技能 ID、state、substate、PO ID、APID、路径、static data index 标为 `source-position` 线索。
-4. 本地资料较多时，先用 `workbench.bat nut-source scan --source <file-or-directory>` 生成外部 source-position 报告，再人工挑选可迁移规则。
+3. 将教程中的技能 ID、state、substate、PO ID、APID、路径、static data index 标为 `source-clue` 线索。
+4. 本地资料较多时，先用 `workbench.bat nut-source scan --source <file-or-directory>` 生成外部 source-clue 报告，再人工挑选可迁移规则。
 5. 回目标 PVF 查职业 registry、skill `.lst`、目标 `.skl`、`load_state`、`pushState`、`pushPassiveObj`、appendage/PO 文件。
 6. API 名优先 TypeSquirrel；无 TypeSquirrel 时只能标“需 TypeSquirrel 或目标 PVF 同类脚本核验”。
 7. 对 `dofile`、`sq_RunScript`、调试 UI、外部热加载标为本地调试线索，不能作为发布 PVF 默认方案。

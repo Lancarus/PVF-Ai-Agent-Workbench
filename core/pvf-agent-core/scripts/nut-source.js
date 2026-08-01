@@ -22,7 +22,7 @@ function usage() {
   return `Usage:
   workbench.bat nut-source scan --source <file-or-directory> [--out <dir>] [--max-symbols 200] [--max-headings 200]
 
-The scan is read-only. It writes a source-position report outside the Workbench by default and does not copy tutorial text into knowledge-pack.
+The scan is read-only. It writes a source-clue report outside the Workbench by default and does not copy tutorial text into knowledge-pack.
 `;
 }
 
@@ -271,7 +271,7 @@ function scanSource(source, maxSymbols, maxHeadings) {
       if (/\b(file|blob)\s*\(/.test(line)) bucketIncrement(riskBuckets, "local-file-io", relPath);
       if (/\b(APID|BUFF|SKILL|STATE)_[A-Z0-9_]+/.test(line)) bucketIncrement(riskBuckets, "bare-constant-id", relPath);
       if (/\b\d{3,}\b/.test(line) && /(skill|state|apid|buff|passive|object|po|技能|状态|被动)/i.test(line)) {
-        bucketIncrement(riskBuckets, "numeric-id-source-position", relPath);
+        bucketIncrement(riskBuckets, "numeric-id-source-clue", relPath);
       }
     }
 
@@ -344,7 +344,7 @@ function scanSource(source, maxSymbols, maxHeadings) {
       missingFromFull: missingFromFull.map((symbol) => ({ symbol, categories: symbolCategories(symbol) })),
     },
     guidance: [
-      "Treat every tutorial ID, APID, state, substate, PO ID, path, and static data index as source-position only.",
+      "Treat every tutorial ID, APID, state, substate, PO ID, path, and static data index as source-clue only.",
       "Verify API names with TypeSquirrel when available; otherwise verify against target PVF same-family scripts before use.",
       "Do not copy tutorial code, screenshots, OCR text, or source stubs into clean knowledge-pack.",
       "Do not use dofile, sq_RunScript, loadfile, or file I/O examples as a default release PVF strategy.",
@@ -409,12 +409,12 @@ function runScan() {
   const maxHeadings = safeLimit("--max-headings", 200);
   const outRoot = path.resolve(option("--out", runtimePath(workbenchRoot, "nut-source-runs", timestamp())));
   fs.mkdirSync(outRoot, { recursive: true });
-  const reportPath = path.join(outRoot, "NUT-SOURCE-POSITION-SCAN.json");
-  const markdownPath = path.join(outRoot, "NUT-SOURCE-POSITION-SCAN.md");
+  const reportPath = path.join(outRoot, "NUT-SOURCE-CLUE-SCAN.json");
+  const markdownPath = path.join(outRoot, "NUT-SOURCE-CLUE-SCAN.md");
   const scanned = scanSource(sourcePath, maxSymbols, maxHeadings);
   const report = {
     schemaVersion: "1.0",
-    phase: "nut-source-position-scan",
+    phase: "nut-source-clue-scan",
     generatedAt: new Date().toISOString(),
     reportPath,
     markdownPath,

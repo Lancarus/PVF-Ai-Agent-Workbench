@@ -70,7 +70,7 @@ Maintenance:
   knowledge-check       Validate the clean knowledge pack (--rebuild-manifest refreshes integrity metadata)
   eval                  Run deterministic Agent evaluations
   absorb                Create a runtime absorption checklist
-  nut-source            Scan local NUT tutorials/stubs into a source-position report
+  nut-source            Scan local NUT tutorials/stubs into a source-clue report
   backend-contract      Run the PVF backend contract
   fixture-check         Check backend fixtures
   real-task-check       Check recorded real-task runs

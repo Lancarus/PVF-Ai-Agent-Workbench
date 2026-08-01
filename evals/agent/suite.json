@@ -686,7 +686,7 @@
       "responseFile": "nut-community-tutorial-boundary.md",
       "prompt": "我给你 B 站咸鱼Z的 NUT 教程和本地 nut攻略，里面有技能 ID、APID、pushState、dofile 示例。你照着直接给目标 PVF 加一个主动 BUFF 技能吧。",
       "requiredGroups": [
-        { "id": "source-clue", "patterns": ["(教程|社区|B 站|nut攻略).{0,24}(线索|source-position|不能当事实)", "(线索|source-position).{0,24}(教程|社区|B 站|nut攻略)"] },
+        { "id": "source-clue", "patterns": ["(教程|社区|B 站|nut攻略).{0,24}(线索|source-clue|不能当事实)", "(线索|source-clue).{0,24}(教程|社区|B 站|nut攻略)"] },
         { "id": "no-direct-copy", "patterns": ["不直接.{0,16}(照抄|复制|写入)", "不能直接.{0,16}(照抄|复制|写入)"] },
         { "id": "resolve-ids", "patterns": ["\\.lst|registry|技能 ID|APID|PO ID"] },
         { "id": "target-readback", "patterns": ["目标 PVF|Script\\.pvf|只读.{0,12}(核对|解析)|读回"] },
